@@ -672,6 +672,78 @@ Pode ser:
 }
 ]
 }
+,
+"🩸 Esfigmomanômetro": {
+"tipo": "Medição não invasiva da pressão arterial",
+"imagem": None,
+"objetivo": """
+O esfigmomanômetro é utilizado para estimar a pressão arterial de forma não invasiva.
+No modelo eletrônico automático, o equipamento combina um **manguito**, um sistema pneumático,
+um **sensor de pressão** e um algoritmo de processamento.
+
+A ideia central para Engenharia Clínica é separar duas coisas:
+
+**o fenômeno fisiológico → a alteração mecânica da artéria**
+
+E:
+
+**a alteração mecânica → pressão/oscilações detectadas → processamento → valor exibido.**
+
+O equipamento não mede diretamente a pressão dentro da artéria. Em métodos automáticos,
+a estimativa depende do método de medição, da qualidade do sinal e do algoritmo do fabricante.
+""",
+"raciocinio": [
+("1. O que o equipamento controla?", "A pressão aplicada pelo manguito ao redor do membro."),
+("2. O que acontece no corpo?", "A compressão externa interage com a artéria e modifica o fluxo e as oscilações associadas ao pulso."),
+("3. Como o equipamento percebe isso?", "Um sensor converte a pressão do sistema pneumático em sinal elétrico."),
+("4. O que faz o controlador?", "Controla inflação/deflação, lê o sensor e processa o sinal conforme o método implementado."),
+("5. Como pensar em falhas?", "Separar manguito e mangueira → vazamento → bomba → válvula → sensor → eletrônica → algoritmo/exibição.")
+],
+"principio": """
+### Cadeia funcional
+
+**Manguito → pressão externa no membro → interação com a artéria →
+variações de pressão no sistema pneumático → sensor → condicionamento/
+processamento → estimativa → tela.**
+
+⚠️ O método exato depende do tipo de esfigmomanômetro.
+
+- **Auscultatório/manual:** utiliza estetoscópio e sons relacionados ao fluxo sanguíneo.
+- **Automático oscilométrico:** analisa oscilações de pressão durante a deflação.
+
+A manutenção deve respeitar o manual do fabricante e os procedimentos de verificação e
+calibração aplicáveis ao modelo.
+""",
+"componentes": [
+("Manguito", "Aplica pressão externa controlada ao membro.", "Tamanho inadequado, dano ou instalação incorreta podem comprometer a medição."),
+("Mangueira pneumática", "Conduz o ar entre os componentes.", "Dobras, desconexões ou vazamentos alteram a dinâmica de pressão."),
+("Bomba de ar", "Eleva a pressão do sistema pneumático.", "Falha pode causar ausência de inflação ou inflação insuficiente."),
+("Válvula de deflação", "Controla a liberação de ar e a queda de pressão.", "Deflação muito rápida, lenta ou irregular pode comprometer a aquisição."),
+("Sensor de pressão", "Converte a pressão pneumática em sinal elétrico.", "Deriva, falha, obstrução do caminho pneumático ou erro eletrônico podem alterar a leitura."),
+("Controlador eletrônico", "Controla a sequência de medição e processa os sinais.", "Separar erro de entrada, sensor, acionamento e processamento antes de atribuir a falha à placa."),
+("Fonte/bateria", "Fornece energia ao sistema.", "Baixa tensão pode afetar bomba, controle e estabilidade da medição."),
+("Display", "Apresenta resultados e informações do ciclo.", "Falha de exibição não significa necessariamente falha de medição.")
+],
+"problemas": [
+{
+"titulo":"Não infla o manguito",
+"sintoma":"O ciclo inicia, mas a pressão não aumenta adequadamente.",
+"cadeia":"Alimentação → controlador → acionamento → bomba → mangueira → manguito.",
+"causas":["Bateria/fonte", "Comando ausente", "Bomba", "Mangueira desconectada", "Vazamento", "Válvula aberta"],
+"passos":["Verificar alimentação.", "Verificar conexões pneumáticas externas.", "Observar se existe comando/acionamento conforme procedimento técnico.", "Separar vazamento de falha de bomba.", "Consultar manual antes de desmontagem."],
+"nao_fazer":"Não ajustar parâmetros de calibração ou modificar o circuito pneumático sem procedimento autorizado."
+},
+{
+"titulo":"Infla, mas apresenta erro ou valor inconsistente",
+"sintoma":"O ciclo pneumático ocorre, porém a leitura é rejeitada, instável ou inconsistente.",
+"cadeia":"Manguito/posição → sinal fisiológico → pressão → sensor → processamento → resultado.",
+"causas":["Movimento", "Manguito inadequado", "Vazamento", "Sensor", "Deflação irregular", "Interferência no sinal", "Processamento"],
+"passos":["Confirmar condições de uso previstas pelo fabricante.", "Verificar integridade do manguito e das conexões.", "Investigar estabilidade da pressão e comportamento da deflação.", "Diferenciar problema pneumático de problema de sensor/processamento.", "Realizar testes de desempenho apenas com método e instrumentos adequados."],
+"nao_fazer":"Não concluir que o equipamento está calibrado apenas porque apresenta números plausíveis."
+}
+]
+}
+
 }
 
 
@@ -960,6 +1032,101 @@ CAMPO → LUZ REFLETIDA → LENTES → FOCO/AMPLIAÇÃO → OCULAR/CÂMERA
 │                       └── Sim → alinhamento/câmera/óptica especializada""",
         "validacao": ["Iluminação uniforme", "Foco e ampliação funcionais", "Imagem estável", "Movimento mecânico sem folgas anormais", "Captura digital, quando aplicável"]
     }
+,
+    "🩸 Esfigmomanômetro": {
+        "fisica": """
+### Princípios físicos
+
+**1. Pressão em um sistema pneumático**  
+A bomba aumenta a pressão do ar no conjunto manguito–mangueira. O sensor mede a pressão do sistema e a eletrônica acompanha sua variação.
+
+**2. Transdução de pressão**  
+O sensor transforma uma grandeza mecânica — pressão — em um sinal elétrico que pode ser condicionado e convertido para processamento.
+
+**3. Dinâmica de inflação e deflação**  
+A bomba aumenta a pressão; a válvula controla a liberação de ar. Vazamentos e restrições modificam a dinâmica do sistema.
+
+**4. Método oscilométrico**  
+Em equipamentos automáticos, pequenas oscilações de pressão associadas à pulsação arterial são analisadas durante a deflação. O algoritmo do fabricante estima valores a partir dessas informações.
+
+⚠️ O método de cálculo não deve ser presumido como universal entre fabricantes.
+""",
+        "interno": [
+            ("Alimentação", "Fonte ou bateria fornece energia para eletrônica e atuadores."),
+            ("Controle", "O controlador inicia o ciclo e monitora condições do sistema."),
+            ("Inflação", "A bomba pressuriza o conjunto pneumático."),
+            ("Medição", "O sensor acompanha a pressão e suas variações."),
+            ("Deflação controlada", "A válvula libera ar segundo a estratégia do equipamento."),
+            ("Processamento", "O sinal é filtrado/processado para extrair informações relevantes."),
+            ("Resultado", "O sistema apresenta a estimativa e possíveis mensagens de erro.")
+        ],
+        "subsistemas": {
+            "Pneumático": ["manguito", "mangueira", "bomba", "válvula", "conexões"],
+            "Sensoriamento": ["sensor de pressão", "condicionamento do sinal"],
+            "Eletrônico/Controle": ["microcontrolador", "driver", "lógica do ciclo"],
+            "Alimentação": ["bateria/fonte", "regulação", "proteções"],
+            "Interface": ["botão", "display", "indicadores"],
+            "Processamento": ["aquisição", "filtragem", "algoritmo", "detecção de erro"]
+        },
+        "relacoes": [
+            ("Controlador", "Bomba", "comanda a inflação"),
+            ("Bomba", "Manguito", "aumenta a pressão do sistema"),
+            ("Manguito", "Artéria", "aplica pressão externa"),
+            ("Sistema pneumático", "Sensor de pressão", "gera a grandeza medida"),
+            ("Sensor", "Controlador", "fornece informação para processamento"),
+            ("Controlador", "Válvula", "controla a deflação"),
+            ("Processamento", "Display", "apresenta o resultado")
+        ],
+        "diagrama": """BOTÃO/COMANDO → CONTROLADOR → DRIVER → BOMBA
+                                      ↓
+BATERIA/FONTE → REGULAÇÃO → ELETRÔNICA
+
+BOMBA → MANGUEIRA → MANGUITO → PRESSÃO EXTERNA NO MEMBRO
+                         ↓
+                    ARTÉRIA/PULSO
+                         ↓
+MANGUITO/SISTEMA → SENSOR DE PRESSÃO → CONDICIONAMENTO → PROCESSAMENTO → DISPLAY
+                         ↑
+                      VÁLVULA
+                         ↑
+                    CONTROLADOR""",
+        "falhas": {
+            "Pneumático": ["Não infla", "Perde pressão", "Deflação irregular", "Vazamento"],
+            "Bomba": ["Sem acionamento", "Baixa capacidade de inflação", "Ruído anormal"],
+            "Válvula": ["Deflação muito rápida", "Deflação muito lenta", "Travamento"],
+            "Sensor": ["Leitura instável", "Deriva", "Valor incompatível"],
+            "Controle/Processamento": ["Erro de ciclo", "Interrupção", "Resultado inconsistente"],
+            "Alimentação": ["Não liga", "Desliga durante a medição", "Bomba fraca"]
+        },
+        "testes": [
+            ("A pressão aumenta e se mantém?", "Ajuda a separar falha de bomba de vazamento."),
+            ("A deflação ocorre de forma controlada?", "Direciona a investigação para válvula/fluxo/controle."),
+            ("O comportamento pneumático está normal, mas o resultado é inconsistente?", "Aumenta a suspeita sobre sensor, aquisição ou processamento."),
+            ("O problema aparece com outro manguito compatível e íntegro?", "Ajuda a separar acessório de equipamento, conforme compatibilidade prevista."),
+            ("O display está errado ou a medição realmente falhou?", "Separar subsistema de interface da cadeia de medição.")
+        ],
+        "arvore": """ERRO DE MEDIÇÃO
+├── Equipamento liga?
+│   ├── Não → alimentação/fonte/bateria/proteções
+│   └── Sim → manguito infla?
+│             ├── Não → comando → driver → bomba → conexões/vazamento
+│             └── Sim → mantém pressão?
+│                       ├── Não → vazamento/válvula/manguito/mangueira
+│                       └── Sim → deflação é controlada?
+│                                 ├── Não → válvula/fluxo/controle
+│                                 └── Sim → resultado inconsistente?
+│                                           ├── Sim → condições de medição/sensor/processamento
+│                                           └── Não → validar desempenho conforme procedimento""",
+        "validacao": [
+            "Inspeção visual do equipamento e acessórios", 
+            "Integridade do manguito, mangueiras e conexões",
+            "Ciclo de inflação e deflação conforme comportamento previsto",
+            "Ausência de vazamentos anormais",
+            "Verificação de desempenho/calibração com método e instrumento apropriados",
+            "Registro da intervenção e do resultado",
+            "Liberação somente conforme procedimento institucional e orientação do fabricante"]
+    }
+
 }
 
 
@@ -1074,6 +1241,8 @@ COMPONENTES_BASE = {
 }
 
 ANATOMIA = {
+
+    "🩸 Esfigmomanômetro": {"sistema":"Sistema cardiovascular, especialmente coração, vasos sanguíneos e circulação periférica.","relacao":"A pressão arterial está relacionada à força exercida pelo sangue sobre as paredes arteriais. O esfigmomanômetro aplica pressão externa ao membro e utiliza um método de medição para obter uma estimativa. No método oscilométrico, o equipamento analisa variações de pressão associadas à pulsação arterial; no método auscultatório, a interpretação depende da ausculta durante a deflação.","conexao":"Coração → ejeção de sangue → artérias → pulso/pressão arterial → membro → manguito → pressão no sistema pneumático → sensor → processamento → resultado."},
     "♨️ Autoclave": {"sistema":"Não mede diretamente uma função anatômica; atua sobre instrumentos e materiais usados no cuidado ao paciente.","relacao":"A relação com o corpo humano é indireta e ocorre pela prevenção de transmissão de microrganismos. O entendimento básico de microbiologia e barreiras de controle de infecção é mais relevante que uma anatomia de órgão específico.","conexao":"Paciente → procedimento → instrumentos/material → processamento correto → redução do risco associado ao reuso."},
     "📈 Eletrocardiógrafo": {"sistema":"Sistema cardiovascular e sistema de condução elétrica cardíaca.","relacao":"O nó sinoatrial inicia a ativação elétrica fisiológica; a condução pelo miocárdio produz campos elétricos que resultam em diferenças de potencial detectáveis na superfície corporal. O ECG registra essas diferenças por eletrodos.","conexao":"Coração → atividade elétrica → propagação pelo volume condutor corporal → pele → eletrodos → cabos → aquisição eletrônica → traçado."},
     "💨 Compressor": {"sistema":"Não mede diretamente anatomia humana; fornece ar comprimido para sistemas que podem ser utilizados em procedimentos clínicos/odontológicos.","relacao":"No contexto odontológico, sua relação é indireta: o ar comprimido permite o funcionamento de instrumentos que atuam na cavidade oral. A segurança depende da qualidade do ar e da aplicação prevista.","conexao":"Compressor → tratamento/distribuição do ar → equipamento odontológico → instrumento → procedimento no paciente."},
