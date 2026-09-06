@@ -1,409 +1,868 @@
 import streamlit as st
+from datetime import datetime
 
 st.set_page_config(
-    page_title="Guia Prático de Engenharia Clínica",
+    page_title="Engenharia Clínica | Guia de Campo",
     page_icon="🩺",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded",
 )
 
-st.title("🩺 Guia Prático de Engenharia Clínica & Manutenção")
-st.caption("Manual de Bolso, Diagnóstico e Roteiro de Estudos para Auxiliar de Engenharia Clínica")
+# =========================================================
+# CONFIGURAÇÃO
+# =========================================================
+EQUIPAMENTOS = {
+    "♨️ Autoclave": {
+        "imagem": None,  # Adicione um caminho local, ex.: "images/autoclave.jpg"
+        "subtitulo": "Esterilização por vapor sob pressão",
+        "descricao": """
+A autoclave é um equipamento utilizado para **esterilizar artigos e materiais por calor úmido**, utilizando vapor em condições controladas de temperatura, tempo e, conforme o equipamento, pressão e remoção de ar.
 
-# Sidebar - Navigation & Study Route
-st.sidebar.header("📌 Navegação")
+Em ambientes como **odontologia, enfermagem, CME e serviços de saúde**, ela é utilizada para o processamento de artigos compatíveis com o método, contribuindo para a prevenção de transmissão de microrganismos e infecções relacionadas à assistência.
+
+⚠️ **Importante:** a arquitetura e o ciclo variam conforme marca, modelo e aplicação. Uma autoclave compacta de bancada não possui necessariamente bomba de vácuo, osmose reversa ou gerador de vapor separado.
+""",
+        "principio": """
+### Como a esterilização ocorre?
+
+O processo depende da transferência de calor pelo vapor. A eficácia não é explicada apenas por “alta temperatura”: o resultado depende da combinação correta entre **temperatura, tempo, qualidade do vapor, remoção de ar e contato adequado com a carga**.
+
+Em termos microbiológicos, o aumento da temperatura acelera a inativação dos microrganismos. Por isso, os ciclos são definidos e validados para atingir determinadas condições.
+
+### Visão simplificada do processo
+
+**Água / alimentação de vapor → geração ou entrada de vapor → remoção de ar → exposição da carga → manutenção das condições do ciclo → exaustão/despressurização → secagem, quando aplicável.**
+""",
+        "ciclo": [
+            {
+                "fase": "1. Condicionamento da carga",
+                "texto": """O objetivo é preparar a câmara e a carga para a esterilização, principalmente reduzindo a presença de ar que pode dificultar o contato do vapor com as superfícies.
+
+Em autoclaves com pré-vácuo, a remoção de ar pode ocorrer por pulsos de vácuo. Em outros equipamentos, pode existir deslocamento gravitacional do ar. Portanto, **o método depende do tipo de autoclave**."""
+            },
+            {
+                "fase": "2. Esterilização / Exposição",
+                "texto": """Após atingir as condições programadas e validadas, inicia-se o período de exposição. A carga permanece durante o tempo previsto sob as condições definidas pelo ciclo."""
+            },
+            {
+                "fase": "3. Exaustão e secagem",
+                "texto": """Após a exposição, o vapor é removido e ocorre redução de pressão. Em equipamentos com secagem por vácuo, uma bomba de vácuo pode ajudar a remover vapor e umidade.
+
+Quando o vapor entra em contato com uma carga mais fria, parte dele condensa. A secagem adequada depende do projeto do equipamento e do ciclo."""
+            }
+        ],
+        "componentes": [
+            ("Câmara", "Local onde a carga é processada; deve suportar as condições de temperatura e pressão previstas."),
+            ("Sistema de aquecimento / gerador de vapor", "Fornece energia térmica ou vapor para o ciclo."),
+            ("Resistência elétrica", "Converte energia elétrica em calor, quando presente no sistema."),
+            ("Sensor de temperatura", "Fornece ao sistema de controle a informação de temperatura."),
+            ("Sensor/transdutor de pressão", "Monitora a pressão quando aplicável ao projeto."),
+            ("Porta e sistema de travamento", "Mantêm a câmara fechada e ajudam a impedir abertura em condição insegura."),
+            ("Gaxeta / borracha de vedação", "Promove vedação entre porta e câmara."),
+            ("Válvulas", "Controlam entrada, saída ou alívio de fluidos e vapor."),
+            ("Bomba d'água", "Pode alimentar água ao sistema, dependendo do modelo."),
+            ("Bomba de vácuo", "Pode remover ar e auxiliar na secagem; não existe em todos os modelos."),
+            ("Microcontrolador / placa eletrônica", "Executa a lógica do ciclo e recebe sinais dos sensores."),
+            ("Sistema de segurança", "Pode incluir travamento, proteção térmica, válvula de segurança e outras proteções.")
+        ],
+        "problemas": [
+            {
+                "titulo": "Não liga",
+                "sintoma": "Painel apagado ou ausência completa de resposta.",
+                "causas": [
+                    "Ausência de alimentação elétrica",
+                    "Cabo, tomada ou disjuntor",
+                    "Fusível ou proteção aberta",
+                    "Falha na fonte ou placa eletrônica"
+                ],
+                "passos": [
+                    "Descrever exatamente o sintoma antes de desmontar.",
+                    "Verificar a alimentação externa e o procedimento seguro da instituição.",
+                    "Inspecionar cabo, plugue e sinais visíveis de dano.",
+                    "Verificar proteções acessíveis conforme manual técnico.",
+                    "Se a alimentação estiver correta, investigar a cadeia de alimentação interna conforme documentação do fabricante.",
+                    "Após qualquer intervenção, realizar teste funcional e registrar o resultado."
+                ],
+                "alerta": "Não energize circuitos expostos e não substitua proteções por pontes."
+            },
+            {
+                "titulo": "Liga, mas não aquece",
+                "sintoma": "Painel funciona e o ciclo inicia, porém a temperatura não sobe como esperado.",
+                "causas": [
+                    "Falha na resistência ou no sistema de aquecimento",
+                    "Conector ou fiação com mau contato",
+                    "Relé/contator não acionando",
+                    "Sensor ou controle impedindo o acionamento",
+                    "Dispositivo de proteção térmica aberto"
+                ],
+                "passos": [
+                    "Identificar em qual ponto do ciclo o aquecimento deveria iniciar.",
+                    "Desenergizar o equipamento e aguardar resfriamento completo.",
+                    "Consultar o diagrama elétrico do modelo antes de acessar componentes.",
+                    "Inspecionar conectores, cabos e sinais de aquecimento anormal.",
+                    "Testar os componentes pelo método previsto pelo fabricante e com instrumento adequado.",
+                    "Diferenciar falha de comando (placa/relé) de falha da carga (resistência).",
+                    "Após o reparo, executar validação funcional conforme o procedimento técnico."
+                ],
+                "alerta": "Não faça jumper em termostatos, sensores ou dispositivos de segurança como procedimento de reparo. Um componente com dois fios pode ser uma proteção crítica."
+            },
+            {
+                "titulo": "Vazamento de vapor na porta",
+                "sintoma": "Escape de vapor ou água na região da porta durante o ciclo.",
+                "causas": [
+                    "Gaxeta suja, ressecada, deformada ou danificada",
+                    "Porta desalinhada",
+                    "Pressão de fechamento desigual",
+                    "Mecanismo de travamento com folga",
+                    "Superfície de vedação danificada"
+                ],
+                "passos": [
+                    "Interromper o uso e aguardar equipamento frio e sem pressão.",
+                    "Localizar e registrar exatamente o ponto do vazamento.",
+                    "Inspecionar a gaxeta em todo o perímetro.",
+                    "Limpar apenas conforme orientação do fabricante.",
+                    "Comparar o lado que vaza com o lado que veda corretamente.",
+                    "Verificar alinhamento e folgas do mecanismo de fechamento.",
+                    "Executar ajuste somente pelo método previsto para aquele modelo.",
+                    "Executar ciclo de teste e validar ausência de vazamento conforme procedimento da empresa."
+                ],
+                "alerta": "Não utilizar martelo, anilhas ou deformação mecânica como solução genérica. O ajuste deve seguir o mecanismo e a especificação do fabricante."
+            },
+            {
+                "titulo": "Vazamento sempre do mesmo lado",
+                "sintoma": "O vazamento é repetitivo e localizado.",
+                "causas": [
+                    "Desalinhamento da porta",
+                    "Pressão de fechamento não uniforme",
+                    "Dobradiça ou ponto de apoio com folga",
+                    "Gaxeta deformada especificamente naquela região"
+                ],
+                "passos": [
+                    "Registrar o lado e a posição exata do vazamento.",
+                    "Comparar visualmente e mecanicamente ambos os lados da porta.",
+                    "Verificar o assentamento da gaxeta.",
+                    "Verificar folgas e geometria do fechamento.",
+                    "Consultar o procedimento técnico específico do fabricante antes de alterar anilhas, espaçadores ou dobradiças.",
+                    "Após o ajuste autorizado, realizar teste completo de vedação e ciclo."
+                ],
+                "alerta": "Este sintoma é um indício útil, mas não prova sozinho que a porta está desalinhada."
+            },
+            {
+                "titulo": "Não atinge a temperatura programada",
+                "sintoma": "Aquece, porém o ciclo não alcança o setpoint esperado.",
+                "causas": [
+                    "Sistema de aquecimento com desempenho insuficiente",
+                    "Alimentação elétrica inadequada",
+                    "Perda de energia por vazamento",
+                    "Sensor com leitura incorreta",
+                    "Falha no controle"
+                ],
+                "passos": [
+                    "Confirmar o valor programado e o comportamento real.",
+                    "Verificar se há vazamentos ou perda evidente de vapor.",
+                    "Analisar o histórico/tempo de subida de temperatura, se disponível.",
+                    "Verificar a cadeia sensor → controle → acionamento → aquecimento.",
+                    "Comparar medições apenas com instrumentos adequados e procedimentos autorizados.",
+                    "Validar o ciclo após a correção."
+                ],
+                "alerta": "Não alterar parâmetros do ciclo para compensar uma falha técnica."
+            },
+            {
+                "titulo": "Temperatura sobe demais / superaquecimento",
+                "sintoma": "Temperatura ultrapassa o comportamento esperado ou ocorre atuação de proteção.",
+                "causas": [
+                    "Falha de sensor",
+                    "Falha de controle",
+                    "Relé travado",
+                    "Problema no circuito de proteção"
+                ],
+                "passos": [
+                    "Retirar o equipamento de operação.",
+                    "Não ignorar alarmes ou proteções.",
+                    "Registrar em qual momento ocorreu o desvio.",
+                    "Investigar sensor, circuito de comando e elementos de proteção conforme documentação.",
+                    "Após correção, validar o comportamento em ciclo controlado."
+                ],
+                "alerta": "Superaquecimento é uma condição de segurança. Não faça bypass de proteções."
+            },
+            {
+                "titulo": "Ciclo interrompe ou apresenta alarme",
+                "sintoma": "O processo não chega ao final ou o equipamento indica erro.",
+                "causas": [
+                    "Temperatura fora do esperado",
+                    "Pressão fora da faixa",
+                    "Falha de sensor",
+                    "Falha de porta/travamento",
+                    "Falha de alimentação",
+                    "Erro de controle"
+                ],
+                "passos": [
+                    "Registrar o código e o momento exato da falha.",
+                    "Consultar o manual técnico específico.",
+                    "Não apagar evidências antes de registrar o erro.",
+                    "Separar a falha por subsistema: térmico, pressão, porta, sensor ou controle.",
+                    "Executar o teste previsto pelo fabricante.",
+                    "Registrar a ação corretiva e a validação."
+                ],
+                "alerta": "O código de erro deve ser interpretado pelo manual do modelo; códigos variam entre fabricantes."
+            }
+        ]
+    },
+
+    "📈 Eletrocardiógrafo": {
+        "imagem": None,
+        "subtitulo": "Aquisição e registro de sinais bioelétricos cardíacos",
+        "descricao": """
+O eletrocardiógrafo registra diferenças de potencial elétrico associadas à atividade cardíaca por meio de eletrodos posicionados no paciente.
+
+O equipamento precisa captar sinais pequenos, rejeitar ruídos e apresentar o traçado com amplitude e velocidade adequadas. Por isso, cabos, eletrodos, contato com a pele, filtros, aterramento e o próprio circuito de aquisição podem influenciar o resultado.
+""",
+        "principio": """
+**Paciente → eletrodos → cabo do paciente → proteção/isolação → amplificação diferencial → filtragem → conversão/processamento → display/impressão.**
+
+O diagnóstico de um traçado alterado deve separar **artefato externo, problema de contato, cabo/eletrodo e falha interna do equipamento**.
+""",
+        "ciclo": [
+            {"fase": "1. Captação", "texto": "Os eletrodos captam diferenças de potencial na superfície corporal."},
+            {"fase": "2. Condicionamento", "texto": "O sinal é protegido, amplificado e filtrado."},
+            {"fase": "3. Processamento", "texto": "O sinal é digitalizado e processado."},
+            {"fase": "4. Registro", "texto": "O traçado é exibido ou impresso."}
+        ],
+        "componentes": [
+            ("Eletrodos", "Interface elétrica entre paciente e sistema."),
+            ("Cabo do paciente", "Conduz os sinais até a entrada do equipamento."),
+            ("Amplificador de instrumentação", "Amplifica sinais diferenciais de pequena amplitude."),
+            ("Filtros", "Reduzem determinadas interferências."),
+            ("Sistema de isolação", "Ajuda a garantir segurança elétrica do paciente."),
+            ("Conversor e processador", "Digitalizam e processam o sinal."),
+            ("Display/impressora", "Apresentam o traçado.")
+        ],
+        "problemas": [
+            {
+                "titulo": "Traçado com muito ruído",
+                "sintoma": "Linha com interferência excessiva.",
+                "causas": ["Mau contato dos eletrodos", "Movimento", "Cabos danificados", "Interferência elétrica", "Problema de aterramento"],
+                "passos": [
+                    "Identificar o tipo de ruído.",
+                    "Verificar preparação e contato dos eletrodos.",
+                    "Inspecionar cabos e conectores.",
+                    "Afastar fontes óbvias de interferência e comparar o ambiente.",
+                    "Testar com simulador de ECG quando disponível.",
+                    "Se o defeito persistir com simulador, investigar o equipamento."
+                ],
+                "alerta": "Não concluir que a bancada metálica ou o transformador são a causa sem teste controlado."
+            },
+            {
+                "titulo": "Amplitude aparentemente incorreta",
+                "sintoma": "Ondas muito altas, muito baixas ou comportamento desregulado.",
+                "causas": ["Configuração de ganho", "Artefato", "Falha de aquisição", "Problema de cabo", "Interferência"],
+                "passos": [
+                    "Conferir ganho e configuração.",
+                    "Comparar com um simulador de ECG.",
+                    "Comparar com outro equipamento sob condições controladas.",
+                    "Trocar uma variável por vez: cabo, tomada, ambiente ou superfície.",
+                    "Registrar se todas as derivações são afetadas.",
+                    "Investigar internamente somente após isolar causas externas."
+                ],
+                "alerta": "Uma bancada metálica pode ser parte do ambiente eletromagnético, mas não deve ser assumida como causa sem evidência."
+            },
+            {
+                "titulo": "Sem sinal em uma derivação",
+                "sintoma": "Uma ou mais derivações não apresentam traçado adequado.",
+                "causas": ["Eletrodo", "Conexão", "Via rompida no cabo", "Entrada do equipamento"],
+                "passos": [
+                    "Verificar eletrodo e posicionamento.",
+                    "Inspecionar conector correspondente.",
+                    "Comparar com cabo conhecido em boas condições.",
+                    "Testar com simulador, se disponível.",
+                    "Seguir o manual técnico para diagnóstico da entrada."
+                ],
+                "alerta": "Evite medir ou injetar sinais em entradas de paciente sem procedimento e equipamento de teste apropriados."
+            }
+        ]
+    },
+
+    "❄️ Câmara fria / Câmara de vacina": {
+        "imagem": None,
+        "subtitulo": "Controle e monitoramento de temperatura",
+        "descricao": """
+Esses equipamentos são utilizados para manter produtos sensíveis dentro de condições térmicas específicas. Em uma câmara de vacina, não basta “estar gelando”: é necessário manter a temperatura dentro da faixa definida para o produto e garantir monitoramento confiável.
+
+O projeto pode incluir controlador eletrônico, sensores, compressor, evaporador, condensador, ventiladores, alarmes, bateria e registro de temperatura.
+""",
+        "principio": """
+**Sensor detecta temperatura → controlador compara com o setpoint → sistema de refrigeração é acionado → calor é removido da câmara → controlador monitora continuamente.**
+""",
+        "ciclo": [
+            {"fase": "1. Leitura", "texto": "O sensor mede a temperatura."},
+            {"fase": "2. Decisão", "texto": "O controlador compara a medição com a faixa configurada."},
+            {"fase": "3. Refrigeração", "texto": "O compressor e demais componentes removem calor."},
+            {"fase": "4. Monitoramento", "texto": "Alarmes e registros acompanham o comportamento."}
+        ],
+        "componentes": [
+            ("Compressor", "Comprime e movimenta o refrigerante no ciclo."),
+            ("Condensador", "Rejeita calor para o ambiente."),
+            ("Dispositivo de expansão", "Reduz a pressão do refrigerante."),
+            ("Evaporador", "Absorve calor do ambiente interno."),
+            ("Ventilador", "Ajuda na circulação de ar, quando presente."),
+            ("Sensor", "Mede temperatura."),
+            ("Controlador", "Controla refrigeração e alarmes."),
+            ("Gaxeta da porta", "Reduz entrada de calor e umidade.")
+        ],
+        "problemas": [
+            {
+                "titulo": "Temperatura acima da faixa",
+                "sintoma": "Temperatura interna sobe ou não retorna ao setpoint.",
+                "causas": ["Porta aberta", "Gaxeta defeituosa", "Condensador obstruído", "Falha de ventilação", "Falha de compressor", "Sensor/controlador"],
+                "passos": [
+                    "Verificar imediatamente o protocolo da instituição para proteção do conteúdo.",
+                    "Confirmar leitura com método de referência autorizado.",
+                    "Verificar porta e vedação.",
+                    "Inspecionar circulação de ar e obstrução externa.",
+                    "Registrar histórico de temperatura.",
+                    "Investigar refrigeração e controle conforme procedimento técnico."
+                ],
+                "alerta": "Em câmaras com produtos críticos, a prioridade é proteger o conteúdo e seguir o procedimento institucional."
+            },
+            {
+                "titulo": "Formação excessiva de gelo",
+                "sintoma": "Acúmulo anormal de gelo no evaporador ou interior.",
+                "causas": ["Entrada de umidade", "Vedação deficiente", "Problema de degelo", "Sensor/controlador"],
+                "passos": [
+                    "Verificar a frequência de abertura da porta.",
+                    "Inspecionar gaxeta.",
+                    "Consultar o método de degelo previsto.",
+                    "Não remover gelo com objetos que possam perfurar componentes.",
+                    "Investigar sistema de degelo conforme o modelo."
+                ],
+                "alerta": "Nunca perfure gelo próximo ao evaporador."
+            }
+        ]
+    },
+
+    "💨 Compressor": {
+        "imagem": None,
+        "subtitulo": "Geração e armazenamento de ar comprimido",
+        "descricao": """
+O compressor transforma energia elétrica em energia pneumática. Um conjunto de compressão aspira ar e aumenta sua pressão, armazenando-o em um reservatório ou fornecendo-o ao sistema.
+
+Em aplicações odontológicas, a qualidade do ar — incluindo limpeza, umidade e presença de contaminantes — é importante para o equipamento atendido.
+""",
+        "principio": """
+**Motor → mecanismo de compressão → aumento da pressão → reservatório → pressostato controla liga/desliga → ar segue para o sistema.**
+""",
+        "ciclo": [
+            {"fase": "1. Aspiração", "texto": "O ar é admitido."},
+            {"fase": "2. Compressão", "texto": "O mecanismo reduz o volume e eleva a pressão."},
+            {"fase": "3. Armazenamento", "texto": "O ar pode ser armazenado no reservatório."},
+            {"fase": "4. Controle", "texto": "O pressostato controla o funcionamento conforme pressão."}
+        ],
+        "componentes": [
+            ("Motor", "Fornece energia mecânica."),
+            ("Cabeçote/pistão", "Comprime o ar."),
+            ("Reservatório", "Armazena ar pressurizado."),
+            ("Pressostato", "Controla o acionamento conforme pressão."),
+            ("Manômetro", "Indica pressão."),
+            ("Válvula de retenção", "Evita retorno do ar."),
+            ("Válvula de segurança", "Protege contra sobrepressão."),
+            ("Filtro", "Reduz entrada de partículas."),
+            ("Purgador", "Permite remoção de condensado.")
+        ],
+        "problemas": [
+            {
+                "titulo": "Não liga",
+                "sintoma": "Motor não inicia.",
+                "causas": ["Sem alimentação", "Pressostato", "Proteção térmica", "Capacitor", "Motor"],
+                "passos": [
+                    "Verificar alimentação.",
+                    "Registrar se há ruído, aquecimento ou tentativa de partida.",
+                    "Verificar pressão atual e condição do pressostato.",
+                    "Seguir o procedimento técnico para teste do circuito de partida.",
+                    "Validar o acionamento após correção."
+                ],
+                "alerta": "Reservatórios pressurizados exigem procedimento seguro antes de qualquer intervenção."
+            },
+            {
+                "titulo": "Enche muito lentamente",
+                "sintoma": "Demora maior que o normal para atingir pressão.",
+                "causas": ["Vazamento", "Filtro obstruído", "Desgaste do conjunto de compressão", "Válvula"],
+                "passos": [
+                    "Comparar o tempo de enchimento com a referência do equipamento.",
+                    "Inspecionar conexões e possíveis vazamentos.",
+                    "Verificar filtro de admissão.",
+                    "Investigar válvulas e conjunto de compressão conforme manual.",
+                    "Validar pressão de corte e tempo de recuperação."
+                ],
+                "alerta": "Não exceda a pressão nominal durante testes."
+            }
+        ]
+    },
+
+    "🦷 Cadeira e caneta odontológica": {
+        "imagem": None,
+        "subtitulo": "Sistema integrado eletromecânico, hidráulico e pneumático",
+        "descricao": """
+Uma cadeira odontológica pode integrar movimentação mecânica ou eletro-hidráulica, comandos elétricos, água, ar comprimido, iluminação e instrumentos.
+
+O diagnóstico fica mais fácil quando o sistema é separado em subsistemas: **elétrico, pneumático, hidráulico e mecânico**.
+""",
+        "principio": """
+**Comando → placa/controle → atuador ou válvula → movimento/fluxo → retorno de sensores ou fim de curso, conforme o projeto.**
+""",
+        "ciclo": [
+            {"fase": "1. Comando", "texto": "Botão ou pedal solicita uma função."},
+            {"fase": "2. Controle", "texto": "A placa ou circuito interpreta o comando."},
+            {"fase": "3. Acionamento", "texto": "Motor, atuador ou válvula é acionado."},
+            {"fase": "4. Resultado", "texto": "A cadeira ou instrumento executa o movimento/função."}
+        ],
+        "componentes": [
+            ("Placa de comando", "Gerencia comandos."),
+            ("Pedal", "Envia comandos ao sistema."),
+            ("Motor/atuador", "Produz movimento."),
+            ("Fim de curso", "Indica limite de movimento, quando presente."),
+            ("Mangueiras", "Conduzem ar ou água."),
+            ("Válvulas", "Controlam fluxo."),
+            ("Regulador", "Ajusta pressão.")
+        ],
+        "problemas": [
+            {
+                "titulo": "Cadeira não sobe ou desce",
+                "sintoma": "Movimento não ocorre.",
+                "causas": ["Sem comando", "Falha de alimentação", "Fim de curso", "Placa", "Motor/atuador", "Travamento mecânico"],
+                "passos": [
+                    "Identificar se nenhum movimento funciona ou apenas um.",
+                    "Verificar comando/pedal.",
+                    "Verificar alimentação e proteções.",
+                    "Observar se existe ruído de acionamento.",
+                    "Separar falha elétrica de travamento mecânico.",
+                    "Consultar esquema específico antes de medir na placa."
+                ],
+                "alerta": "Não apoiar ou trabalhar sob partes móveis sem travamento mecânico adequado."
+            },
+            {
+                "titulo": "Caneta não gira ou tem baixa potência",
+                "sintoma": "Instrumento não atinge funcionamento esperado.",
+                "causas": ["Pressão inadequada", "Mangueira", "Conexão", "Turbina/motor", "Desgaste interno"],
+                "passos": [
+                    "Confirmar se o problema ocorre em uma ou mais posições.",
+                    "Verificar fornecimento de ar conforme especificação.",
+                    "Inspecionar mangueira e conexão.",
+                    "Testar com instrumento conhecido em boas condições, quando permitido.",
+                    "Encaminhar componente interno para manutenção conforme fabricante."
+                ],
+                "alerta": "Não exceda pressão especificada pelo fabricante."
+            }
+        ]
+    },
+
+    "🔊 Ultrassom odontológico": {
+        "imagem": None,
+        "subtitulo": "Vibração ultrassônica para procedimentos odontológicos",
+        "descricao": """
+O ultrassom odontológico utiliza um circuito eletrônico para excitar um transdutor, que converte energia elétrica em vibração mecânica de alta frequência.
+
+Dependendo da tecnologia, o equipamento pode utilizar transdutores piezoelétricos ou magnetoestritivos. Portanto, frequência, construção e diagnóstico variam conforme o modelo.
+""",
+        "principio": """
+**Energia elétrica → gerador eletrônico → transdutor → vibração mecânica → ponta/inserto.**
+
+O sistema de água auxilia o procedimento e pode participar do resfriamento.
+""",
+        "ciclo": [
+            {"fase": "1. Comando", "texto": "O operador aciona pedal ou comando."},
+            {"fase": "2. Geração", "texto": "O circuito gera sinal adequado ao transdutor."},
+            {"fase": "3. Conversão", "texto": "O transdutor produz vibração mecânica."},
+            {"fase": "4. Irrigação", "texto": "O sistema de água atua conforme o equipamento."}
+        ],
+        "componentes": [
+            ("Placa eletrônica", "Gera e controla o sinal."),
+            ("Transdutor", "Converte energia elétrica em vibração."),
+            ("Caneta", "Transmite a vibração."),
+            ("Inserto/ponta", "Elemento ativo no procedimento."),
+            ("Pedal", "Aciona o funcionamento."),
+            ("Sistema de água", "Fornece irrigação.")
+        ],
+        "problemas": [
+            {
+                "titulo": "Sem vibração",
+                "sintoma": "Ponta não apresenta funcionamento.",
+                "causas": ["Inserto inadequado", "Cabo", "Transdutor", "Placa", "Pedal"],
+                "passos": [
+                    "Confirmar alimentação e comando.",
+                    "Verificar encaixe e compatibilidade do inserto.",
+                    "Comparar com caneta/acessório conhecido em boas condições quando permitido.",
+                    "Inspecionar cabo e conectores.",
+                    "Investigar circuito e transdutor conforme manual técnico."
+                ],
+                "alerta": "Não operar ponta sem condições adequadas de irrigação quando o procedimento exigir."
+            },
+            {
+                "titulo": "Sem água",
+                "sintoma": "Não há irrigação adequada.",
+                "causas": ["Registro fechado", "Obstrução", "Mangueira", "Válvula/bomba"],
+                "passos": [
+                    "Verificar nível/fonte de água.",
+                    "Verificar regulagem.",
+                    "Inspecionar mangueira.",
+                    "Verificar obstruções pelo método autorizado.",
+                    "Investigar válvula ou bomba conforme o modelo."
+                ],
+                "alerta": "Não utilizar objetos improvisados que possam danificar orifícios ou componentes."
+            }
+        ]
+    },
+
+    "🔍 Colposcópio": {
+        "imagem": None,
+        "subtitulo": "Sistema óptico de ampliação e iluminação",
+        "descricao": """
+O colposcópio permite observação ampliada e iluminada de estruturas anatômicas. Dependendo do modelo, pode possuir sistema óptico binocular, câmera, captura digital e diferentes fontes de iluminação.
+
+O diagnóstico deve separar **óptica, iluminação, alimentação e mecânica**.
+""",
+        "principio": """
+**Fonte de luz → iluminação do campo → sistema óptico/câmera → ampliação → observação ou captura de imagem.**
+""",
+        "ciclo": [
+            {"fase": "1. Alimentação", "texto": "O sistema recebe energia."},
+            {"fase": "2. Iluminação", "texto": "A fonte ilumina o campo."},
+            {"fase": "3. Óptica", "texto": "Lentes formam a imagem ampliada."},
+            {"fase": "4. Ajuste", "texto": "Foco e ampliação são configurados."}
+        ],
+        "componentes": [
+            ("Fonte de luz", "Ilumina o campo."),
+            ("Lentes", "Formam e ampliam a imagem."),
+            ("Sistema de foco", "Ajusta nitidez."),
+            ("Braço articulado", "Permite posicionamento."),
+            ("Câmera, quando presente", "Realiza captura digital."),
+            ("Fonte de alimentação", "Fornece energia.")
+        ],
+        "problemas": [
+            {
+                "titulo": "Imagem sem foco",
+                "sintoma": "Imagem permanece desfocada.",
+                "causas": ["Ajuste de foco", "Lente suja", "Problema mecânico/óptico"],
+                "passos": [
+                    "Verificar ajuste e distância de trabalho.",
+                    "Inspecionar lentes.",
+                    "Utilizar apenas material de limpeza recomendado.",
+                    "Se persistir, encaminhar para avaliação óptica."
+                ],
+                "alerta": "Não utilizar produtos ou tecidos inadequados em superfícies ópticas."
+            },
+            {
+                "titulo": "Iluminação não funciona",
+                "sintoma": "Luz apagada ou instável.",
+                "causas": ["Fonte", "LED/lâmpada", "Driver", "Cabo", "Controle de intensidade"],
+                "passos": [
+                    "Verificar alimentação.",
+                    "Registrar se a falha é total ou intermitente.",
+                    "Verificar componente de iluminação conforme manual.",
+                    "Inspecionar conectores.",
+                    "Validar intensidade e estabilidade após correção."
+                ],
+                "alerta": "Fontes internas podem permanecer energizadas mesmo após desligamento; siga o procedimento do fabricante."
+            }
+        ]
+    }
+}
+
+
+# =========================================================
+# FUNÇÕES
+# =========================================================
+def mostrar_imagem(info):
+    if info.get("imagem"):
+        st.image(info["imagem"], use_container_width=True)
+    else:
+        st.info(
+            "📷 **Imagem do equipamento:** adicione uma foto na pasta `images/` "
+            "e informe o caminho correspondente no campo `imagem`."
+        )
+
+
+def mostrar_componentes(componentes):
+    st.dataframe(
+        [{"Componente": nome, "Função": funcao} for nome, funcao in componentes],
+        use_container_width=True,
+        hide_index=True
+    )
+
+
+def mostrar_problemas(problemas):
+    st.subheader("🛠️ Biblioteca de problemas e soluções")
+    st.caption("Use como roteiro de investigação. A intervenção deve seguir manual técnico, treinamento e autorização aplicáveis.")
+
+    termo = st.text_input(
+        "🔎 Procurar problema, sintoma ou causa",
+        placeholder="Ex.: não aquece, vazamento, ruído..."
+    ).lower()
+
+    encontrados = 0
+
+    for problema in problemas:
+        texto_busca = (
+            problema["titulo"] + " " +
+            problema["sintoma"] + " " +
+            " ".join(problema["causas"])
+        ).lower()
+
+        if not termo or termo in texto_busca:
+            encontrados += 1
+
+            with st.expander(f"⚠️ {problema['titulo']}", expanded=False):
+                st.error(f"**Sintoma:** {problema['sintoma']}")
+
+                st.markdown("#### 🔍 Possíveis causas")
+                for causa in problema["causas"]:
+                    st.markdown(f"- {causa}")
+
+                st.markdown("#### 🧭 Roteiro passo a passo")
+                for i, passo in enumerate(problema["passos"], 1):
+                    st.markdown(f"**{i}.** {passo}")
+
+                st.warning(f"⚠️ **Atenção:** {problema['alerta']}")
+
+    if encontrados == 0:
+        st.info("Nenhum problema encontrado. Tente outro termo.")
+
+
+def mostrar_fluxo_autoclave():
+    st.subheader("🌳 Fluxo mental de diagnóstico")
+
+    st.code("""
+[ EQUIPAMENTO COM FALHA ]
+            |
+            v
+[ Qual é o sintoma? ]
+            |
+    +-------+--------+---------+
+    |       |        |         |
+ Não liga  Não      Vaza    Ciclo/
+           aquece            alarme
+    |       |        |         |
+ Elétrico  Aquec.   Porta/   Identificar
+           Controle Vedação  etapa do ciclo
+    |       |        |         |
+ Testar    Separar  Localizar Consultar
+ cadeia    comando  ponto     código/manual
+           x carga  e causa
+            |
+            v
+[ Corrigir somente após confirmar a hipótese ]
+            |
+            v
+[ Validar funcionamento e registrar ]
+""", language="text")
+
+
+def pagina_equipamento(nome, info):
+    st.title(nome)
+    st.caption(info["subtitulo"])
+
+    mostrar_imagem(info)
+
+    tabs = st.tabs([
+        "📚 Entender o equipamento",
+        "⚙️ Componentes",
+        "🔄 Funcionamento",
+        "🛠️ Problemas e soluções",
+        "🌳 Diagnóstico"
+    ])
+
+    with tabs[0]:
+        st.subheader("O que é e para que serve?")
+        st.markdown(info["descricao"])
+
+        st.subheader("Princípio de funcionamento")
+        st.markdown(info["principio"])
+
+    with tabs[1]:
+        st.subheader("Principais componentes")
+        mostrar_componentes(info["componentes"])
+
+    with tabs[2]:
+        st.subheader("Funcionamento passo a passo")
+        for etapa in info["ciclo"]:
+            with st.expander(etapa["fase"], expanded=True):
+                st.write(etapa["texto"])
+
+    with tabs[3]:
+        mostrar_problemas(info["problemas"])
+
+    with tabs[4]:
+        if nome == "♨️ Autoclave":
+            mostrar_fluxo_autoclave()
+        else:
+            st.markdown("""
+### Método universal
+
+**1. Confirmar o sintoma → 2. Identificar a etapa de funcionamento → 3. Separar o equipamento em subsistemas → 4. Começar por verificações simples → 5. Testar uma hipótese por vez → 6. Corrigir → 7. Validar → 8. Registrar.**
+
+#### Perguntas-chave
+
+- O problema é reproduzível?
+- Quando ele aparece?
+- O que ainda funciona?
+- O que mudou?
+- Existe outro equipamento para comparação?
+- Posso testar com simulador ou instrumento apropriado?
+- O defeito está no ambiente, no acessório ou no equipamento?
+""")
+
+
+# =========================================================
+# APP
+# =========================================================
+st.sidebar.title("🩺 Engenharia Clínica")
+st.sidebar.caption("Guia de estudo e campo")
+
 menu = st.sidebar.radio(
-    "Selecione uma Seção:",
-    ["🎯 Roteiro de Estudos & Metodologia", 
-     "♨️ 1. Autoclave (Prioridade 1)",
-     "📈 2. Eletrocardiógrafo - ECG (Prioridade 2)",
-     "❄️ 3. Câmaras de Vacina & Fria (Prioridade 3)",
-     "💨 4. Compressor Odonto/Hospitalar (Prioridade 4)",
-     "🦷 5. Cadeira & Caneta Odontológica (Prioridade 5)",
-     "🔊 6. Ultrassom Odontológico (Prioridade 6)",
-     "🔍 7. Colposcópio (Prioridade 7)",
-     "🚀 Guia de Publicação no GitHub / Streamlit Cloud"]
+    "Navegação",
+    ["🏠 Início", *EQUIPAMENTOS.keys(), "📝 Registro de ocorrência", "📚 Metodologia"]
 )
 
-# ---------------------------------------------------------
-# SECTION 0: ROTEIRO DE ESTUDOS
-# ---------------------------------------------------------
-if menu == "🎯 Roteiro de Estudos & Metodologia":
-    st.header("🎯 Roteiro Prático de Estudos & Metodologia de Manutenção")
-    
+st.sidebar.divider()
+st.sidebar.info("""
+⚠️ **Uso profissional**
+
+Este app é um guia de estudo e apoio ao diagnóstico.
+
+Sempre priorize:
+- Manual do fabricante
+- Procedimento da empresa
+- Segurança
+- Rastreabilidade
+- Validação após intervenção
+""")
+
+if menu == "🏠 Início":
+    st.title("🩺 Guia Prático de Engenharia Clínica")
     st.markdown("""
-    Bem-vindo ao seu novo cargo como **Auxiliar de Engenharia Clínica**! 
-    Este aplicativo foi estruturado para ser seu **manual de campo rápido** e **roteiro de aprendizado**.
-    
-    ### 🔄 Metodologia Universal de Diagnóstico
-    Em qualquer equipamento biomédico, siga sempre este fluxo lógico para resolver problemas sem "trocar peças às cegas":
-    
-    $$\text{Sintoma} \longrightarrow \text{Possíveis Causas} \longrightarrow \text{Testes de Isolamento} \longrightarrow \text{Correção/Ajuste} \longrightarrow \text{Validação de Segurança e Desempenho}$$
-    
-    ---
-    ### 🗓️ Roteiro Priorizado de Estudos
-    Suas prioridades foram organizadas com base no impacto clínico, complexidade técnica e demandas reais do seu dia a dia:
-    """)
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        st.info("""
-        **1️⃣ Autoclave (Alta Prioridade)**
-        - *Motivo:* Envolve elétrica, mecânica, fluido, temperatura e pressão. Alta criticidade de biossegurança.
-        - *Seus Casos Práticos:* Ajuste de alinhamento de porta/anilhas e teste de termostato vs. resistência.
-        
-        **2️⃣ Eletrocardiógrafo - ECG (Alta Prioridade)**
-        - *Motivo:* Excelente para dominar bioeletrônica, filtros, aterramento e interferências magnéticas.
-        - *Seu Caso Prático:* Interferência de bancada metálica/transformadores ferrosos gerando artefatos de amplitude.
-        
-        **3️⃣ Câmaras Frias & Vacina**
-        - *Motivo:* Refrigeração médica, termometria, controladores PID, calibração de sensores e redundância de energia.
-        
-        **4️⃣ Compressor Odontológico / Hospitalar**
-        - *Motivo:* Base da pneumática médica (ar isento de óleo, secadores, pressostatos, válvulas de alívio).
-        """)
-    with col2:
-        st.warning("""
-        **5️⃣ Cadeira e Caneta Odontológica**
-        - *Motivo:* Integração de pneumática, hidráulica, iluminação e micro-motores de alta/baixa rotação.
-        
-        **6️⃣ Ultrassom Odontológico (Cavitadores)**
-        - *Motivo:* Piezoelectricidade, geradores de alta frequência e transdutores.
-        
-        **7️⃣ Colposcópio**
-        - *Motivo:* Óptica médica, iluminação LED/halógena e alinhamento mecânico de braços pantográficos.
-        """)
+Este aplicativo foi pensado para funcionar como um **manual de bolso**, mas sem transformar manutenção em uma simples lista de “troque esta peça”.
 
-# ---------------------------------------------------------
-# SECTION 1: AUTOCLAVE
-# ---------------------------------------------------------
-elif menu == "♨️ 1. Autoclave (Prioridade 1)":
-    st.header("♨️ Ficha Técnica: Autoclave")
-    
-    tab1, tab2, tab3 = st.tabs(["📝 Ficha Técnica & Mecanismo", "🔧 Seus Casos Práticos & Correções", "🌳 Fluxograma de Diagnóstico"])
-    
-    with tab1:
-        st.subheader("1. Finalidade")
-        st.write("Esterilização de artigos críticos por meio de calor úmido sob alta pressão, eliminando todas as formas de vida microbiana (esporos, bactérias, vírus).")
-        
-        st.subheader("2. Princípio de Funcionamento")
-        st.write("A água destilada é aquecida por uma resistência elétrica na câmara. O vapor gerado fica retido, elevando a pressão interna. A alta pressão permite que a água atinja temperaturas superiores a 100°C (geralmente 121°C a 134°C), desnaturando proteínas celulares.")
-        
-        st.subheader("3. Fluxo de Funcionamento")
-        st.code("Entrada: Água destilada + Energia Elétrica ➔ Aquecimento/Pressurização ➔ Esterilização (Set Point) ➔ Despressurização ➔ Secagem ➔ Saída: Artigos Estéreis", language="text")
-        
-        st.subheader("4. Componentes Principais")
-        st.table([
-            {"Componente": "Câmara (Interna/Externa)", "Função": "Vaso de pressão em aço inox que comporta os artigos e suporta a pressão."},
-            {"Componente": "Resistência Elétrica", "Função": "Converte energia elétrica em calor para vaporizar a água."},
-            {"Componente": "Borracha/Gaxeta da Porta", "Função": "Vedação hermética entre a câmara e a porta."},
-            {"Componente": "Termostato de Segurança", "Função": "Desliga a resistência em caso de sobreaquecimento (proteção térmica)."},
-            {"Componente": "Válvula Solenóide", "Função": "Controla a entrada e saída de água/vapor na câmara."},
-            {"Componente": "Pressostato / Transdutor", "Função": "Monitora a pressão interna para controle do ciclo e descarte de segurança."},
-            {"Componente": "Válvula de Segurança Mecânica", "Função": "Abre mecanicamente se a pressão ultrapassar o limite máximo seguro."}
-        ])
-        
-        st.subheader("5. Manutenção Preventiva")
-        st.markdown("""
-        - **Limpeza:** Limpeza diária da borracha de vedação e da câmara interna com sabão neutro e água destilada.
-        - **Inspeção:** Verificar desgaste, ressecamento ou rasgos na borracha da porta.
-        - **Testes:** Teste biológico semanal (esporos *Geobacillus stearothermophilus*) e Teste químico de penetração de vapor (Bowie-Dick / Classe 5 ou 6).
-        - **Troca Preventiva:** Substituição da borracha de vedação a cada 6 meses a 1 ano.
-        - **Calibração:** Calibração anual dos sensores de temperatura e manômetro de pressão.
-        """)
+A ideia central é desenvolver seu raciocínio técnico:
 
-    with tab2:
-        st.subheader("🛠️ Solução de Problemas Reais do Seu Dia a Dia")
-        
-        st.markdown("### ⚠️ Problema 1: Vazamento na Porta Digitale (Sempre no mesmo lado)")
-        st.error("**Sintoma:** Escape de vapor/água durante a pressurização, localizado constantemente em um lado específico da porta.")
-        st.markdown("""
-        **Análise Técnica:**
-        - Quando o vazamento ocorre **sempre no mesmo lado**, a causa raramente é apenas a borracha gasta. Indica **desalinhamento estrutural do fecho**, empenamento do braço ou pressão desequilibrada nos pontos de fixação.
-        
-        **Passo a Passo de Correção (Metodologia Aplicada):**
-        1. **Inspeção Inicial:** Verifique a borracha de vedação (limpeza e ressecamento).
-        2. **Análise de Alinhamento:** Observe a folga da porta com a câmara antes do aperto.
-        3. **Ajuste com Anilhas/Arruelas:** Utilize chave e martelo/ferramenta de ajuste para posicionar anilhas nos pontos de articulação/dobradiça desalinhados, corrigindo a geometria e equilibrando a pressão de fechamento.
-        4. **Testes de Validação:** Executar ciclo de teste com câmara vazia até a máxima pressão de trabalho (ex: 2.1 bar) e verificar com sabão líquido/detector se há vazamento no local.
-        """)
-        
-        st.markdown("---")
-        st.markdown("### ⚠️ Problema 2: Autoclave não esquenta (Diagnóstico: Termostato vs. Resistência)")
-        st.warning("**Sintoma:** A autoclave liga a IHM/painel, inicia o ciclo, mas a temperatura não sobe.")
-        st.markdown("""
-        **Passo a Passo do Teste Prático de Campo:**
-        1. **Segurança Primeiro:** Desconecte o equipamento da rede elétrica.
-        2. **Acesso aos Componentes:** Abra a carenagem da autoclave para acessar o termostato de segurança e a resistência.
-        3. **Teste do Termostato de Segurança:**
-           - O termostato possui dois terminais elétricos.
-           - Com o multímetro em escala de continuidade (bip), meça os terminais. Se estiver **Aberto (sem bip)**, o termostato atuou ou queimou.
-           - *Teste de Confirmação:* Fazer o jumper (unir temporariamente os dois fios com isolamento). Ligar o equipamento brevemente. Se voltar a aquecer ➔ **Solicitar novo Termostato de Segurança com urgência.**
-        4. **Teste da Resistência (caso o termostato esteja normal/jumper não resolva):**
-           - Com multímetro na escala de Resistência (Ω), meça os terminais da resistência.
-           - *Leitura esperada:* Valor ôhmico baixo (ex: $10\Omega$ a $40\Omega$ dependendo da potência $P = V^2/R$).
-           - *Resistência Queimada:* Leitura em $OL$ (circuito aberto) ou fuga para a massa/terra.
-        """)
+> **Sintoma → Sistema envolvido → Hipóteses → Testes → Confirmação → Correção autorizada → Validação**
 
-    with tab3:
-        st.subheader("🌳 Fluxograma de Diagnóstico: Autoclave")
-        st.markdown("""
-        ```text
-        [ Autoclave com Falha ]
-                 │
-                 ├──► Não liga? ──► Verificar tomada / fusível geral / chave L/D / fonte da placa
-                 │
-                 ├──► Não esquenta? 
-                 │          │
-                 │          ├──► Testar continuidade do Termostato ──(Sem bip)──► Trocar Termostato
-                 │          │
-                 │          └──► Testar resistência (Ω) ────────────(Aberto)─► Trocar Resistência
-                 │
-                 └──► Vazamento na Porta?
-                            │
-                            ├──► Borracha ressecada/rasgada? ──► Substituir borracha
-                            │
-                            └──► Vazamento de um só lado? ────► Alinhar porta / Inserir anilhas de ajuste
-        ```
-        """)
+### Como usar no dia a dia
 
-# ---------------------------------------------------------
-# SECTION 2: ECG
-# ---------------------------------------------------------
-elif menu == "📈 2. Eletrocardiógrafo - ECG (Prioridade 2)":
-    st.header("📈 Ficha Técnica: Eletrocardiógrafo (ECG)")
-    
-    tab1, tab2, tab3 = st.tabs(["📝 Ficha Técnica", "🔬 Interferências & Seu Caso Real", "🌳 Fluxograma de Diagnóstico"])
-    
-    with tab1:
-        st.subheader("1. Finalidade")
-        st.write("Captação, amplificação e registro gráfico dos sinais elétricos bioelétricos gerados pela despolarização e repolarização do tecido cardíaco.")
-        
-        st.subheader("2. Princípio de Funcionamento")
-        st.write("Eletrodos de Ag/AgCl aplicados na pele captam microvoltagens ($0,5mV$ a $5mV$). Um amplificador de instrumentação com alto CMRR (Razão de Rejeição em Modo Comum) amplifica o sinal, enquanto filtros rejeitam ruídos de rede ($60 Hz$) e tremores musculares.")
-        
-        st.subheader("3. Fluxo de Funcionamento")
-        st.code("Sinal Bioelétrico (Pele) ➔ Eletrodos/Cabo Paciente ➔ Amplificação & Filtro ➔ Processamento Digital ➔ Impressora Térmica / Display", language="text")
-        
-        st.subheader("4. Componentes Principais")
-        st.table([
-            {"Componente": "Cabo de Paciente (10 vias)", "Função": "Conduz os sinais dos eletrodos até o módulo de entrada do equipamento."},
-            {"Componente": "Amplificador de Instrumentação", "Função": "Amplifica os sinais de milivolts mantendo altíssima impedância de entrada."},
-            {"Componente": "Circuito de Perna Direita (RLD)", "Função": "Injeta um sinal em contrafase para cancelar ruído de modo comum (60Hz)."},
-            {"Componente": "Bloco Isolador (Opto/Indutivo)", "Função": "Garante a isolação galvânica do paciente para segurança contra choques."},
-            {"Componente": "Módulo de Impressão Térmica", "Função": "Registra o gráfico em papel milimetrado térmico."}
-        ])
-        
-        st.subheader("5. Manutenção Preventiva")
-        st.markdown("""
-        - **Limpeza:** Higienização de eletrodos e cabos com álcool 70% ou detergente neutro (evitar dobrar os cabos).
-        - **Inspeção:** Inspeção visual dos pinos do cabo de paciente, presilhas/pera e integridade dos isolamentos.
-        - **Testes:** Verificação com Simulador de ECG (geração de ondas de $1mV$, $60 BPM$).
-        - **Calibração:** Validação de amplitude ($10 mm = 1 mV$) e velocidade do papel ($25 mm/s$ ou $50 mm/s$).
-        """)
+**1. Escolha o equipamento**  
+Leia primeiro a finalidade e o princípio de funcionamento.
 
-    with tab2:
-        st.subheader("🔬 Estudo de Caso Real: Interferência Magnética de Bancada")
-        st.warning("**Caso Relatado:** Dois eletrocardiógrafos no mesmo ambiente sobre bancada metálica (ferro/alumínio). Um equipamento antigo começou a apresentar exames desregulados com alta amplitude e ruído excessivo.")
-        
-        st.markdown("""
-        ### 🧠 Fundamentação Teórica: Indução Eletromagnética & Bancadas Metálicas
-        
-        1. **Transformadores e Núcleo Ferroso:**
-           - Transformadores de fonte interna trabalham com fluxo magnético alternado. Em equipamentos mais antigos, o blindamento magnético do transformador (chapa de ferro/Aço Silício) ou dos indutores pode perder eficiência.
-           - O fluxo magnético disperso induz correntes parasitas (*Foucault*) na bancada metálica condutora.
-        
-        2. **Acoplamento Indutivo:**
-           - A bancada de ferro/alumínio passa a atuar como uma antena condutora ou como um caminho de retorno de malha de terra (*ground loop*), elevando a tensão em modo comum no chassi do equipamento e nos cabos de sinal.
-           - Isso distorce o ponto de referência do amplificador diferencial, fazendo o sinal oscilar ou saturar a amplitude do ECG.
-        
-        3. **Solução Prática Confirmada:**
-           - **Isolamento Físico:** Colocar uma placa de **material dielétrico/plástico (ex: acrílico, borracha espessa, MDF)** sob o equipamento. Isso interrompe o acoplamento capacitivo/indutivo direto entre o chassi/fonte e a superfície metálica da bancada.
-           - **Conexão de Aterramento:** Garantir que o pino de terra da tomada seja de baixa resistência ($< 5 \Omega$) e que o terminal de equalização de potencial do chassi do ECG esteja aterrado.
-        """)
+**2. Entenda os componentes**  
+Antes de procurar defeitos, saiba a função de cada componente.
 
-    with tab3:
-        st.subheader("🌳 Fluxograma de Diagnóstico: ECG")
-        st.markdown("""
-        ```text
-        [ Ruído / Sinal Alterado no ECG ]
-                 │
-                 ├──► Ruído de 60Hz (Onda senoidal contínua)?
-                 │          ├──► Checar Aterramento da tomada
-                 │          ├──► Checar eletrodo solto ou gel seco
-                 │          └──► Verificar se há bancada metálica induzindo ruído ──► Usar isolante plástico sob o ECG
-                 │
-                 ├──► Linha de base oscilando (Respiração/Movimento)?
-                 │          └──► Orientar paciente / Limpar pele com álcool / Trocar eletrodos
-                 │
-                 └──► Sem sinal em alguma derivação?
-                            └──► Testar continuidade da via específica do Cabo de Paciente com multímetro
-        ```
-        """)
+**3. Abra a biblioteca de problemas**  
+Pesquise pelo sintoma observado.
 
-# ---------------------------------------------------------
-# SECTION 3: CAMARAS
-# ---------------------------------------------------------
-elif menu == "❄️ 3. Câmaras de Vacina & Fria (Prioridade 3)":
-    st.header("❄️ Ficha Técnica: Câmara de Vacina & Câmara Fria")
-    
-    st.markdown("""
-    ### 1. Finalidade
-    Manter imunobiológicos, bolsas de sangue e reagentes em faixa estrita de temperatura (geralmente $+2^\circ C$ a $+8^\circ C$ para vacinas, com setpoint fixo em $+5^\circ C$).
+**4. Siga o roteiro de investigação**  
+Comece por verificações simples e isole uma variável por vez.
 
-    ### 2. Princípio de Funcionamento
-    Compressão de gás refrigerante (Ciclo Rankine de Refrigeração): O compressor comprime o gás (ex: R134a), que libera calor no condensador. O fluido passa pelo tubo capilar/válvula de expansão, evapora no evaporador absorvendo calor da câmara interna, resfriando o ar.
+**5. Registre a ocorrência**  
+Anote equipamento, sintoma, causa confirmada e ação realizada.
+""")
 
-    ### 3. Fluxo de Funcionamento
-    `Termostato/Sensor lê T > Setpoint ➔ Liga Compressor/Evaporador ➔ Troca Térmica ➔ T atinge Setpoint ➔ Desliga Compressor`
+    st.subheader("📊 Equipamentos disponíveis")
+    cols = st.columns(2)
+    for i, (nome, info) in enumerate(EQUIPAMENTOS.items()):
+        with cols[i % 2]:
+            st.markdown(f"### {nome}")
+            st.write(info["subtitulo"])
 
-    ### 4. Componentes Principais
-    """)
-    st.table([
-        {"Componente": "Compressor Hermético", "Função": "Bomba o fluido refrigerante pelo sistema."},
-        {"Componente": "Controlador PID / Microprocessado", "Função": "Módulo eletrônico que gerencia temperatura, degelo e alarmes."},
-        {"Componente": "Sensores NTC / Pt100", "Função": "Mede a temperatura interna da câmara e da solução termométrica."},
-        {"Componente": "Sistema de Bateria / No-Break", "Função": "Mantém o sistema de monitoramento/refrigeração ativo na falta de energia."}
-    ])
+elif menu == "📚 Metodologia":
+    st.title("📚 Metodologia universal de manutenção")
 
     st.markdown("""
-    ### 5. Manutenção Preventiva
-    - **Limpeza:** Limpeza mensal do condensador (remoção de poeira nas aletas para evitar sobreaquecimento).
-    - **Inspeção:** Teste de alarme de porta aberta e vedação das gaxetas magnéticas.
-    - **Calibração:** Calibração anual dos sensores térmicos com termômetro padrão aferido pela Rede Brasileira de Calibração (RBC).
+## 1. Não comece desmontando
 
-    ### 6. Principais Falhas & Ações
-    """)
-    st.table([
-        {"Sintoma": "Temperatura subindo acima de 8°C", "Possíveis Causas": "Condensador sujo, fuga de gás refrigerante, porta mal vedada, compressor travado", "Teste/Ação": "Limpar aletas do condensador; testar corrente (A) do compressor; verificar gaxeta"},
-        {"Sintoma": "Bloqueio de gelo no evaporador", "Possíveis Causas": "Falha no degelo automático, resistência de degelo queimada, sensor de degelo descalibrado", "Teste/Ação": "Testar continuidade da resistência de degelo; acionar degelo manual no controlador"},
-        {"Sintoma": "Alarme sonoro constante", "Possíveis Causas": "Desvio de temperatura, porta aberta, falha na bateria do nobreak", "Teste/Ação": "Verificar histórico de temperatura e tensão da bateria interna"}
-    ])
+Primeiro pergunte:
 
-# ---------------------------------------------------------
-# SECTION 4: COMPRESSOR
-# ---------------------------------------------------------
-elif menu == "💨 4. Compressor Odonto/Hospitalar (Prioridade 4)":
-    st.header("💨 Ficha Técnica: Compressor Isento de Óleo")
-    
-    st.markdown("""
-    ### 1. Finalidade
-    Fornecer ar comprimido limpo, seco e **isento de óleo** para acionamento de instrumentos odontológicos (canetas, sugadores) e equipamentos pneumáticos hospitalares.
+- O que exatamente aconteceu?
+- Quando começou?
+- O defeito acontece sempre?
+- Em qual etapa ele aparece?
 
-    ### 2. Princípio de Funcionamento
-    Motores elétricos movimentam pistões com anéis de Teflon (autolubrificantes). O ar ambiente é aspirado, comprimido para dentro do reservatório (reservatório de pressão) até atingir a pressão máxima (ex: 8 bar / 115 psi), quando o pressostato desliga o motor.
+## 2. Identifique o subsistema
 
-    ### 3. Componentes Principais
-    """)
-    st.table([
-        {"Componente": "Pressostato", "Função": "Liga/Desliga o motor com base na pressão do reservatório."},
-        {"Componente": "Válvula de Retenção", "Função": "Impede que o ar do reservatório retorne para os cabeçotes do compressor."},
-        {"Componente": "Válvula de Alívio (Despressurização)", "Função": "Alivia a pressão do cabeçote ao desligar para permitir partida sem carga."},
-        {"Componente": "Filtro Coalescente & Secador", "Função": "Remove umidade, óleo condensado e partículas do ar comprimido."},
-        {"Componente": "Purgador Manual / Automático", "Função": "Drena a água acumulada no fundo do reservatório."}
-    ])
+Exemplos:
 
-    st.markdown("""
-    ### 4. Principais Falhas & Diagnóstico
-    """)
-    st.table([
-        {"Sintoma": "Compressor não liga", "Possíveis Causas": "Pressostato desarmado, capacitor de partida queimado, protetor térmico atuado", "Teste/Ação": "Checar tensão nos contatos do pressostato; testar capacitância do capacitor de partida com capacímetro"},
-        {"Sintoma": "Demora muito para encher o reservatório", "Possíveis Causas": "Filtro de ar de entrada entupido, anéis de Teflon do pistão gastos, vazamento no sistema", "Teste/Ação": "Verificar filtro de ar; aplicar água com sabão nas conexões para achar vazamentos"},
-        {"Sintoma": "Motor 'zune' mas não consegue dar partida", "Possíveis Causas": "Válvula de retenção com vazamento (cabeçote pressurizado) ou capacitor defeituoso", "Teste/Ação": "Testar se há ar saindo pela válvula de alívio; substituir capacitor"}
-    ])
+- **Não aquece** → sistema térmico + comando
+- **Vaza** → vedação + mecânica + pressão
+- **Não liga** → alimentação + proteção + controle
+- **Sinal com ruído** → paciente/acessório + ambiente + aquisição
 
-# ---------------------------------------------------------
-# SECTION 5: CADEIRA & CANETA ODONTO
-# ---------------------------------------------------------
-elif menu == "🦷 5. Cadeira & Caneta Odontológica (Prioridade 5)":
-    st.header("🦷 Ficha Técnica: Cadeira & Canetas Odontológicas")
-    
-    st.markdown("""
-    ### 🛠️ Cadeira Odontológica (Mocho / Equipo)
-    - **Princípio:** Eletromecânica (motores fuso/rosca sem fim) ou Eletro-hidráulica (bomba hidráulica e pistões) comandada por placa microprocessada e pedais.
-    - **Manutenção Preventiva:** Lubrificação dos fusos mecânicos, ajuste dos fins de curso elétricos e drenagem do filtro regulador de ar do equipo.
-    - **Falha Comum:** Cadeira não sobe/desce. *Teste:* Checar chaves de fim de curso (podem estar travadas abertas) e fusíveis da placa de comando.
+## 3. Mude uma variável por vez
 
-    ---
-    ### ⚙️ Caneta de Alta Rotação (Turbina Extraflex)
-    - **Princípio:** O ar comprimido (2,2 bar) incide nas pás de um microrrolamento de cerâmica, atingindo até $400.000 RPM$.
-    - **Manutenção Preventiva:** Lubrificação diária com spray lubrificante antes de autoclavar!
-    - **Falhas Comuns:**
-      - *Broca caindo:* Desgaste do sistema Push-Button (trocar a pinça/rotor).
-      - *Pouco spray de água:* Entupimento do microfiltro de água ou do orifício do spray (desentupir com agulha especial).
-    """)
+Em um ECG com interferência, por exemplo:
 
-# ---------------------------------------------------------
-# SECTION 6: ULTRASSOM ODONTO
-# ---------------------------------------------------------
-elif menu == "🔊 6. Ultrassom Odontológico (Prioridade 6)":
-    st.header("🔊 Ficha Técnica: Ultrassom Odontológico (Cavitador)")
-    
-    st.markdown("""
-    ### 1. Finalidade
-    Remoção de tártaro e raspagem periodontal por vibração ultrassônica.
+- mesmo equipamento, outro ambiente;
+- mesmo ambiente, outra tomada;
+- mesmo equipamento, outro cabo;
+- teste com simulador.
 
-    ### 2. Princípio de Funcionamento
-    A placa eletrônica gera um sinal elétrico de alta frequência ($25 kHz$ a $30 kHz$). Este sinal alimenta cerâmicas piezoelétricas na caneta de ultrassom, que se expandem e contraem rapidamente, fazendo a ponta (inserto) vibrar mecânicamente.
+Assim você evita conclusões falsas.
 
-    ### 3. Falhas Comuns & Soluções
-    """)
-    st.table([
-        {"Sintoma": "Sem vibração na ponta", "Possíveis Causas": "Inserto mal apertado, cabo da caneta interrompido, transdutor piezoelétrico trincado", "Teste/Ação": "Apertar o inserto com a chave torquímetros; testar continuidade do cabo; testar caneta reserva"},
-        {"Sintoma": "Sem fluxo de água (esquentando a ponta)", "Possíveis Causas": "Válvula solenoide de água queimada/entupida, registro regulador fechado", "Teste/Ação": "Testar tensão (V) na bobina da solenoide de água ao acionar o pedal"}
-    ])
+## 4. Não confunda hipótese com diagnóstico
 
-# ---------------------------------------------------------
-# SECTION 7: COLPOSCÓPIO
-# ---------------------------------------------------------
-elif menu == "🔍 7. Colposcópio (Prioridade 7)":
-    st.header("🔍 Ficha Técnica: Colposcópio")
-    
-    st.markdown("""
-    ### 1. Finalidade
-    Exame visual ampliado do colo do útero e vagina sob iluminação focalizada.
+“Pode ser a resistência” é uma hipótese.
 
-    ### 2. Princípio de Funcionamento
-    Sistema óptico estéreo binocular (semelhante a um microscópio cirúrgico) montado sobre braço articulado. Utiliza lentes de aumento variável e fonte de luz LED ou halógena com filtro verde (para realce de vasos sanguíneos).
+“Foi confirmada falha na resistência pelo teste previsto” é um diagnóstico técnico.
 
-    ### 3. Manutenção & Soluções Rápidas
-    - **Lentes Sujas/Embaçadas:** Limpeza estrita com papel óptico e solução de álcool isopropílico/éter. Nunca usar pano comum para não riscar o tratamento anti-reflexo.
-    - **Luz Piscando ou Desligada:** Verificar a fonte chaveada interna ou a lâmpada/LED e potenciômetro de ajuste de intensidade (reostato).
-    - **Braço caindo sozinho:** Ajuste da tensão mecânica das molas/frenagem nos manípulos das articulações.
-    """)
+## 5. Validação faz parte da manutenção
 
-# ---------------------------------------------------------
-# SECTION 8: GITHUB & STREAMLIT CLOUD GUIDE
-# ---------------------------------------------------------
-elif menu == "🚀 Guia de Publicação no GitHub / Streamlit Cloud":
-    st.header("🚀 Como Colocar este App na Web Gratuitamente")
-    
-    st.markdown("""
-    Siga estes passos simples para ter o seu aplicativo acessível pelo celular ou qualquer computador:
+A manutenção só termina depois de confirmar:
 
-    ### Passo 1: Criar a Conta no GitHub
-    1. Acesse [github.com](https://github.com) e crie uma conta gratuita.
+- funcionamento;
+- segurança;
+- desempenho;
+- ausência do defeito;
+- registro da intervenção.
+""")
 
-    ### Passo 2: Criar um Repositório
-    1. Clique no botão **"+"** no canto superior direito ➔ **New repository**.
-    2. Nomeie o repositório como: `engenharia-clinica-app`.
-    3. Deixe marcado como **Public**.
-    4. Marque a opção **Add a README file** e clique em **Create repository**.
+elif menu == "📝 Registro de ocorrência":
+    st.title("📝 Registro rápido de ocorrência")
 
-    ### Passo 3: Adicionar os Arquivos
-    Dentro do seu repositório criado:
-    1. Clique em **Add file** ➔ **Upload files**.
-    2. Suba o arquivo `app.py` (o código deste sistema).
-    3. Suba o arquivo `requirements.txt` contendo a linha:
-       ```text
-       streamlit
-       ```
-    4. Clique em **Commit changes**.
+    with st.form("registro"):
+        equipamento = st.selectbox("Equipamento", list(EQUIPAMENTOS.keys()))
+        patrimonio = st.text_input("Patrimônio / identificação")
+        local = st.text_input("Local")
+        sintoma = st.text_area("Sintoma observado")
+        etapa = st.selectbox(
+            "Etapa em que ocorre",
+            ["Não identificado", "Inicialização", "Funcionamento", "Durante o ciclo", "Finalização"]
+        )
+        hipotese = st.text_area("Hipótese inicial")
+        teste = st.text_area("Teste realizado")
+        resultado = st.text_area("Resultado")
+        acao = st.text_area("Ação realizada / encaminhamento")
+        status = st.selectbox("Status", ["Em análise", "Resolvido", "Encaminhado", "Aguardando peça"])
+        enviar = st.form_submit_button("Salvar na sessão")
 
-    ### Passo 4: Publicar no Streamlit Community Cloud
-    1. Acesse [share.streamlit.io](https://share.streamlit.io) e faça login com sua conta do GitHub.
-    2. Clique em **New app**.
-    3. Selecione seu repositório `engenharia-clinica-app`, a branch `main` e o arquivo principal `app.py`.
-    4. Clique em **Deploy!**
-    
-    🎉 **Pronto!** Em menos de 2 minutos você terá um link público (ex: `https://seu-usuario-engenharia-clinica.streamlit.app`) para usar no seu dia a dia no hospital/clínica!
-    """)
+    if enviar:
+        registro = {
+            "Data": datetime.now().strftime("%d/%m/%Y %H:%M"),
+            "Equipamento": equipamento,
+            "Patrimônio": patrimonio,
+            "Local": local,
+            "Sintoma": sintoma,
+            "Etapa": etapa,
+            "Hipótese": hipotese,
+            "Teste": teste,
+            "Resultado": resultado,
+            "Ação": acao,
+            "Status": status
+        }
+
+        if "registros" not in st.session_state:
+            st.session_state.registros = []
+
+        st.session_state.registros.append(registro)
+        st.success("Ocorrência salva na sessão atual.")
+
+    if st.session_state.get("registros"):
+        st.subheader("Registros da sessão")
+        st.dataframe(st.session_state.registros, use_container_width=True)
+
+else:
+    pagina_equipamento(menu, EQUIPAMENTOS[menu])
