@@ -11,7 +11,7 @@ import json
 # ==========================================================
 
 st.set_page_config(
-    page_title="Engenharia Clínica | Guia de Campo V2",
+    page_title="Engenharia Clínica | Guia de Campo V4",
     page_icon="🩺",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -874,6 +874,207 @@ CAMPO → LUZ REFLETIDA → LENTES → FOCO/AMPLIAÇÃO → OCULAR/CÂMERA
     }
 }
 
+
+# ==========================================================
+# V4 - FUNDAMENTOS, COMPONENTES INTERATIVOS E ANATOMIA
+# ==========================================================
+COMPONENTES_BASE = {
+    "Amplificador diferencial": {
+        "o_que_e":"Circuito eletrônico que amplifica principalmente a diferença de tensão entre duas entradas e reduz, dentro dos seus limites, sinais presentes de forma semelhante nas duas entradas.",
+        "como_funciona":"Ele recebe dois sinais, compara V+ e V− e produz uma saída proporcional à diferença. Em equipamentos biomédicos, isso é importante porque o sinal útil pode ser pequeno e o ambiente pode introduzir ruído comum aos dois condutores.",
+        "fisica":"Lei de Ohm, circuitos diferenciais e amplificação. A rejeição de modo comum é uma característica real, mas não elimina qualquer interferência.",
+        "no_equipamento":"No ECG, integra a etapa analógica inicial que recebe os biopotenciais antes do processamento digital.",
+        "falhas":"Saturação, ganho incorreto, ruído, conexão defeituosa ou falha na alimentação podem alterar o sinal. Sempre separar entrada, amplificação e processamento.",
+        "revisar":"Entrada → proteção → amplificador diferencial → filtros → ADC/processamento."
+    },
+    "Relé": {
+        "o_que_e":"Chave eletromecânica controlada eletricamente. Um circuito de comando energiza uma bobina e o campo magnético movimenta contatos para abrir ou fechar outro circuito.",
+        "como_funciona":"Corrente na bobina → campo magnético → armadura móvel → mudança dos contatos. Assim, uma placa de baixa potência pode comandar uma carga maior, respeitando o projeto.",
+        "fisica":"Eletromagnetismo e conversão de energia elétrica em movimento mecânico.",
+        "no_equipamento":"Pode aparecer no acionamento de resistência, motor ou outros atuadores, dependendo do projeto.",
+        "falhas":"Contato queimado/oxidado, bobina aberta, contato travado ou falha do sinal de comando.",
+        "revisar":"Comando ≠ potência: confirmar primeiro se o relé recebe comando e depois se seus contatos entregam energia à carga."
+    },
+    "Filtro passa-baixa": {
+        "o_que_e":"Filtro que permite a passagem das frequências abaixo de uma frequência de corte e atenua progressivamente frequências acima dela.",
+        "como_funciona":"Pode ser implementado com componentes passivos ou circuitos ativos. Em sinais biomédicos, ajuda a limitar componentes de alta frequência antes ou depois da digitalização.",
+        "fisica":"Resposta em frequência. A frequência de corte não significa bloqueio instantâneo: existe uma região de transição e uma inclinação de atenuação.",
+        "no_equipamento":"Pode ser usado em cadeias de aquisição como o ECG, conforme a arquitetura e finalidade do filtro.",
+        "falhas":"Corte inadequado pode deixar ruído passar ou remover informação relevante.",
+        "revisar":"Baixa frequência passa; alta frequência é atenuada."
+    },
+    "Filtro passa-alta": {
+        "o_que_e":"Filtro que atenua componentes abaixo da frequência de corte e permite a passagem das componentes acima dela.",
+        "como_funciona":"Pode reduzir variações muito lentas e componentes de baixa frequência, como derivações de linha de base, dependendo da aplicação.",
+        "fisica":"Resposta em frequência e frequência de corte.",
+        "no_equipamento":"Pode integrar condicionamento de sinais analógicos, especialmente quando há necessidade de reduzir componentes muito lentas.",
+        "falhas":"Um corte excessivo pode distorcer sinais de interesse.",
+        "revisar":"Alta frequência passa; baixa frequência é atenuada."
+    },
+    "Filtro passa-faixa": {
+        "o_que_e":"Combinação funcional que privilegia uma faixa de frequências e atenua componentes abaixo e acima dela.",
+        "como_funciona":"Pode resultar da associação de comportamento passa-alta e passa-baixa ou de outras topologias.",
+        "fisica":"Define uma banda de interesse por limites inferior e superior.",
+        "no_equipamento":"Útil quando o sistema precisa priorizar uma faixa de sinal conhecida.",
+        "falhas":"Faixa mal definida pode reduzir informação ou manter ruído indesejado.",
+        "revisar":"Frequência baixa demais ↓ | faixa de interesse ✓ | frequência alta demais ↓."
+    },
+    "Filtro rejeita-faixa / notch": {
+        "o_que_e":"Filtro projetado para atenuar uma faixa estreita ou uma frequência específica.",
+        "como_funciona":"É usado quando existe uma interferência conhecida que se deseja reduzir, sem necessariamente remover todas as frequências próximas.",
+        "fisica":"Atenuação seletiva em frequência.",
+        "no_equipamento":"Em ECG, pode ser associado à redução de interferência de rede, conforme projeto e configuração. Seu uso deve ser entendido porque filtragem também pode modificar o traçado.",
+        "falhas":"Uso excessivo ou inadequado pode mascarar informação e não substitui a identificação da fonte do ruído.",
+        "revisar":"Filtrar não é o mesmo que eliminar a causa da interferência."
+    },
+    "Conversor A/D": {
+        "o_que_e":"Circuito que transforma um sinal analógico contínuo em representação digital.",
+        "como_funciona":"O sistema amostra o sinal em intervalos e quantiza sua amplitude em níveis digitais. Taxa de amostragem e resolução influenciam a representação.",
+        "fisica":"Amostragem, quantização e processamento digital de sinais.",
+        "no_equipamento":"Após o condicionamento analógico, permite que processadores armazenem, exibam e analisem sinais.",
+        "falhas":"Problemas de referência, clock, resolução ou processamento podem gerar comportamento incorreto.",
+        "revisar":"Analógico → amostragem → quantização → dados digitais."
+    },
+    "Sensor": {
+        "o_que_e":"Elemento que transforma uma grandeza física em um sinal utilizável pelo sistema.",
+        "como_funciona":"Temperatura, pressão, posição ou outra variável altera uma propriedade física e o circuito converte essa alteração em informação.",
+        "fisica":"Depende do tipo: resistivo, termistor, termopar, pressão, óptico, magnético etc.",
+        "no_equipamento":"Fecha o ciclo de controle: processo → sensor → controlador → atuador → processo.",
+        "falhas":"Sensor pode estar correto e a leitura exibida errada por falha de cabo, condicionamento, ADC ou software.",
+        "revisar":"Não confunda: grandeza real, sinal do sensor e valor exibido são três etapas diferentes."
+    },
+    "Controlador eletrônico": {
+        "o_que_e":"Parte responsável por receber informações, aplicar lógica e comandar atuadores.",
+        "como_funciona":"Entrada de sensores/comandos → lógica programada ou analógica → saída para driver, relé, motor, válvula ou resistência.",
+        "fisica":"Eletrônica, lógica de controle e sistemas em malha aberta ou fechada.",
+        "no_equipamento":"É o centro da decisão, mas não deve ser culpado antes de verificar entradas e saídas.",
+        "falhas":"Entrada incorreta, alimentação, software, saída de acionamento ou comunicação.",
+        "revisar":"Pergunte: o controlador recebeu a informação correta? tomou a decisão correta? entregou o comando?"
+    },
+    "Resistência / sistema de aquecimento": {
+        "o_que_e":"Elemento que converte energia elétrica em energia térmica por efeito Joule.",
+        "como_funciona":"A corrente atravessa um material resistivo e parte da energia elétrica é dissipada como calor.",
+        "fisica":"Efeito Joule; potência elétrica depende das relações entre tensão, corrente e resistência.",
+        "no_equipamento":"Autoclaves e outros sistemas térmicos usam aquecimento controlado para atingir condições definidas.",
+        "falhas":"Elemento aberto, conexão, relé/driver, proteção térmica ou comando.",
+        "revisar":"Comando → potência → resistência → transferência de calor → sensor → controle."
+    },
+    "Motor": {
+        "o_que_e":"Conversor eletromecânico que transforma energia elétrica em movimento.",
+        "como_funciona":"O projeto do motor utiliza campos elétricos e magnéticos para produzir torque e rotação ou outro movimento.",
+        "fisica":"Eletromagnetismo e conversão eletromecânica.",
+        "no_equipamento":"Pode movimentar compressor, bomba, ventilador ou mecanismos.",
+        "falhas":"Alimentação, comando, circuito de partida, enrolamentos, rolamentos ou carga mecânica excessiva.",
+        "revisar":"Motor não gira não significa automaticamente motor defeituoso."
+    },
+    "Válvula": {
+        "o_que_e":"Elemento que controla, direciona, interrompe ou protege o fluxo de um fluido ou gás.",
+        "como_funciona":"Uma abertura controlada altera o caminho disponível ao fluxo. Pode ser manual, mecânica, pneumática ou solenóide, conforme o equipamento.",
+        "fisica":"Pressão, diferença de pressão, vazão e resistência ao fluxo.",
+        "no_equipamento":"Autoclaves, compressores e equipamentos odontológicos podem possuir diferentes tipos de válvulas.",
+        "falhas":"Obstrução, vazamento, travamento, comando ausente ou desgaste de vedação.",
+        "revisar":"Verifique o fluxo real e não apenas se existe comando elétrico."
+    },
+    "Fonte de luz": {
+        "o_que_e":"Subsistema que fornece energia luminosa ao campo observado.",
+        "como_funciona":"Energia elétrica é convertida em luz por uma tecnologia de iluminação; a óptica direciona essa luz.",
+        "fisica":"Óptica, emissão luminosa, intensidade e distribuição da luz.",
+        "no_equipamento":"No colposcópio, iluminação é parte da cadeia de formação da imagem.",
+        "falhas":"Fonte, driver, conexão, guia óptico ou controle de intensidade.",
+        "revisar":"Sem iluminação adequada, a óptica pode estar perfeita e a imagem ainda ser inadequada."
+    }
+}
+
+ANATOMIA = {
+    "♨️ Autoclave": {"sistema":"Não mede diretamente uma função anatômica; atua sobre instrumentos e materiais usados no cuidado ao paciente.","relacao":"A relação com o corpo humano é indireta e ocorre pela prevenção de transmissão de microrganismos. O entendimento básico de microbiologia e barreiras de controle de infecção é mais relevante que uma anatomia de órgão específico.","conexao":"Paciente → procedimento → instrumentos/material → processamento correto → redução do risco associado ao reuso."},
+    "📈 Eletrocardiógrafo": {"sistema":"Sistema cardiovascular e sistema de condução elétrica cardíaca.","relacao":"O nó sinoatrial inicia a ativação elétrica fisiológica; a condução pelo miocárdio produz campos elétricos que resultam em diferenças de potencial detectáveis na superfície corporal. O ECG registra essas diferenças por eletrodos.","conexao":"Coração → atividade elétrica → propagação pelo volume condutor corporal → pele → eletrodos → cabos → aquisição eletrônica → traçado."},
+    "💨 Compressor": {"sistema":"Não mede diretamente anatomia humana; fornece ar comprimido para sistemas que podem ser utilizados em procedimentos clínicos/odontológicos.","relacao":"No contexto odontológico, sua relação é indireta: o ar comprimido permite o funcionamento de instrumentos que atuam na cavidade oral. A segurança depende da qualidade do ar e da aplicação prevista.","conexao":"Compressor → tratamento/distribuição do ar → equipamento odontológico → instrumento → procedimento no paciente."},
+    "❄️ Câmara fria / Câmara de vacina": {"sistema":"Relação indireta com imunologia e conservação de produtos biológicos.","relacao":"O equipamento não atua diretamente no corpo, mas mantém condições ambientais necessárias para preservar produtos utilizados posteriormente em pacientes.","conexao":"Controle térmico → conservação do produto → manutenção das características especificadas → aplicação clínica conforme protocolo."},
+    "🦷 Cadeira e caneta odontológica": {"sistema":"Cavidade oral, dentes, periodonto e estruturas associadas.","relacao":"A cadeira posiciona o paciente e os instrumentos realizam funções mecânicas, pneumáticas e hidráulicas relacionadas ao atendimento odontológico. Para engenharia clínica, é essencial entender que pressão, rotação, irrigação e posicionamento afetam diretamente a execução do procedimento.","conexao":"Paciente → posicionamento → acesso ao campo oral → instrumento → energia mecânica/pneumática + irrigação → procedimento."},
+    "🔊 Ultrassom odontológico": {"sistema":"Estruturas dentárias e periodontais, conforme a aplicação clínica.","relacao":"O equipamento gera vibração mecânica de alta frequência no inserto; a aplicação clínica ocorre sobre estruturas específicas segundo técnica profissional. A engenharia deve compreender a cadeia física sem extrapolar para decisão clínica.","conexao":"Gerador → transdutor → vibração → inserto + irrigação → interação mecânica no campo odontológico."},
+    "🔍 Colposcópio": {"sistema":"Sistema reprodutor feminino, especialmente estruturas observadas durante o exame colposcópico.","relacao":"O equipamento não 'cria' a imagem do tecido: ele ilumina o campo e amplia a luz refletida para permitir observação detalhada. A interpretação anatômica e clínica é responsabilidade profissional específica.","conexao":"Estrutura anatômica → iluminação → reflexão → óptica → ocular/câmera → imagem para observação."}
+}
+
+def get_component_knowledge(nome):
+    nome_l = nome.lower()
+    for chave, dados in COMPONENTES_BASE.items():
+        if chave.lower() in nome_l or nome_l in chave.lower():
+            return dados
+    if "sensor" in nome_l: return COMPONENTES_BASE["Sensor"]
+    if "controle" in nome_l or "placa" in nome_l or "controlador" in nome_l: return COMPONENTES_BASE["Controlador eletrônico"]
+    if "motor" in nome_l: return COMPONENTES_BASE["Motor"]
+    if "válvula" in nome_l: return COMPONENTES_BASE["Válvula"]
+    if "resist" in nome_l or "aquec" in nome_l: return COMPONENTES_BASE["Resistência / sistema de aquecimento"]
+    if "luz" in nome_l: return COMPONENTES_BASE["Fonte de luz"]
+    return {"o_que_e":"Componente específico do equipamento.","como_funciona":"Sua operação exata depende do projeto do fabricante e deve ser correlacionada ao diagrama técnico.","fisica":"Identifique a energia de entrada, transformação e saída.","no_equipamento":"Analise sua posição na cadeia funcional.","falhas":"Separe comando, alimentação, componente e carga.","revisar":"Onde este componente recebe energia/informação e para onde ele envia?"}
+
+def render_componentes_interativos_v4(componentes, nome_eq):
+    st.markdown("## 🔧 Laboratório de componentes interativos")
+    st.caption("Escolha um componente. A ideia é revisar desde os fundamentos: o que é → como funciona → física → papel no equipamento → falhas.")
+    nomes = [c[0] for c in componentes]
+    selecionado = st.selectbox("🎯 Selecione um componente", nomes, key=f"comp_select_{nome_eq}")
+    item = next(c for c in componentes if c[0] == selecionado)
+    nome, funcao, diagnostico = item
+    base = get_component_knowledge(nome)
+    st.markdown(f"### {nome}")
+    cols = st.columns(2)
+    with cols[0]:
+        st.info(f"**Função neste equipamento:** {funcao}")
+        st.markdown("#### ⚙️ Como funciona")
+        st.write(base["como_funciona"])
+        st.markdown("#### ⚛️ Física e engenharia")
+        st.write(base["fisica"])
+    with cols[1]:
+        st.markdown("#### 🧩 O que é")
+        st.write(base["o_que_e"])
+        st.markdown("#### 🏥 Papel no equipamento")
+        st.write(base["no_equipamento"])
+        st.markdown("#### ⚠️ Como pensar na falha")
+        st.write(diagnostico)
+    with st.expander("🧠 Revisão rápida: o que preciso lembrar?"):
+        st.write(base["revisar"])
+        st.write("**Falhas típicas:** " + base["falhas"])
+    st.divider()
+    st.markdown("### 📚 Glossário de eletrônica clínica")
+    fundamentos = ["Amplificador diferencial", "Relé", "Filtro passa-baixa", "Filtro passa-alta", "Filtro passa-faixa", "Filtro rejeita-faixa / notch", "Conversor A/D", "Sensor", "Controlador eletrônico"]
+    escolha = st.selectbox("Relembrar um fundamento", fundamentos, key=f"fund_{nome_eq}")
+    d = COMPONENTES_BASE[escolha]
+    with st.expander(f"📖 {escolha}", expanded=True):
+        st.markdown(f"**O que é:** {d['o_que_e']}")
+        st.markdown(f"**Como funciona:** {d['como_funciona']}")
+        st.markdown(f"**Física:** {d['fisica']}")
+        st.markdown(f"**Aplicação:** {d['no_equipamento']}")
+
+def render_fundamentos_v4(nome):
+    st.markdown("## 🧠 Fundamentos para quem está começando")
+    st.markdown("Esta aba existe para conectar o equipamento à base da Engenharia Biomédica. Antes de decorar defeitos, entenda os blocos fundamentais.")
+    blocos = [
+        ("⚡ Energia elétrica", "Tensão é diferença de potencial; corrente é movimento de carga; resistência se opõe ao fluxo. Em diagnóstico, pergunte sempre: existe alimentação? a tensão chega? a carga responde?"),
+        ("🔁 Sinais analógicos e digitais", "Um sensor pode produzir um sinal contínuo. O condicionamento ajusta esse sinal; o conversor A/D permite processamento digital."),
+        ("🎛️ Ganho e amplificação", "Amplificar é aumentar a amplitude de um sinal. Ganho inadequado pode fazer um sinal parecer maior ou menor sem que o fenômeno físico tenha mudado."),
+        ("📈 Frequência e filtros", "Passa-baixa reduz altas frequências; passa-alta reduz baixas; passa-faixa privilegia uma banda; notch/rejeita-faixa reduz uma região específica."),
+        ("🔄 Controle em malha fechada", "Grandeza real → sensor → controlador → atuador → processo → nova medição. Temperatura, pressão e outros processos podem usar esse princípio."),
+        ("🧲 Eletromagnetismo", "Motores e relés utilizam campos eletromagnéticos para produzir movimento ou comutação. Interferências também podem ocorrer por acoplamento elétrico ou magnético."),
+        ("🛡️ Segurança", "Em equipamentos de saúde, desempenho não basta. Qualquer intervenção deve respeitar fabricante, procedimento, isolamento, aterramento, proteções e testes aplicáveis.")
+    ]
+    for t, txt in blocos:
+        with st.expander(t): st.write(txt)
+
+def render_anatomia_v4(nome):
+    dados = ANATOMIA.get(nome)
+    st.markdown("## 🫀 Relação com anatomia e fisiologia")
+    if not dados:
+        st.info("Relação anatômica a ser adicionada.")
+        return
+    st.markdown("### Sistema ou contexto biológico")
+    st.write(dados["sistema"])
+    st.markdown("### Como o equipamento se relaciona com o corpo humano")
+    st.write(dados["relacao"])
+    st.markdown("### Cadeia corpo ↔ tecnologia")
+    st.info(dados["conexao"])
+    st.warning("⚠️ Esta seção explica a relação técnico-biológica. Diagnóstico e interpretação clínica não devem ser inferidos apenas pelo funcionamento do equipamento.")
+
+
 def render_fisica_avancada(info):
     st.markdown(info["fisica"])
 
@@ -1063,99 +1264,50 @@ def render_fluxo_ecg():
 def equipamento_page(nome, info):
     st.markdown(f'<div class="hero"><h1>{nome}</h1><h4>{info["tipo"]}</h4></div>', unsafe_allow_html=True)
     render_image(info)
-
     avancado = TECNICO.get(nome)
-
     tabs = st.tabs([
-        "📚 Visão geral",
-        "⚛️ Princípios físicos",
-        "🔬 Funcionamento interno",
-        "🧩 Subsistemas",
-        "🔧 Componentes",
-        "🔗 Relações",
-        "📊 Diagrama funcional",
-        "⚠️ Falhas",
-        "🧪 Testes",
-        "🌳 Árvore de decisão",
-        "✅ Validação",
-        "🛠️ Biblioteca de problemas"
+        "📚 Visão geral", "🧠 Fundamentos", "🫀 Anatomia", "⚛️ Princípios físicos",
+        "🔬 Funcionamento interno", "🧩 Subsistemas", "🔧 Componentes interativos",
+        "🔗 Relações", "📊 Diagrama funcional", "⚠️ Falhas", "🧪 Testes",
+        "🌳 Árvore de decisão", "✅ Validação", "🛠️ Problemas"
     ])
-
     with tabs[0]:
         st.markdown("## O que é e para que serve?")
         st.markdown(info["objetivo"])
-        st.markdown("## Desenvolvendo o raciocínio técnico")
+        st.markdown("## Como desenvolver o raciocínio técnico")
         render_raciocinio(info["raciocinio"])
-
-    with tabs[1]:
-        if avancado:
-            render_fisica_avancada(avancado)
-        if nome == "📈 Eletrocardiógrafo":
-            st.divider()
-            st.markdown(info["interferencia"])
-
-    with tabs[2]:
-        if avancado:
-            render_funcionamento_interno(avancado)
-        st.divider()
-        st.markdown("## Cadeia de funcionamento")
-        st.markdown(info["principio"])
-
+    with tabs[1]: render_fundamentos_v4(nome)
+    with tabs[2]: render_anatomia_v4(nome)
     with tabs[3]:
-        if avancado:
-            render_mapa_subsistemas(avancado)
-
+        if avancado: render_fisica_avancada(avancado)
+        if nome == "📈 Eletrocardiógrafo":
+            st.divider(); st.markdown(info["interferencia"])
     with tabs[4]:
-        render_componentes_interativos(info["componentes"])
-
+        if avancado: render_funcionamento_interno(avancado)
+        st.divider(); st.markdown("## Cadeia de funcionamento"); st.markdown(info["principio"])
     with tabs[5]:
-        if avancado:
-            render_relacoes(avancado)
-
-    with tabs[6]:
-        if avancado:
-            render_diagrama(avancado)
-
+        if avancado: render_mapa_subsistemas(avancado)
+    with tabs[6]: render_componentes_interativos_v4(info["componentes"], nome)
     with tabs[7]:
-        if avancado:
-            render_falhas_subsistema(avancado)
-
+        if avancado: render_relacoes(avancado)
     with tabs[8]:
-        if avancado:
-            render_testes_hipoteses(avancado)
-
+        if avancado: render_diagrama(avancado)
     with tabs[9]:
-        if avancado:
-            render_arvore(avancado)
-
+        if avancado: render_falhas_subsistema(avancado)
     with tabs[10]:
-        if avancado:
-            render_validacao(avancado)
-
+        if avancado: render_testes_hipoteses(avancado)
     with tabs[11]:
+        if avancado: render_arvore(avancado)
+    with tabs[12]:
+        if avancado: render_validacao(avancado)
+    with tabs[13]:
         st.markdown("## Biblioteca de problemas")
-        busca = st.text_input(
-            "🔎 Pesquisar",
-            placeholder="Ex.: vazamento, não aquece, ruído, temperatura...",
-            key=f"busca_{nome}"
-        ).lower()
-
-        encontrados = []
-        for p in info["problemas"]:
-            texto = (p["titulo"] + p["sintoma"] + " ".join(p["causas"])).lower()
-            if not busca or busca in texto:
-                encontrados.append(p)
-
-        if not encontrados:
-            st.info("Nenhum problema encontrado.")
+        busca = st.text_input("🔎 Pesquisar", placeholder="Ex.: vazamento, não aquece, ruído, temperatura...", key=f"busca_{nome}").lower()
+        encontrados = [p for p in info["problemas"] if not busca or busca in (p["titulo"] + p["sintoma"] + " ".join(p["causas"])).lower()]
+        if not encontrados: st.info("Nenhum problema encontrado.")
         else:
-            escolha = st.selectbox(
-                "Selecione o problema",
-                [p["titulo"] for p in encontrados],
-                key=f"problema_{nome}"
-            )
-            problema = next(p for p in encontrados if p["titulo"] == escolha)
-            render_problema(problema)
+            escolha = st.selectbox("Selecione o problema", [p["titulo"] for p in encontrados], key=f"problema_{nome}")
+            render_problema(next(p for p in encontrados if p["titulo"] == escolha))
 
 # ==========================================================
 # REGISTRO
@@ -1259,7 +1411,7 @@ def estudo_page():
 # ==========================================================
 
 st.sidebar.title("🩺 Engenharia Clínica")
-st.sidebar.caption("Guia de Campo V2")
+st.sidebar.caption("Guia de Campo V4")
 
 menu = st.sidebar.radio(
     "Navegação",
