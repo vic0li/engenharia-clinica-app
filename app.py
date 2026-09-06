@@ -18,30 +18,118 @@ st.set_page_config(
 )
 
 # ----------------------------------------------------------
-# ESTILO
+# ESTILO — ALTO CONTRASTE / LEGIBILIDADE
 # ----------------------------------------------------------
 st.markdown("""
 <style>
-    .hero {
-        padding: 1.5rem;
-        border-radius: 18px;
-        background: linear-gradient(135deg, #eef6ff, #f7fbff);
-        border: 1px solid #d8e8f8;
-        margin-bottom: 1rem;
-    }
-    .concept {
-        padding: 1rem;
-        border-left: 5px solid #2d7ff9;
-        background-color: #f7fbff;
-        border-radius: 8px;
-        margin: 0.7rem 0;
-    }
-    .warning-box {
-        padding: 1rem;
-        border-left: 5px solid #f59e0b;
-        background-color: #fffaf0;
-        border-radius: 8px;
-    }
+/* Fundo geral */
+.stApp {
+    background: #0f172a;
+    color: #f8fafc;
+}
+
+/* Área principal */
+.main .block-container {
+    max-width: 1400px;
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+}
+
+/* Texto: evita o problema de texto claro em fundo branco */
+h1, h2, h3, h4, h5, h6,
+p, li, label, .stMarkdown, .stMarkdown p, .stCaption {
+    color: #f8fafc !important;
+}
+
+/* Cards personalizados */
+.hero {
+    padding: 1.8rem;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #172554, #0f766e);
+    border: 1px solid #38bdf8;
+    color: #ffffff !important;
+    margin-bottom: 1rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+}
+.hero h1, .hero h2, .hero h3, .hero p { color: #ffffff !important; }
+
+.concept {
+    padding: 1rem;
+    border-left: 5px solid #38bdf8;
+    background-color: #172554;
+    color: #f8fafc !important;
+    border-radius: 8px;
+    margin: 0.7rem 0;
+}
+.concept * { color: #f8fafc !important; }
+
+.warning-box {
+    padding: 1rem;
+    border-left: 5px solid #f59e0b;
+    background-color: #422006;
+    color: #fff7ed !important;
+    border-radius: 8px;
+}
+.warning-box * { color: #fff7ed !important; }
+
+/* Expansores */
+details {
+    background-color: #1e293b !important;
+    border: 1px solid #475569 !important;
+    border-radius: 10px !important;
+    margin-bottom: 0.5rem !important;
+}
+details summary, details p, details div { color: #f8fafc !important; }
+
+/* Inputs e selectbox */
+.stSelectbox > div > div,
+.stTextInput input,
+.stTextArea textarea {
+    background-color: #1e293b !important;
+    color: #ffffff !important;
+    border-color: #64748b !important;
+}
+
+/* Tabs */
+button[data-baseweb="tab"] {
+    color: #cbd5e1 !important;
+    font-weight: 600 !important;
+}
+button[data-baseweb="tab"][aria-selected="true"] {
+    color: #ffffff !important;
+}
+
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background-color: #111827 !important;
+}
+section[data-testid="stSidebar"] * {
+    color: #f8fafc !important;
+}
+
+/* Dataframes e tabelas */
+.stDataFrame, [data-testid="stDataFrame"] {
+    background-color: #1e293b !important;
+}
+
+/* Código e diagramas */
+pre, code {
+    background-color: #020617 !important;
+    color: #e2e8f0 !important;
+}
+
+/* Métricas */
+[data-testid="stMetric"] {
+    background-color: #1e293b;
+    border: 1px solid #475569;
+    padding: 0.8rem;
+    border-radius: 10px;
+}
+
+/* Alertas Streamlit */
+[data-testid="stAlert"] {
+    border-radius: 10px;
+}
 </style>
 """, unsafe_allow_html=True)
 
