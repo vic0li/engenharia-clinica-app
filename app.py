@@ -1525,7 +1525,7 @@ Não substitui:
 """)
 
 if menu == "🏠 Início":
-    st.markdown('<div class="hero"><h1>🩺 Guia de Campo de Engenharia Clínica</h1><h3>Versão 2 — aprender a pensar, não apenas decorar defeitos</h3></div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero"><h1>🩺 Guia de Campo de Engenharia Clínica</h1><h3>, unsafe_allow_html=True)
 
     st.markdown("""
     ## A lógica do aplicativo
