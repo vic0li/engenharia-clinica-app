@@ -586,6 +586,350 @@ Pode ser:
 }
 }
 
+
+# ==========================================================
+# CAMADA TÉCNICA AVANÇADA — V3
+# Princípios físicos → subsistemas → componentes → relações
+# → falhas → testes → decisão → validação
+# ==========================================================
+
+TECNICO = {
+    "♨️ Autoclave": {
+        "fisica": """
+### Princípios físicos
+
+**1. Conversão eletrotérmica (efeito Joule)**  
+A resistência converte energia elétrica em calor. A potência dissipada depende do circuito e da resistência elétrica do elemento de aquecimento.
+
+**2. Transferência de calor**  
+O aquecimento da carga ocorre por condução, convecção e, principalmente no processo com vapor, pela transferência intensa de energia durante a condensação do vapor sobre superfícies mais frias.
+
+**3. Relação pressão–temperatura do vapor**  
+Em um sistema de vapor saturado, pressão e temperatura estão relacionadas. Entretanto, **pressão não substitui temperatura nem tempo de exposição**: o processo precisa seguir o ciclo especificado pelo fabricante.
+
+**4. Remoção de ar e contato com a carga**  
+Ar residual pode prejudicar a distribuição do vapor. A eficiência depende da arquitetura da autoclave, do carregamento e do ciclo utilizado.
+""",
+        "interno": [
+            ("Entrada e proteção", "A alimentação chega ao equipamento e passa por dispositivos de proteção e distribuição."),
+            ("Controle", "A placa/controlador lê sensores, verifica condições de segurança e executa a sequência programada."),
+            ("Geração de calor", "A resistência transfere energia ao sistema térmico e possibilita a geração/aquecimento do meio de processo."),
+            ("Câmara e vedação", "A porta, gaxeta e mecanismo de fechamento precisam manter a integridade do volume pressurizado."),
+            ("Medição", "Sensores fornecem temperatura e, conforme o modelo, pressão ou outras condições."),
+            ("Sequência do ciclo", "O controlador conduz condicionamento, aquecimento, exposição, exaustão e secagem conforme a arquitetura."),
+            ("Segurança", "Intertravamentos e dispositivos de proteção impedem condições inseguras.")
+        ],
+        "subsistemas": {
+            "Elétrico/Potência": ["alimentação", "fusíveis/proteções", "relé/acionamento", "resistência"],
+            "Térmico": ["resistência", "transferência de calor", "sensor de temperatura"],
+            "Pressão/Vapor": ["câmara", "válvulas", "linhas de fluxo", "exaustão"],
+            "Vedação/Mecânico": ["porta", "gaxeta", "dobradiça", "mecanismo de fechamento"],
+            "Controle/Sensores": ["placa", "sensor", "lógica do ciclo", "intertravamentos"],
+            "Segurança": ["trava", "proteções térmicas", "dispositivos previstos pelo fabricante"]
+        },
+        "relacoes": [
+            ("Controle", "Resistência", "comanda aquecimento"),
+            ("Resistência", "Câmara", "fornece energia térmica"),
+            ("Sensor de temperatura", "Controle", "fecha a malha de controle"),
+            ("Porta/Gaxeta", "Câmara", "mantém vedação"),
+            ("Válvulas", "Câmara", "controlam fluxo/condições")
+        ],
+        "diagrama": """ALIMENTAÇÃO
+    ↓
+PROTEÇÃO → CONTROLE ← SENSOR
+    ↓              ↑
+ACIONAMENTO → RESISTÊNCIA
+                  ↓
+             CÂMARA / VAPOR
+                  ↓
+        VEDAÇÃO → EXPOSIÇÃO → EXAUSTÃO""",
+        "falhas": {
+            "Vedação/Mecânico": ["Vazamento localizado na porta", "Gaxeta deformada/suja", "Desalinhamento", "Fechamento desigual"],
+            "Elétrico/Potência": ["Não liga", "Liga mas não aquece", "Proteção atuada", "Falha de acionamento"],
+            "Térmico": ["Subida lenta de temperatura", "Não atinge condição prevista", "Oscilação de leitura"],
+            "Controle/Sensores": ["Ciclo interrompe", "Leitura incoerente", "Comando inadequado"],
+            "Pressão/Vapor": ["Comportamento anormal de pressão", "Fluxo/exaustão inadequado"]
+        },
+        "testes": [
+            ("Vazamento sempre no mesmo lado?", "Sim → aumenta a suspeita de assimetria mecânica; não → investigar gaxeta/superfície em todo o perímetro."),
+            ("Controlador solicita aquecimento?", "Separar falha de comando de falha da cadeia de potência, conforme documentação técnica."),
+            ("Temperatura medida externamente e leitura interna concordam?", "Divergência controlada sugere investigar medição/calibração; usar método autorizado."),
+            ("Falha ocorre com ciclo repetido?", "Reprodutibilidade ajuda a separar evento aleatório de defeito sistemático.")
+        ],
+        "arvore": """SINTOMA
+├── Não liga → alimentação? → proteção? → comando?
+├── Liga/não aquece → comando? → potência? → elemento térmico?
+├── Aquece/não conclui → sensor? → controle? → condição de processo?
+└── Vaza na porta → ponto fixo? → gaxeta? → alinhamento? → fechamento?""",
+        "validacao": ["Inspeção visual e montagem correta", "Ausência do sintoma original", "Ciclo funcional completo conforme fabricante", "Verificação dos intertravamentos", "Registro dos parâmetros/testes exigidos pelo procedimento institucional"]
+    },
+
+    "📈 Eletrocardiógrafo": {
+        "fisica": """
+### Princípios físicos
+
+**1. Biopotenciais**  
+O ECG mede diferenças de potencial elétrico associadas à atividade cardíaca, captadas na superfície corporal.
+
+**2. Interface eletrodo–pele**  
+A qualidade do contato influencia a impedância e a suscetibilidade a artefatos. Movimento e contato inadequado alteram a aquisição.
+
+**3. Amplificação diferencial e rejeição de modo comum**  
+O front-end amplifica diferenças entre entradas e busca rejeitar sinais comuns. A rejeição é finita e depende do equilíbrio do sistema.
+
+**4. Ruído e acoplamento eletromagnético**  
+Cabos podem captar interferência por acoplamento capacitivo, magnético ou conduzido. O ambiente deve ser tratado como variável experimental.
+""",
+        "interno": [
+            ("Interface paciente", "Eletrodos estabelecem contato elétrico com a pele."),
+            ("Cabos", "Transportam sinais de baixa amplitude e podem captar interferências."),
+            ("Proteção/isolação", "A entrada do paciente possui arquitetura de segurança específica."),
+            ("Front-end analógico", "Amplifica o sinal diferencial e condiciona o sinal."),
+            ("Filtragem", "Atenua componentes indesejados dentro da estratégia do equipamento."),
+            ("Conversão", "O sinal condicionado é digitalizado."),
+            ("Processamento", "O software/processador organiza derivações, visualização e registro.")
+        ],
+        "subsistemas": {
+            "Paciente/Eletrodos": ["eletrodos", "gel", "pele", "impedância de contato"],
+            "Cabos": ["cabo paciente", "conectores", "blindagem"],
+            "Aquisição Analógica": ["proteção", "amplificador diferencial", "referências"],
+            "Filtragem/Conversão": ["filtros", "ADC", "processamento"],
+            "Alimentação/Isolação": ["fonte", "isolação", "segurança elétrica"],
+            "Ambiente": ["rede elétrica", "outros equipamentos", "campos EM", "aterramento"]
+        },
+        "relacoes": [
+            ("Eletrodo", "Amplificador diferencial", "fornece biopotencial"),
+            ("Cabo", "Ambiente", "pode sofrer acoplamento"),
+            ("Amplificador", "Filtros", "entrega sinal condicionado"),
+            ("Filtros", "ADC/Processamento", "prepara o sinal"),
+            ("Ambiente", "Aquisição", "pode introduzir interferência")
+        ],
+        "diagrama": """ATIVIDADE CARDÍACA
+      ↓
+CORPO → ELETRODOS → CABOS ← INTERFERÊNCIA AMBIENTAL
+                         ↓
+              PROTEÇÃO / ISOLAÇÃO
+                         ↓
+             AMPLIFICADOR DIFERENCIAL
+                         ↓
+                  FILTROS → ADC
+                         ↓
+                 PROCESSAMENTO → TELA""",
+        "falhas": {
+            "Paciente/Eletrodos": ["Ruído por mau contato", "Artefato de movimento", "Impedância elevada"],
+            "Cabos": ["Mau contato interno", "Conector danificado", "Captação de ruído"],
+            "Aquisição Analógica": ["Amplitude incoerente", "Ruído persistente", "Falha de canal"],
+            "Ambiente": ["Interferência de rede", "Acoplamento EM", "Problema de aterramento"],
+            "Processamento": ["Configuração de ganho", "Filtros inadequados", "Falha de visualização"]
+        },
+        "testes": [
+            ("Ruído muda com movimento?", "Sim → priorizar artefato/eletrodo/cabo; não → continuar isolamento."),
+            ("Ruído persiste com simulador?", "Sim → reduz a probabilidade de causa fisiológica e aumenta investigação da cadeia técnica."),
+            ("Mudar apenas o ambiente altera o defeito?", "Sim → investigar variável ambiental/acoplamento."),
+            ("Todas as derivações são afetadas?", "Padrão ajuda a localizar entre contato, cabo, canal ou processamento.")
+        ],
+        "arvore": """TRAÇADO ANORMAL
+├── Movimento altera? → eletrodo/pele/cabo
+├── Todas derivações? → configuração/ambiente/cadeia comum
+├── Persiste com simulador?
+│   ├── Não → interface paciente
+│   └── Sim → cabo → ambiente → aquisição interna
+└── Persiste em ambiente controlado → investigar equipamento""",
+        "validacao": ["Teste com simulador apropriado quando disponível", "Verificação de ganho e derivações", "Traçado estável nas condições de teste", "Testes de segurança elétrica aplicáveis", "Registro da condição antes/depois"]
+    },
+
+    "💨 Compressor": {
+        "fisica": """
+### Princípios físicos
+
+**1. Conversão eletromecânica**: motor converte energia elétrica em movimento.
+
+**2. Compressão de gás**: o mecanismo reduz o volume disponível ao ar, elevando sua pressão. A análise real envolve temperatura, vazamentos e eficiência do conjunto.
+
+**3. Energia armazenada**: o reservatório contém energia pneumática e deve ser tratado como recipiente pressurizado.
+
+**4. Controle por realimentação**: pressostato e indicação de pressão participam da lógica de partida e parada.
+""",
+        "interno": [("Alimentação", "Fornece energia ao sistema."), ("Motor/partida", "Produz torque e inicia movimento."), ("Cabeçote", "Comprime o ar."), ("Retenção", "Controla retorno de fluxo."), ("Reservatório", "Acumula ar pressurizado."), ("Controle", "Pressostato decide corte/retorno."), ("Distribuição", "Filtro, regulador e mangueiras entregam o ar.")],
+        "subsistemas": {"Elétrico": ["alimentação", "proteção", "capacitor", "motor"], "Mecânico": ["pistão", "cabeçote", "rolamentos"], "Pneumático": ["válvulas", "reservatório", "mangueiras"], "Controle": ["pressostato", "manômetro"], "Segurança": ["válvula de segurança", "purgador", "proteções"]},
+        "relacoes": [("Pressostato","Motor","liga/desliga"),("Motor","Cabeçote","fornece movimento"),("Cabeçote","Reservatório","fornece ar comprimido"),("Reservatório","Manômetro","fornece pressão para indicação"),("Válvula de retenção","Cabeçote","evita retorno")],
+        "diagrama": """REDE → PROTEÇÃO → MOTOR → CABEÇOTE → RETENÇÃO → RESERVATÓRIO
+                     ↑                              ↓
+                 PRESSOSTATO ← PRESSÃO ← MANÔMETRO
+                                                    ↓
+                                      FILTRO/REGULADOR → USO""",
+        "falhas": {"Elétrico": ["Não liga", "Tentativa de partida", "Proteção atua"], "Mecânico": ["Ruído", "Baixa compressão", "Desgaste"], "Pneumático": ["Vazamento", "Enchimento lento", "Retorno de ar"], "Controle": ["Não corta", "Não religa", "Indicação incoerente"]},
+        "testes": [("Motor gira?", "Não → cadeia elétrica/comando; sim → seguir para compressão."), ("Pressão sobe?", "Não → capacidade de compressão versus vazamento."), ("Tempo de enchimento está fora da referência?", "Comparar com especificação do equipamento."), ("Pressão de corte é coerente?", "Avaliar controle e medição sem exceder limites nominais.")],
+        "arvore": """NÃO ATINGE PRESSÃO
+├── Motor não gira → alimentação/proteção/comando/partida
+├── Motor gira → pressão sobe?
+│   ├── Não → compressão/válvula/vazamento
+│   └── Sim, lentamente → vazamento/filtro/desgaste
+└── Pressão sobe demais → retirar de uso e investigar controle/segurança""",
+        "validacao": ["Estanqueidade", "Tempo de enchimento dentro da referência", "Pressão de corte/retorno conforme fabricante", "Ausência de vazamento anormal", "Função dos dispositivos previstos de segurança"]
+    },
+
+    "❄️ Câmara fria / Câmara de vacina": {
+        "fisica": """
+### Princípios físicos
+
+**1. Conservação de energia e transferência de calor**: o sistema remove energia térmica do interior.
+
+**2. Ciclo de refrigeração**: o refrigerante circula entre regiões de maior e menor pressão, absorvendo calor no evaporador e rejeitando calor no condensador.
+
+**3. Convecção**: ventiladores e circulação de ar influenciam a uniformidade espacial da temperatura.
+
+**4. Controle em malha fechada**: sensor → controlador → atuador → nova medição.
+""",
+        "interno": [("Sensor", "Mede temperatura."), ("Controlador", "Compara medição e estratégia de controle."), ("Compressor", "Mantém circulação do refrigerante."), ("Condensador", "Rejeita calor ao ambiente."), ("Expansão", "Reduz pressão do fluido."), ("Evaporador", "Absorve calor do interior."), ("Ventilação", "Distribui ar e reduz gradientes."), ("Porta/gaxeta", "Limita entrada de calor e umidade.")],
+        "subsistemas": {"Refrigeração": ["compressor","condensador","expansão","evaporador"], "Circulação de ar": ["ventiladores","dutos","distribuição"], "Controle": ["sensor","controlador","alarmes"], "Vedação": ["porta","gaxeta"], "Ambiente": ["temperatura externa","ventilação do condensador","carga térmica"]},
+        "relacoes": [("Sensor","Controlador","realimenta"),("Controlador","Compressor","aciona"),("Compressor","Condensador","circula refrigerante"),("Evaporador","Ar interno","absorve calor"),("Ventilador","Temperatura interna","melhora uniformidade")],
+        "diagrama": """SENSOR → CONTROLADOR → COMPRESSOR
+   ↑                         ↓
+TEMPERATURA ← EVAPORADOR ← EXPANSÃO
+                    ↑
+CONDENSADOR ← COMPRESSOR
+                    ↓
+             AMBIENTE EXTERNO""",
+        "falhas": {"Refrigeração": ["Não resfria", "Recuperação lenta"], "Circulação": ["Gradiente térmico", "Pontos quentes/frios"], "Controle/Sensor": ["Leitura incoerente", "Ciclagem inadequada"], "Vedação": ["Entrada de ar quente", "Condensação"], "Ambiente": ["Condensador sem ventilação", "Carga térmica elevada"]},
+        "testes": [("Leitura independente confirma o desvio?", "Separar falha real de falha de medição."), ("Compressor opera?", "Operação não garante capacidade frigorífica; continuar investigação."), ("Há circulação de ar?", "Falha pode causar não uniformidade."), ("Porta/gaxeta estão íntegras?", "Investigar carga térmica adicional."), ("Histórico mostra quando começou?", "Ajuda a correlacionar evento, ambiente e degradação.")],
+        "arvore": """TEMPERATURA FORA DA FAIXA
+├── Confirmar leitura por método autorizado
+├── Desvio real?
+│   ├── Não → sensor/medição
+│   └── Sim → porta/carga/ambiente?
+│             ├── Sim → reduzir causa externa conforme protocolo
+│             └── Não → circulação → refrigeração → controle
+└── Proteger conteúdo conforme protocolo institucional""",
+        "validacao": ["Temperatura dentro da faixa especificada", "Estabilidade e recuperação", "Uniformidade conforme procedimento", "Alarmes e registro de dados", "Proteção do conteúdo e documentação"]
+    },
+
+    "🦷 Cadeira e caneta odontológica": {
+        "fisica": """
+### Princípios físicos
+
+A unidade odontológica integra **eletricidade, mecânica, pneumática e hidráulica**. A mesma ação do operador pode disparar diferentes cadeias de energia.
+
+- **Elétrica → mecânica**: motores e atuadores produzem movimento.
+- **Pressão → movimento/rotação**: ar comprimido pode alimentar instrumentos.
+- **Pressão e vazão**: água e ar são controlados por válvulas e reguladores.
+- **Lógica de controle**: comandos são convertidos em acionamentos.
+""",
+        "interno": [("Comando", "Botões e pedal recebem a intenção do operador."), ("Controle", "Placa interpreta permissões e sequências."), ("Potência", "Relés/drivers fornecem energia aos atuadores."), ("Atuação", "Motor, válvula ou atuador executa a ação."), ("Distribuição", "Mangueiras transportam ar/água."), ("Feedback", "Fins de curso e sensores limitam ou informam posição.")],
+        "subsistemas": {"Comando/Controle": ["pedal","botões","placa"], "Elétrico": ["fonte","relés","drivers"], "Mecânico": ["atuadores","transmissão","estrutura"], "Pneumático": ["compressor externo","regulador","válvulas","mangueiras"], "Hidráulico": ["água","válvulas","tubulações"], "Segurança/Posição": ["fim de curso","intertravamentos"]},
+        "relacoes": [("Pedal","Placa","envia comando"),("Placa","Relé/Driver","comanda potência"),("Relé/Driver","Motor/Válvula","aciona"),("Ar comprimido","Caneta","fornece energia pneumática"),("Fim de curso","Controle","informa limite")],
+        "diagrama": """OPERADOR → PEDAL/BOTÃO → CONTROLE → POTÊNCIA → ATUADOR
+                                           ↓
+AR/ÁGUA → REGULAÇÃO → VÁLVULAS → INSTRUMENTOS
+                                           ↓
+                                      MOVIMENTO/FLUXO
+                                           ↑
+                                   SENSOR/FIM DE CURSO""",
+        "falhas": {"Comando/Controle": ["Função não responde", "Comando intermitente"], "Elétrico": ["Motor não aciona", "Sem alimentação"], "Mecânico": ["Travamento", "Folga", "Movimento irregular"], "Pneumático": ["Baixa pressão", "Vazamento", "Sem fluxo"], "Hidráulico": ["Baixa vazão", "Obstrução", "Vazamento"], "Segurança": ["Movimento bloqueado por fim de curso"]},
+        "testes": [("Apenas uma função falha?", "Sim → cadeia específica; não → investigar alimentação/controle comum."), ("Há comando chegando ao atuador?", "Separar comando de potência/atuador conforme esquema."), ("Existe ruído de acionamento sem movimento?", "Sugere separar travamento mecânico de ausência de comando."), ("Pressão/fluxo na entrada está correto?", "Separar falha da unidade de falha no suprimento.")],
+        "arvore": """FUNÇÃO NÃO OPERA
+├── Outras funções operam?
+│   ├── Não → alimentação/controle comum
+│   └── Sim → comando específico
+├── Há acionamento?
+│   ├── Não → comando/controle/potência
+│   └── Sim → atuador/mecânica/fluxo
+└── Movimento bloqueado → verificar sensores/fins de curso conforme fabricante""",
+        "validacao": ["Movimentos completos e suaves", "Comandos e pedal", "Pressão/vazão dentro da referência", "Ausência de vazamentos", "Limites de movimento e segurança"]
+    },
+
+    "🔍 Colposcópio": {
+        "fisica": """
+### Princípios físicos
+
+**1. Óptica geométrica**: lentes coletam e direcionam raios de luz para formar uma imagem.
+
+**2. Foco**: a nitidez depende da posição relativa entre objeto, lentes e plano de observação/captura.
+
+**3. Ampliação e campo de visão**: alterações ópticas modificam a imagem observada e a área visualizada.
+
+**4. Iluminação e reflexão**: a qualidade depende da quantidade, distribuição e direção da luz que retorna do campo observado.
+
+**5. Captura digital, quando presente**: a luz é convertida em sinal por um sensor de imagem e processada.
+""",
+        "interno": [("Fonte de luz", "Produz iluminação controlada."), ("Sistema de iluminação", "Direciona a luz ao campo."), ("Objeto/campo", "Reflete parte da luz."), ("Óptica", "Coleta e forma imagem."), ("Foco/ampliação", "Ajusta nitidez e campo."), ("Ocular/câmera", "Permite observação ou captura."), ("Mecânica", "Mantém alinhamento e posicionamento.")],
+        "subsistemas": {"Iluminação": ["fonte","driver","guia óptico"], "Óptico": ["objetivas","oculares","lentes"], "Foco/Ampliação": ["mecanismo","engrenagens","seletores"], "Mecânico": ["braço","suporte","articulações"], "Imagem Digital": ["câmera","sensor","cabo","software"]},
+        "relacoes": [("Fonte de luz","Campo","ilumina"),("Campo","Lentes","fornece luz refletida"),("Lentes","Foco","formam imagem"),("Foco","Ocular/Câmera","entrega imagem nítida"),("Braço","Sistema óptico","mantém posicionamento")],
+        "diagrama": """FONTE DE LUZ → ILUMINAÇÃO → CAMPO
+                              ↓
+CAMPO → LUZ REFLETIDA → LENTES → FOCO/AMPLIAÇÃO → OCULAR/CÂMERA
+                                                        ↓
+                                                     IMAGEM""",
+        "falhas": {"Iluminação": ["Campo escuro", "Intensidade irregular"], "Óptico": ["Imagem turva", "Sujeira/dano"], "Foco/Ampliação": ["Não focaliza", "Ampliação irregular"], "Mecânico": ["Folga", "Instabilidade", "Desalinhamento"], "Imagem Digital": ["Sem imagem na tela", "Artefatos digitais"]},
+        "testes": [("Imagem direta está boa e digital ruim?", "Separar cadeia óptica de câmera/software."), ("A nitidez muda com distância de trabalho?", "Investigar foco/posicionamento antes de assumir defeito óptico."), ("Iluminação muda sem alterar foco?", "Separar subsistema de iluminação."), ("Há folga mecânica?", "Instabilidade pode simular problema óptico.")],
+        "arvore": """IMAGEM RUIM
+├── Iluminação adequada?
+│   ├── Não → fonte/driver/caminho óptico
+│   └── Sim → foco correto?
+│             ├── Não → posicionamento/mecanismo
+│             └── Sim → lente limpa/íntegra?
+│                       ├── Não → procedimento de limpeza autorizado
+│                       └── Sim → alinhamento/câmera/óptica especializada""",
+        "validacao": ["Iluminação uniforme", "Foco e ampliação funcionais", "Imagem estável", "Movimento mecânico sem folgas anormais", "Captura digital, quando aplicável"]
+    }
+}
+
+def render_fisica_avancada(info):
+    st.markdown(info["fisica"])
+
+def render_funcionamento_interno(info):
+    st.markdown("## Funcionamento interno passo a passo")
+    for i, (etapa, descricao) in enumerate(info["interno"], 1):
+        with st.expander(f"{i}. {etapa}", expanded=(i == 1)):
+            st.write(descricao)
+
+def render_mapa_subsistemas(info):
+    st.markdown("## Mapa de subsistemas")
+    for subsistema, itens in info["subsistemas"].items():
+        st.markdown(f"### 🔹 {subsistema}")
+        st.markdown(" → ".join(itens))
+
+def render_componentes_interativos(componentes):
+    st.markdown("## Componentes interativos")
+    st.caption("Clique em cada componente para abrir sua função e relação com o diagnóstico.")
+    for nome, funcao, diagnostico in componentes:
+        with st.expander(f"🔧 {nome}"):
+            st.markdown(f"**Função:** {funcao}")
+            st.markdown(f"**Impacto diagnóstico:** {diagnostico}")
+
+def render_relacoes(info):
+    st.markdown("## Relação entre componentes")
+    for origem, destino, relacao in info["relacoes"]:
+        st.markdown(f"**{origem}** ── *{relacao}* ──▶ **{destino}**")
+
+def render_diagrama(info):
+    st.markdown("## Diagrama funcional")
+    st.code(info["diagrama"], language=None)
+
+def render_falhas_subsistema(info):
+    st.markdown("## Falhas organizadas por subsistema")
+    for subsistema, falhas in info["falhas"].items():
+        with st.expander(f"⚠️ {subsistema}"):
+            for falha in falhas:
+                st.markdown(f"- {falha}")
+
+def render_testes_hipoteses(info):
+    st.markdown("## Testes para diferenciar hipóteses")
+    for pergunta, interpretacao in info["testes"]:
+        st.markdown(f"**Teste/observação:** {pergunta}")
+        st.info(interpretacao)
+
+def render_arvore(info):
+    st.markdown("## Árvore de decisão")
+    st.code(info["arvore"], language=None)
+
+def render_validacao(info):
+    st.markdown("## Validação pós-manutenção")
+    st.warning("A validação deve seguir manual do fabricante, procedimento institucional, competência técnica e requisitos de segurança aplicáveis.")
+    for i, item in enumerate(info["validacao"], 1):
+        st.checkbox(item, key=f"valid_{item}")
+
+
 # ==========================================================
 # FUNÇÕES
 # ==========================================================
@@ -718,67 +1062,82 @@ def render_fluxo_ecg():
 
 def equipamento_page(nome, info):
     st.markdown(f'<div class="hero"><h1>{nome}</h1><h4>{info["tipo"]}</h4></div>', unsafe_allow_html=True)
-
     render_image(info)
+
+    avancado = TECNICO.get(nome)
 
     tabs = st.tabs([
         "📚 Visão geral",
-        "🧠 Como pensar",
-        "⚙️ Componentes",
-        "🔄 Funcionamento",
-        "⚡ Interferências/Física",
-        "🛠️ Problemas",
-        "🌳 Diagnóstico"
+        "⚛️ Princípios físicos",
+        "🔬 Funcionamento interno",
+        "🧩 Subsistemas",
+        "🔧 Componentes",
+        "🔗 Relações",
+        "📊 Diagrama funcional",
+        "⚠️ Falhas",
+        "🧪 Testes",
+        "🌳 Árvore de decisão",
+        "✅ Validação",
+        "🛠️ Biblioteca de problemas"
     ])
 
     with tabs[0]:
         st.markdown("## O que é e para que serve?")
         st.markdown(info["objetivo"])
-
-    with tabs[1]:
         st.markdown("## Desenvolvendo o raciocínio técnico")
         render_raciocinio(info["raciocinio"])
 
-    with tabs[2]:
-        st.markdown("## Componentes e função no diagnóstico")
-        render_componentes(info["componentes"])
+    with tabs[1]:
+        if avancado:
+            render_fisica_avancada(avancado)
+        if nome == "📈 Eletrocardiógrafo":
+            st.divider()
+            st.markdown(info["interferencia"])
 
-    with tabs[3]:
-        st.markdown("## Princípio de funcionamento")
+    with tabs[2]:
+        if avancado:
+            render_funcionamento_interno(avancado)
+        st.divider()
+        st.markdown("## Cadeia de funcionamento")
         st.markdown(info["principio"])
 
+    with tabs[3]:
+        if avancado:
+            render_mapa_subsistemas(avancado)
+
     with tabs[4]:
-        if nome == "📈 Eletrocardiógrafo":
-            st.markdown(info["interferencia"])
-        else:
-            st.markdown("""
-            ## Física aplicada ao diagnóstico
-
-            Um bom diagnóstico depende de entender qual tipo de energia o equipamento utiliza.
-
-            Pergunte:
-
-            - Existe energia elétrica?
-            - Existe conversão para calor?
-            - Existe movimento?
-            - Existe pressão?
-            - Existe fluxo?
-            - Existe transferência de calor?
-            - Existe sinal elétrico?
-            - Existe luz?
-            - Existe um sensor?
-
-            Depois siga a cadeia de transformação da energia.
-
-            **Energia entra → componente transforma → outro componente transmite →
-            sensor mede → controlador decide → resultado ocorre.**
-            """)
+        render_componentes_interativos(info["componentes"])
 
     with tabs[5]:
-        st.markdown("## Biblioteca de falhas")
+        if avancado:
+            render_relacoes(avancado)
+
+    with tabs[6]:
+        if avancado:
+            render_diagrama(avancado)
+
+    with tabs[7]:
+        if avancado:
+            render_falhas_subsistema(avancado)
+
+    with tabs[8]:
+        if avancado:
+            render_testes_hipoteses(avancado)
+
+    with tabs[9]:
+        if avancado:
+            render_arvore(avancado)
+
+    with tabs[10]:
+        if avancado:
+            render_validacao(avancado)
+
+    with tabs[11]:
+        st.markdown("## Biblioteca de problemas")
         busca = st.text_input(
             "🔎 Pesquisar",
-            placeholder="Ex.: vazamento, não aquece, ruído, temperatura..."
+            placeholder="Ex.: vazamento, não aquece, ruído, temperatura...",
+            key=f"busca_{nome}"
         ).lower()
 
         encontrados = []
@@ -792,16 +1151,11 @@ def equipamento_page(nome, info):
         else:
             escolha = st.selectbox(
                 "Selecione o problema",
-                [p["titulo"] for p in encontrados]
+                [p["titulo"] for p in encontrados],
+                key=f"problema_{nome}"
             )
             problema = next(p for p in encontrados if p["titulo"] == escolha)
             render_problema(problema)
-
-    with tabs[6]:
-        if nome == "📈 Eletrocardiógrafo":
-            render_fluxo_ecg()
-        else:
-            render_diagnostico(info)
 
 # ==========================================================
 # REGISTRO
