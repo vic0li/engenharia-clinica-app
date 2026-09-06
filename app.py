@@ -104,7 +104,7 @@ EQUIPAMENTOS_V3 = {
                 "como_funciona": "Quando a força exercida pela pressão interna excede a força pré-ajustada da mola ($F = P \cdot A$), a válvula abre instantaneamente, descarregando o vapor para a atmosfera.",
                 "principio_fisico": "Equilíbrio de forças mecânicas (Pressão x Pressão Elastómerica/Mola).",
                 "como_testar": "1. Acionamento manual da alavanca sob carga de pressão (se aplicável ao protocolo).\n2. Teste de bancada em bancada de aferição de válvulas para verificar a pressão exata de abertura e recalibração.",
-                "sintomas_falha": "Válvula "soprando" abaixo da pressão nominal de trabalho; válvula travada que não abre em sobrepressão extrema.",
+                "sintomas_falha": "Válvula soprando abaixo da pressão nominal de trabalho; válvula travada que não abre em sobrepressão extrema.",
                 "relacao_componentes": "Proteção mecânica final em paralelo com a câmara, independente do sistema eletrônico de controle."
             }
         },
