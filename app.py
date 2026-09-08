@@ -1,820 +1,1481 @@
-import json
-from datetime import datetime
-import pandas as pd
 import streamlit as st
 
+import pandas as pd
+
+from datetime import datetime
+
+import json
+
+
+
 # ==========================================================
-# ENGENHARIA CLÍNICA - GUIA DE CAMPO V5
+
+# ENGENHARIA CLÍNICA - GUIA DE CAMPO V2
+
 # Filosofia:
+
 # PRINCÍPIO FÍSICO → COMPONENTE → SINTOMA → HIPÓTESE
-# → TESTE → DIAGNÓSTICO → PROCEDIMENTO DE REPARO PASSO A PASSO → VALIDAÇÃO
+
+# → TESTE → CONCLUSÃO → CORREÇÃO AUTORIZADA → VALIDAÇÃO
+
 # ==========================================================
+
+
 
 st.set_page_config(
-    page_title="Engenharia Clínica | Guia de Campo Técnico V5",
+
+    page_title="Engenharia Clínica | Guia de Campo V4",
+
     page_icon="🩺",
+
     layout="wide",
+
     initial_sidebar_state="expanded",
+
 )
 
+
+
 # ----------------------------------------------------------
-# ESTILO — ALTO CONTRASTE / MODO TÉCNICO
+
+# ESTILO — ALTO CONTRASTE / LEGIBILIDADE
+
 # ----------------------------------------------------------
-st.markdown(
-    """
+
+st.markdown("""
+
 <style>
+
 /* Fundo geral */
+
 .stApp {
+
     background: #0f172a;
+
     color: #f8fafc;
+
 }
+
+
 
 /* Área principal */
+
 .main .block-container {
-    max-width: 1450px;
-    padding-top: 1.5rem;
+
+    max-width: 1400px;
+
+    padding-top: 2rem;
+
     padding-bottom: 3rem;
+
 }
 
-/* Texto */
+
+
+/* Texto: evita o problema de texto claro em fundo branco */
+
 h1, h2, h3, h4, h5, h6,
+
 p, li, label, .stMarkdown, .stMarkdown p, .stCaption {
+
     color: #f8fafc !important;
+
 }
+
+
 
 /* Cards personalizados */
+
 .hero {
+
     padding: 1.8rem;
-    border-radius: 16px;
-    background: linear-gradient(135deg, #1e293b, #0f766e);
+
+    border-radius: 18px;
+
+    background: linear-gradient(135deg, #172554, #0f766e);
+
     border: 1px solid #38bdf8;
+
     color: #ffffff !important;
-    margin-bottom: 1.2rem;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+
+    margin-bottom: 1rem;
+
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+
 }
+
 .hero h1, .hero h2, .hero h3, .hero p { color: #ffffff !important; }
 
+
+
 .concept {
+
     padding: 1rem;
+
     border-left: 5px solid #38bdf8;
-    background-color: #1e293b;
+
+    background-color: #172554;
+
     color: #f8fafc !important;
+
     border-radius: 8px;
+
     margin: 0.7rem 0;
+
 }
+
 .concept * { color: #f8fafc !important; }
 
-.tech-box {
-    padding: 1.2rem;
-    border-left: 5px solid #10b981;
-    background-color: #064e3b;
-    color: #ecfdf5 !important;
-    border-radius: 8px;
-    margin: 0.8rem 0;
-}
-.tech-box * { color: #ecfdf5 !important; }
+
 
 .warning-box {
+
     padding: 1rem;
+
     border-left: 5px solid #f59e0b;
+
     background-color: #422006;
+
     color: #fff7ed !important;
+
     border-radius: 8px;
-    margin: 0.8rem 0;
+
 }
+
 .warning-box * { color: #fff7ed !important; }
 
-.danger-box {
-    padding: 1rem;
-    border-left: 5px solid #ef4444;
-    background-color: #450a0a;
-    color: #fef2f2 !important;
-    border-radius: 8px;
-    margin: 0.8rem 0;
-}
-.danger-box * { color: #fef2f2 !important; }
+
 
 /* Expansores */
+
 details {
+
     background-color: #1e293b !important;
+
     border: 1px solid #475569 !important;
+
     border-radius: 10px !important;
-    margin-bottom: 0.6rem !important;
+
+    margin-bottom: 0.5rem !important;
+
 }
+
 details summary, details p, details div { color: #f8fafc !important; }
 
+
+
 /* Inputs e selectbox */
+
 .stSelectbox > div > div,
+
 .stTextInput input,
+
 .stTextArea textarea {
+
     background-color: #1e293b !important;
+
     color: #ffffff !important;
+
     border-color: #64748b !important;
+
 }
+
+
 
 /* Tabs */
+
 button[data-baseweb="tab"] {
+
     color: #cbd5e1 !important;
+
     font-weight: 600 !important;
-    font-size: 1.05rem !important;
+
 }
+
 button[data-baseweb="tab"][aria-selected="true"] {
-    color: #38bdf8 !important;
-    border-bottom-color: #38bdf8 !important;
+
+    color: #ffffff !important;
+
 }
+
+
 
 /* Sidebar */
+
 section[data-testid="stSidebar"] {
+
     background-color: #111827 !important;
-}
-section[data-testid="stSidebar"] * {
-    color: #f8fafc !important;
+
 }
 
-/* Dataframes */
-.stDataFrame, [data-testid="stDataFrame"] {
-    background-color: #1e293b !important;
+section[data-testid="stSidebar"] * {
+
+    color: #f8fafc !important;
+
 }
+
+
+
+/* Dataframes e tabelas */
+
+.stDataFrame, [data-testid="stDataFrame"] {
+
+    background-color: #1e293b !important;
+
+}
+
+
 
 /* Código e diagramas */
+
 pre, code {
+
     background-color: #020617 !important;
-    color: #38bdf8 !important;
-    font-size: 0.95rem !important;
+
+    color: #e2e8f0 !important;
+
 }
+
+
 
 /* Métricas */
+
 [data-testid="stMetric"] {
+
     background-color: #1e293b;
+
     border: 1px solid #475569;
+
     padding: 0.8rem;
+
     border-radius: 10px;
+
 }
+
+
+
+/* Alertas Streamlit */
+
+[data-testid="stAlert"] {
+
+    border-radius: 10px;
+
+}
+
 </style>
-""",
-    unsafe_allow_html=True,
-)
+
+""", unsafe_allow_html=True)
+
+
 
 # ==========================================================
-# BASE TÉCNICA E GUIAS DE REPARO TIPO IFIXIT
+
+# BASE TÉCNICA
+
 # ==========================================================
+
+
 
 EQUIPAMENTOS = {
-    "♨️ Autoclave": {
-        "tipo": "Esterilização por calor úmido sob pressão",
-        "objetivo": """
-A autoclave esteriliza artigos críticos via vapor saturado sob pressão. O processo exige o trinômio 
-**Temperatura x Pressão x Tempo**, além de remoção prévia de ar e vapor livre de gases não condensáveis.
+
+
+
+"♨️ Autoclave": {
+
+"tipo": "Esterilização por calor úmido",
+
+"imagem": None,
+
+"objetivo": """
+
+A autoclave é um equipamento utilizado para esterilizar artigos compatíveis por meio
+
+de vapor sob condições controladas. Seu objetivo não é simplesmente “esquentar o material”.
+
+O processo depende de uma combinação controlada de **tempo, temperatura, qualidade do vapor,
+
+remoção de ar e contato adequado entre vapor e carga**.
+
+
+
+Em odontologia, enfermagem e outras áreas da saúde, a esterilização adequada é uma barreira
+
+fundamental contra a transmissão de microrganismos por instrumentos e materiais.
+
 """,
-        "raciocinio": [
-            (
-                "1. Transferência Térmica",
-                "O vapor condensa na carga, liberando calor latente de vaporização (~2260 kJ/kg).",
-            ),
-            (
-                "2. Remoção de Ar",
-                "Ar atua como isolante térmico e impede o contato direto do vapor com o instrumental.",
-            ),
-            (
-                "3. Malha de Controle",
-                "Sensores PT100/NTC e transdutores de pressão informam a CLP/Placa Controladora.",
-            ),
-            (
-                "4. Cadeia de Falha",
-                "Identifique se o problema é elétrico (potência/comando), pneumático/hidráulico (vedação/válvulas) ou de instrumentação.",
-            ),
-        ],
-        "principio": """
-### Fluxo de Trabalho e Potência
-**Rede Elétrica AC → Filtro EMI → Relé/SSR → Resistência Tubular → Caldeira/Câmara → Válvula Solenóide → Exaustão**
+
+"raciocinio": [
+
+("1. O que precisa acontecer?",
+
+ "O calor precisa chegar de forma adequada às superfícies da carga durante tempo suficiente."),
+
+("2. Por que o vapor é importante?",
+
+ "O vapor condensa ao encontrar uma superfície mais fria e transfere grande quantidade de energia térmica."),
+
+("3. Por que o ar pode ser um problema?",
+
+ "Bolsões de ar podem dificultar o contato eficiente do vapor com determinadas superfícies."),
+
+("4. O que controla o processo?",
+
+ "Sensores fornecem informações ao controlador, que decide quando aquecer, manter condições e finalizar etapas."),
+
+("5. Como pensar em uma falha?",
+
+ "Primeiro identifique em qual etapa o processo falha: alimentação, aquecimento, vedação, controle, sensores ou finalização.")
+
+],
+
+"principio": """
+
+### Cadeia de funcionamento
+
+
+
+**Energia elétrica → sistema de controle → aquecimento/geração de vapor →
+
+condicionamento da câmara → exposição da carga → exaustão → secagem, quando aplicável.**
+
+
+
+A arquitetura exata depende da marca e do modelo. Autoclaves compactas de bancada podem
+
+funcionar de forma diferente de autoclaves hospitalares de grande porte.
+
+
+
+⚠️ Portanto, não assuma que toda autoclave possui bomba de vácuo, osmose reversa ou
+
+gerador de vapor separado.
+
 """,
-        "componentes": [
-            (
-                "Câmara de Pressão",
-                "Vaso de pressão em aço inox (AISI 304/316L).",
-                "Deformações ou microfissuras invalidam o vaso.",
-            ),
-            (
-                "Gaxeta de Vedação",
-                "Anel de silicone elastomérico de alta temperatura.",
-                "Ressecamento ou rasgos causam fuga de pressão.",
-            ),
-            (
-                "Resistência Elétrica",
-                "Elemento blindado de imersão/contato.",
-                "Pode abrir circuito ou apresentar fuga para terra (massa).",
-            ),
-            (
-                "Válvula Solenóide",
-                "Válvula de controle de exaustão/água (NC/NO).",
-                "Obstrução por incrustação de calcário/sujeira.",
-            ),
-            (
-                "Sensor PT100",
-                "Termorresistência de platina para leitura precisa.",
-                "Descalibração ou rompimento do spiro.",
-            ),
-            (
-                "Válvula de Segurança",
-                "Dispositivo mecânico de alívio por sobrepressão.",
-                "Travamento por oxidação ou mola fadigada.",
-            ),
-        ],
-        "problemas": [
-            {
-                "titulo": "Vazamento de vapor na porta",
-                "sintoma": "Vazamento visível ou ruído de escape de vapor na borda do fecho durante a pressurização.",
-                "cadeia": "Pressão da câmara → Vedação mecânica da gaxeta → Ajuste de fecho da porta.",
-                "causas": [
-                    "Gaxeta impregnada com sujidade ou ressecada",
-                    "Gaxeta montada no sentido invertido",
-                    "Desalinhamento da trava mecânica da porta",
-                    "Superfície da borda da câmara oxidada/danificada",
-                ],
-                "passos_diagnostico": [
-                    "Aguardar despressurização total e resfriamento abaixo de 40°C.",
-                    "Inspecionar a gaxeta visualmente sob iluminação focalizada.",
-                    "Verificar presença de deformação permanente no silicone.",
-                ],
-                "guia_reparo_passo_a_passo": {
-                    "dificuldade": "Intermediário",
-                    "ferramentas": [
-                        "Chave Allen / Torx",
-                        "Álcool Isopropílico 99%",
-                        "Pano livre de fiapos",
-                        "Gaxeta de reposição original (Silicone)",
-                        "Graxa de silicone atóxica de alta temperatura",
-                    ],
-                    "passos": [
-                        "**Passo 1 (Isolamento Energético):** Desconecte o equipamento da tomada de rede elétrica e garanta manômetro em ZERO bar.",
-                        "**Passo 2 (Remoção do Vedante):** Com auxílio de uma espátula plástica (não use chave de fenda para não riscar o inox), remova a gaxeta antiga da canaleta da porta.",
-                        "**Passo 3 (Higienização do Assento):** Limpe profundamente a cavidade da canaleta utilizando pano umedecido em álcool isopropílico até remover resíduos endurecidos.",
-                        "**Passo 4 (Instalação da Nova Gaxeta):** Aplique uma camada microscópica de graxa de silicone atóxica na nova gaxeta. Insira-a na câmara iniciando pelos 4 pontos cardeais (12h, 6h, 9h, 3h) para garantir distribuição uniforme do elastômero sem esticar.",
-                        "**Passo 5 (Ajuste Mecânico do Fecho):** Caso o vazamento persista, ajuste a porca micrométrica de pressão do fecho/trinco da porta com chave adequada, incrementando 1/4 de volta até obter resistência adequada ao fechar.",
-                        "**Passo 6 (Validação e Teste de Estanqueidade):** Execute um ciclo completo de teste a vazio a 134°C. Monitore com detector visual ou sabão neutro nas bordas. Verifique a ausência de quedas de pressão na fase de esterilização.",
-                    ],
-                    "seguranca": "Risco de queimadura severa e projeção de vapor sob pressão. NUNCA tente ajustar trincos com a câmara pressurizada.",
-                },
-            },
-            {
-                "titulo": "Liga o painel, mas não aquece",
-                "sintoma": "Display ativo, ciclo iniciado, porém a temperatura permanece ambiente e não há geração de pressão.",
-                "cadeia": "Comando CLP → Relé/SSR → Termostato de Segurança → Resistência Tubular.",
-                "causas": [
-                    "Termostato rearmável (Bimetálico) disparado",
-                    "Resistência elétrica queimada (Circuito Aberto)",
-                    "Relé de Estado Sólido (SSR) ou Relé de Potência defeituoso",
-                    "Sensor de nível de água não detecta água na câmara",
-                ],
-                "passos_diagnostico": [
-                    "Verificar status dos LEDs indicadores de acionamento de resistência na placa.",
-                    "Testar se o termostato de segurança mecânico abriu o circuito.",
-                ],
-                "guia_reparo_passo_a_passo": {
-                    "dificuldade": "Avançado",
-                    "ferramentas": [
-                        "Multímetro Digital True RMS com pontas de prova",
-                        "Alicate amperímetro",
-                        "Chave de fenda/Phillips isolada 1000V",
-                        "Resistência de substituição",
-                    ],
-                    "passos": [
-                        "**Passo 1 (Desconexão da Rede):** Desligue a autoclave do disjuntor principal e retire o cabo da tomada.",
-                        "**Passo 2 (Teste do Termostato de Proteção):** Localize o termostato bimetálico rearmável no fundo da câmara. Pressione o pino central de reset até ouvir um 'click'. Meça a continuidade com o multímetro (deve indicar < 1 Ohm).",
-                        "**Passo 3 (Medição da Resistência Elétrica):** Desconecte os terminais elétricos da resistência. Com o multímetro na escala de Resistência (Ω), meça o valor entre os terminais. (Exemplo: para 1200W/220V, o valor esperado é ~40 Ohms). Se indicar 'OL' ou resistência infinita, a resistência está queimada e deve ser substituída.",
-                        "**Passo 4 (Teste de Fuga para a Massa):** Meça a resistência entre cada terminal da resistência e a carcaça de aterramento. O valor deve ser maior que 10 MΩ. Se houver continuidade, substitua a resistência devido ao risco de choque elétrico.",
-                        "**Passo 5 (Verificação do Acionamento SSR/Relé):** Energize o equipamento com cuidado. Na fase de aquecimento, meça com o multímetro em VCA a tensão na saída do relé/SSR para a resistência. Se houver tensão de entrada no relé mas não houver saída, substitua o relé defeituoso.",
-                        "**Passo 6 (Montagem e Teste de Corrente):** Reconecte os terminais isolados. Ligue o equipamento e utilize um alicate amperímetro no condutor fase da resistência para confirmar o consumo de corrente nominal durante o aquecimento.",
-                    ],
-                    "seguranca": "Perigo de choque elétrico em alta tensão (220V/110V) e alta corrente. Testes com equipamento energizado devem ser executados apenas com EPIS adequados.",
-                },
-            },
-        ],
-    },
-    "📈 Eletrocardiógrafo": {
-        "tipo": "Aquisição e amplificação de biopotenciais elétricos",
-        "objetivo": """
-Capturar biopotenciais bioelétricos cardíacos na ordem de 0.5mV a 5mV através de eletrodos de superfície, 
-rejeitando ruídos de modo comum de 60Hz da rede elétrica e ruídos miográficos.
-""",
-        "raciocinio": [
-            (
-                "1. Biopotencial",
-                "O sinal elétrico é captado por reações de óxido-redução na interface Ag/AgCl do eletrodo.",
-            ),
-            (
-                "2. Rejeição de Modo Comum (CMRR)",
-                "Amplificadores de instrumentação (ex: INA128) exigem alto CMRR (>100dB) para eliminar 60Hz.",
-            ),
-            (
-                "3. Pernas/Drive de Perna Direita (DRD)",
-                "Circuito ativo que injeta o ruído em contra-fase no paciente para cancelar a interferência.",
-            ),
-            (
-                "4. Isolação Galvânica",
-                "Barreira optoacoplada ou transformador isolador para proteção do paciente (Parte Aplicada Tipo CF).",
-            ),
-        ],
-        "principio": """
-### Cadeia Analógica
-**Eletrodo Ag/AgCl → Cabo paciente → Proteção ESD/Defibrilador → Filtro Passa-Baixa Passive → Amplificador de Instrumentação → Isolação Galvânica → ADC → DSP**
-""",
-        "componentes": [
-            (
-                "Cabo de Paciente",
-                "Conjunto de condutores blindados com malha trançada.",
-                "Ruptura interna do cobre por dobramento excessivo.",
-            ),
-            (
-                "Eletrodos de Clipes/Ventosas",
-                "Sensores Ag/AgCl de contato direto.",
-                "Oxidação do banho de prata gerando ruído offset.",
-            ),
-            (
-                "Circuito de Proteção contra Desfibrilação",
-                "Lâmpadas neon / Diodos TVS de corte de surto.",
-                "Curto-circuito após absorver choque de desfibrilador.",
-            ),
-            (
-                "Amplificador de Instrumentação",
-                "CI de alta impedância de entrada (>10 MΩ).",
-                "Dano por descarga eletrostática (ESD).",
-            ),
-        ],
-        "problemas": [
-            {
-                "titulo": "Traçado com ruído excessivo de 60Hz / Linha de base grossa",
-                "sintoma": "Interferência senoidal contínua de alta frequência saturando a visualização do complexo QRS.",
-                "cadeia": "Pele do Paciente → Impedância do Eletrodo → Blindagem do Cabo → Circuito DRL → Aterramento.",
-                "causas": [
-                    "Aterramento elétrico da tomada ausente ou deficiente",
-                    "Geleira/sujeira acumulada nos conectores das garras/clipes",
-                    "Ruptura da malha de blindagem do cabo de paciente",
-                    "Cabo do paciente correndo em paralelo a cabos de rede elétrica de 220V",
-                ],
-                "passos_diagnostico": [
-                    "Desconectar o cabo do paciente e conectar um Simulador de ECG homologado.",
-                    "Observar se o ruído desaparece com o simulador.",
-                ],
-                "guia_reparo_passo_a_passo": {
-                    "dificuldade": "Fácil a Intermediário",
-                    "ferramentas": [
-                        "Simulador de ECG / Paciente",
-                        "Multímetro com escala de continuidade",
-                        "Lixa d'água bem fina (Grão 1200) ou palha de aço",
-                        "Álcool Isopropílico",
-                        "Analisador de Segurança Elétrica",
-                    ],
-                    "passos": [
-                        "**Passo 1 (Descarte do Ambiente/Aterramento):** Ligue o equipamento em uma tomada aterrada confirmada. Teste o neutro e terra da tomada com multímetro (diferença de potencial Neutro-Terra deve ser < 2VCA).",
-                        "**Passo 2 (Limpeza dos Contatos de Eletrodos):** Se o ruído for no paciente, limpe os eletrodos metálicos de ventosa/clipe com álcool isopropílico. Se houver camada de oxidação escura, passe levemente a lixa grão 1200 para expor a camada condutora.",
-                        "**Passo 3 (Teste de Continuidade do Cabo de Paciente):** Desconecte o cabo de paciente do ECG. Com o multímetro na escala de continuidade (bip), meça cabo a cabo: do pino do conector DB15/DB25 até a ponta de banana/clipe correspondente (ex: RA, LA, LL, V1-V6). O valor deve ser próximo de 0 Ohms ou ~1kΩ a 10kΩ caso haja resistor de proteção interno anti-desfibrilação no cabo.",
-                        "**Passo 4 (Teste da Blindagem):** Meça a continuidade entre o pino do conector referente à blindagem (shield) e a malha do cabo. Se houver interrupção da blindagem, substitua o cabo completo por um novo cabo blindado.",
-                        "**Passo 5 (Teste com Simulador e Validação):** Conecte o cabo ao Simulador de ECG e configure um sinal padrão de 1mV a 60 BPM. Selecione filtros de rede (Filtro Notch 60Hz ligado). Confirme um traçado limpo sem flutuações de linha de base.",
-                    ],
-                    "seguranca": "Garantir isolamento elétrico total conforme norma ABNT NBR IEC 60601-1 / CF para evitar correntes de fuga no paciente.",
-                },
-            }
-        ],
-    },
-    "💨 Compressor": {
-        "tipo": "Geração e armazenamento de energia pneumática isenta de óleo",
-        "objetivo": """
-Comprimir ar atmosférico limpo e seco para alimentar consultórios e equipamentos pneumáticos sem contaminação por lubrificantes.
-""",
-        "raciocinio": [
-            (
-                "1. Admissão e Compressão",
-                "O pistão com anel de teflon reduz o volume do cilindro aumentando a pressão.",
-            ),
-            (
-                "2. Retenção",
-                "Válvulas unidirecionais impedem o retorno do ar comprimido do reservatório para o cabeçote.",
-            ),
-            (
-                "3. Pressostato",
-                "Interruptor pressórico comuta os contatos do motor entre a pressão de liga (ex: 80 PSI) e desliga (ex: 120 PSI).",
-            ),
-            (
-                "4. Drenagem de Umidade",
-                "O processo de compressão condensa a umidade do ar, exigindo purga periódica.",
-            ),
-        ],
-        "principio": """
-### Cadeia Pneumática
-**Filtro de Ar → Válvula de Admissão → Cilindro/Pistão → Válvula de Descarga → Válvula de Retenção → Reservatório (Vaso de Pressão) → Pressostato → Regulador/Filtro Coalescente**
-""",
-        "componentes": [
-            (
-                "Pressostato",
-                "Dispositivo eletromecânico ajustável de acionamento.",
-                "Descalibração da mola ou contatos elétricos carbonizados.",
-            ),
-            (
-                "Válvula de Retenção",
-                "Válvula de sentido único na entrada do tanque.",
-                "Vedações de borracha desgastadas deixando retornar ar.",
-            ),
-            (
-                "Anel de Pistão (PTFE/Teflon)",
-                "Vedação mecânica do pistão sem óleo.",
-                "Desgaste por abrasão reduzindo a capacidade de vazão.",
-            ),
-            (
-                "Capacitor de Partida",
-                "Componente elétrico que cria o defasamento para partida do motor monofásico.",
-                "Perda de capacitância (microfarads abaixo do nominal).",
-            ),
-        ],
-        "problemas": [
-            {
-                "titulo": "Motor murmura (ronca), mas não consegue dar partida",
-                "sintoma": "Ao cair a pressão, o motor tenta ligar, produz um zumbido grave e desarma o protetor térmico após alguns segundos.",
-                "cadeia": "Pressostato → Capacitor de Partida → Enrolamento Auxiliar → Motor elétrico → Contra-pressão da Válvula de Retenção.",
-                "causas": [
-                    "Capacitor de partida/marcha esgotado ou queimado",
-                    "Válvula de retenção presa aberta (deixando pressão travada no cabeçote)",
-                    "Válvula de alívio/despressurização do pressostato travada",
-                    "Baixa tensão de alimentação na rede elétrica (queda de tensão abaixo de 10%)",
-                ],
-                "passos_diagnostico": [
-                    "Efetuar medição da tensão da tomada sob carga.",
-                    "Despressurizar completamente o reservatório e tentar ligar.",
-                ],
-                "guia_reparo_passo_a_passo": {
-                    "dificuldade": "Intermediário",
-                    "ferramentas": [
-                        "Multímetro com Capacímetro",
-                        "Chave de boca / Chave inglesa",
-                        "Alicate Amperímetro",
-                        "Capacitor de reposição (mesmo valor em µF e Volts)",
-                        "Veda-rosca (Fita PTFE)",
-                    ],
-                    "passos": [
-                        "**Passo 1 (Despressurização e Desconexão):** Abra o dreno do reservatório até zerar o manômetro de pressão. Desconecte o compressor da energia.",
-                        "**Passo 2 (Diagnóstico da Válvula de Retenção):** Se o compressor consegue dar partida com o tanque em ZERO PSI, mas falha quando o tanque tem pressão, a Válvula de Retenção está defeituosa. Desmonte a válvula na entrada do tanque, limpe o disco de vedação interno de nitrila e substitua a mola de retorno.",
-                        "**Passo 3 (Teste do Capacitor de Partida):** Abra a caixa de ligação do motor. Descarregue o capacitor encostando uma chave com cabo isolado nos dois terminais. Desconecte ao menos um terminal do capacitor. Configure o multímetro na função Capacímetro (µF). Meça o valor e compare com o rótulo do componente (ex: 45µF ±5%). Se o valor medido for inferior a 10% do nominal, substitua o capacitor.",
-                        "**Passo 4 (Substituição do Capacitor):** Instale o novo capacitor respeitando a isolação dos terminais. Garanta conexões firmes.",
-                        "**Passo 5 (Teste da Válvula de Alívio do Pressostato):** Quando o compressor desliga ao atingir a pressão máxima, ouve-se um pequeno espirro de ar ('psssht') perto do pressostato. Esse espirro é a liberação de ar da linha entre o cabeçote e a retenção. Se não ocorrer esse espirro, substitua a micro-válvula de alívio do pressostato.",
-                        "**Passo 6 (Teste e Monitoramento de Amperagem):** Energize o compressor. Ligue-o e meça a corrente de partida e de trabalho no condutor fase utilizando o alicate amperímetro. Confirme se a corrente permanece dentro da corrente nominal (In) da plaqueta do motor.",
-                    ],
-                    "seguranca": "Reservatórios são vasos de pressão sujeitos a riscos de explosão por fadiga ou sobrepressão. NUNCA altere o lacre da válvula de segurança mecânica.",
-                },
-            }
-        ],
-    },
-    "❄️ Câmara fria / Câmara de vacina": {
-        "tipo": "Conservação térmica controlada de insumos imunobiológicos (2°C a 8°C)",
-        "objetivo": """
-Manter a temperatura homogênea no interior da câmara dentro da faixa restrita de 2.0°C a 8.0°C, 
-com sistema de emergência, registrador de dados (datalogger) e autonomia em caso de queda de energia.
-""",
-        "raciocinio": [
-            (
-                "1. Mudança de Fase",
-                "O fluido refrigerante (ex: R134a/R600a) absorve calor na evaporação e rejeita calor na condensação.",
-            ),
-            (
-                "2. Homogeneidade",
-                "Forçadores de ar com ventiladores axiais mantêm a temperatura idêntica em todas as prateleiras.",
-            ),
-            (
-                "3. Degelo Inteligente (Defrost)",
-                "Ciclos de degelo por resistência ou gás quente evitam o bloqueio do evaporador por acúmulo de gelo.",
-            ),
-            (
-                "4. Calibração do Sensor",
-                "Sensores em poço termo-amortecido (solução de glicol) simulam a temperatura real do frasco de vacina.",
-            ),
-        ],
-        "principio": """
-### Cadeia de Refrigeração e Controle
-**Compressor Hermético → Condensador Aletado → Filtro Secador → Tubo Capilar / Válvula de Expansão → Evaporador → Linha de Sucção → Sensor PT100/NTC → Microprocessador PID**
-""",
-        "componentes": [
-            (
-                "Compressor Hermético",
-                "Bomba do fluido refrigerante.",
-                "Perda de rendimento mecânico (compressão fraca) ou travamento.",
-            ),
-            (
-                "Microcontrolador / Termostato PID",
-                "Cérebro eletrônico do equipamento.",
-                "Desalinhamento de parâmetros PID ou falha nos relés de comando.",
-            ),
-            (
-                "Sensor de Temperatura NTC/PT100",
-                "Elemento sensor imerso em solução neutra.",
-                "Deriva térmica (sensor 'mentindo' a temperatura real).",
-            ),
-            (
-                "Micro-motor Evaporador",
-                "Ventilador forçador de ar interno.",
-                "Queima do enrolamento ou travamento por bucha gasta.",
-            ),
-        ],
-        "problemas": [
-            {
-                "titulo": "Temperatura subindo acima de 8.0°C / Alarme de Alta Temperatura",
-                "sintoma": "Display indicando subida gradual de temperatura (ex: 10.5°C) e alarme sonoro ativado.",
-                "cadeia": "Carga Térmica → Ventilação Evaporador → Troca Térmica no Condensador → Fluido Refrigerante → Compressor.",
-                "causas": [
-                    "Sujeira/poeira acumulada bloqueando as aletas do condensador externo",
-                    "Bloqueio de gelo no evaporador interno por falha no degelo",
-                    "Microvazamento de gás refrigerante no sistema selado",
-                    "Gaxeta magnética da porta danificada permitindo entrada de ar quente",
-                ],
-                "passos_diagnostico": [
-                    "Transferir IMEDIATAMENTE as vacinas para caixa térmica de transporte com gelo reciclável e termômetro calibrado.",
-                    "Inspecionar a colmeia do condensador.",
-                ],
-                "guia_reparo_passo_a_passo": {
-                    "dificuldade": "Avançado",
-                    "ferramentas": [
-                        "Manômetro de Refrigeração (Manifold para R134a/R600a)",
-                        "Pincel macio / Aspirador de pó / Ar comprimido",
-                        "Termômetro Padrão Calibrado (Inmetro)",
-                        "Detector de vazamento de fluido refrigerante",
-                        "Multímetro",
-                    ],
-                    "passos": [
-                        "**Passo 1 (Plano de Contingência de Vacinas):** Transfira 100% da carga para recipiente térmico adequado mantendo a cadeia de frio antes de qualquer intervenção.",
-                        "**Passo 2 (Limpeza do Condensador):** Remova a grade traseira/inferior. Com um pincel macio e aspirador de pó, limpe completamente o pó e fiapos acumulados nas aletas de alumínio do condensador. A sujeira impede a troca térmica e faz o compressor esquentar e desarmar por protetor térmico.",
-                        "**Passo 3 (Verificação do Bloqueio de Gelo):** Abra o gabinete e verifique a hélice do ventilador do evaporador. Se houver placa de gelo cobrindo as aletas do evaporador, execute um degelo forçado ou utilize soprador térmico em baixa temperatura para derreter o gelo. Inspecione a resistência de degelo com o multímetro.",
-                        "**Passo 4 (Verificação da Pressão de Gás):** Com o compressor ligado, conecte a mangueira de baixa do Manifold na válvula de serviço (Schrader). Verifique se a pressão de sucção está dentro do especificado pelo fabricante (Ex: para R134a, normalmente entre 0 a 12 PSI dependendo do evaporador). Pressão negativa (vácuo) indica vazamento ou obstrução no tubo capilar.",
-                        "**Passo 5 (Teste do Sensor e Calibração):** Coloque a ponta do termômetro padrão calibrado junto ao sensor da câmara dentro do poço de glicol. Aguarde 15 minutos. Compare a leitura do display com a leitura do padrão. Caso haja diferença > 0.5°C, acesse o menu técnico do controlador e ajuste o parâmetro de OFFSET de temperatura.",
-                        "**Passo 6 (Validação do Ciclo de Historiador):** Realize um teste de qualificação térmica por no mínimo 4 horas, verificando a estabilidade no gráfico do datalogger entre 2.0°C e 8.0°C antes de liberar para o uso da enfermagem.",
-                    ],
-                    "seguranca": "Fluidos refrigerantes tipo R600a (Isobutano) são altamente inflamáveis. Exigem cuidados extremoz contra faíscas durante soldagem/manutenção.",
-                },
-            }
-        ],
-    },
-    "🩸 Esfigmomanômetro": {
-        "tipo": "Medição não invasiva de pressão arterial (NIBP / NIPB)",
-        "objetivo": """
-Medir a Pressão Arterial Sistólica (PAS) e Diastólica (PAD) por meio de algoritmo oscilométrico, 
-detectando as micro-oscilações de pressão geradas pela parede da artéria no manguito.
-""",
-        "raciocinio": [
-            (
-                "1. Pressão Dinâmica",
-                "A micro-bomba infla o manguito acima da pressão sistólica esperada estangulando o fluxo sanguíneo.",
-            ),
-            (
-                "2. Transdução Piezorresistiva",
-                "O sensor de pressão (ex: ponte de Wheatstone de silício) converte a pressão pneumática em mV elétrico.",
-            ),
-            (
-                "3. Filtro Analógico/Algoritmo",
-                "O circuito separa o sinal DC (pressão estática do manguito) do sinal AC (pulsos arteriais de 1Hz a 3Hz).",
-            ),
-            (
-                "4. Deflação Controlada",
-                "A válvula solenóide de sangria libera a pressão a uma taxa linear de 2 a 3 mmHg por segundo.",
-            ),
-        ],
-        "principio": """
-### Cadeia do Módulo NIBP
-**Manguito/Bolsa de Borracha → Acoplamento Rápido → Tubo Pneumático → Sensor Piezoelétrico → Amplificador Operacional → Micro-Bomba DC → Válvula Solenóide de Escorva → Processador**
-""",
-        "componentes": [
-            (
-                "Bolsa Inflável (Bladder)",
-                "Bolsa de elastômero vulcanizado dentro do manguito de velkro.",
-                "Micro-furos por ressecamento ou dobra continuada.",
-            ),
-            (
-                "Sensor de Pressão Silício",
-                "Transdutor piezorresistivo de alta precisão.",
-                "Deriva de Zero (Zero Offset drift) requerendo calibração.",
-            ),
-            (
-                "Micro-Válvula de Sangria",
-                "Solenóide de controle proporcional de vazão.",
-                "Entrada de fiapos da fita velcro travando o embolo.",
-            ),
-            (
-                "Conector Engate Rápido",
-                "Conexão macho/fêmea de encaixe do tubo.",
-                "Anel O-Ring interno cortado ou ausente.",
-            ),
-        ],
-        "problemas": [
-            {
-                "titulo": "Erro de Vazamento / Não consegue pressurizar (Erro de Deflação)",
-                "sintoma": "A bomba funciona por longo período, a pressão no display sobe devagar ou aborta exibindo mensagem 'ERROR 1' / 'LEAK'.",
-                "cadeia": "Comando de Bomba → Conectores Pneumáticos → Tubulação Interna → Manguito → Válvula de Exaustão.",
-                "causas": [
-                    "Bolsa de borracha interna do manguito furada",
-                    "Anel de vedação O-ring do conector de engate rápido danificado",
-                    "Tubo de silicone interno desconectado da placa principal",
-                    "Válvula solenóide com sujeira no assento de vedação",
-                ],
-                "passos_diagnostico": [
-                    "Conectar um manômetro digital calibrado / Analisador de NIBP para teste de decaimento de pressão (Pneumatic Leak Test).",
-                ],
-                "guia_reparo_passo_a_passo": {
-                    "dificuldade": "Fácil a Intermediário",
-                    "ferramentas": [
-                        "Analisador de PNI / Manômetro Digital de Precisão",
-                        "Seringa de 60ml ou Pera de insuflação com válvula",
-                        "Recipiente com água e sabão (para teste de bolhas)",
-                        "O-rings de reposição de silicone",
-                        "Chave de precisão para abertura de gabinete",
-                    ],
-                    "passos": [
-                        "**Passo 1 (Isolamento do Problema - Manguito vs Equipamento):** Desconecte o manguito do monitor. Conecte um manguito novo/testado ou um reservatório rígido de 500ml (simulador). Se o problema sumir, o defeito está no manguito/tubo do paciente.",
-                        "**Passo 2 (Teste de Estanqueidade do Manguito):** Remova a bolsa de borracha interna do tecido de velkro. Infle a bolsa até 150 mmHg utilizando uma pera de insuflação com manômetro. Submerja a bolsa em um recipiente com água limpa e observe o aparecimento de bolhas de ar. Se houver bolhas, substitua o refil da bolsa inflável.",
-                        "**Passo 3 (Inspecionar Engate Rápido):** Examine o interior do conector fêmea no painel do aparelho. Verifique se o anel de vedação (O-ring) está posicionado corretamente ou ressecado. Substitua o O-ring e aplique graxa de silicone atóxica.",
-                        "**Passo 4 (Teste de Decaimento Interno):** Se o manguito estiver perfeito, abra o gabinete do monitor. Conecte o analisador de NIBP na saída. Utilize o menu técnico do equipamento para entrar no 'SERVICE MODE / LEAK TEST'. O equipamento inflará o sistema até 250 mmHg e fechará as válvulas. Aguarde 60 segundos. O decaimento de pressão NÃO deve exceder 5 mmHg em 1 minuto.",
-                        "**Passo 5 (Limpeza da Válvula Solenóide):** Se houver decaimento rápido interno, desconecte a mangueira da solenóide de exaustão. Aplique um jato de álcool isopropílico e ar comprimido seco através dos orifícios da válvula solenóide para remover poeira e fiapos retidos no embolo.",
-                        "**Passo 6 (Calibração e Zero Linear):** Após sanar o vazamento, execute a calibração de pressão estática utilizando o analisador de PNI em 50, 100, 150 e 200 mmHg, garantindo erro menor que ±3 mmHg em todos os pontos.",
-                    ],
-                    "seguranca": "Erros de medição de pressão arterial podem levar a diagnósticos incorretos de hipertensão ou hipotensão, impactando a medicação do paciente.",
-                },
-            }
-        ],
-    },
+
+"componentes": [
+
+("Câmara", "Recipiente onde a carga é processada. Deve suportar as condições térmicas e mecânicas previstas.", "Se houver problema estrutural ou perda de vedação, o ciclo pode não manter as condições necessárias."),
+
+("Resistência / sistema de aquecimento", "Transforma energia elétrica em energia térmica.", "Se o controlador solicita aquecimento mas a temperatura não sobe, investigue a cadeia de potência e o elemento de aquecimento."),
+
+("Sensor de temperatura", "Informa ao controlador a temperatura do sistema.", "Uma leitura incorreta pode fazer o sistema aquecer pouco, demais ou interromper o ciclo."),
+
+("Controle eletrônico", "Executa a lógica do ciclo com base em sensores e parâmetros.", "Uma falha de controle pode parecer falha de resistência, por isso é necessário separar comando de carga."),
+
+("Porta", "Fecha a câmara e integra o sistema de vedação.", "Desalinhamento pode produzir vazamento localizado."),
+
+("Gaxeta", "Promove vedação entre porta e câmara.", "Sujeira, ressecamento ou deformação podem permitir fuga de vapor."),
+
+("Trava/sistema de segurança", "Impede abertura em condições inseguras e confirma condição da porta.", "Falhas podem impedir o início do ciclo ou gerar alarmes."),
+
+("Válvulas", "Controlam ou protegem fluxos de vapor, água e pressão, conforme o modelo.", "Obstrução ou falha pode alterar pressão e comportamento do ciclo."),
+
+],
+
+"problemas": [
+
+{
+
+"titulo":"Vazamento de vapor na porta",
+
+"sintoma":"Escape de vapor ou água pela região da porta.",
+
+"cadeia":"Vedação depende de: geometria correta + força de fechamento adequada + gaxeta íntegra + superfície de contato adequada.",
+
+"causas":["Gaxeta suja ou danificada","Gaxeta deformada","Porta desalinhada","Fechamento com força desigual","Folga mecânica","Superfície de vedação danificada"],
+
+"passos":[
+
+"Retirar o equipamento de uso e aguardar resfriamento e despressurização completa.",
+
+"Registrar o ponto exato do vazamento.",
+
+"Verificar se o vazamento ocorre sempre no mesmo lado.",
+
+"Inspecionar visualmente toda a gaxeta.",
+
+"Comparar o lado que vaza com o lado que apresenta vedação adequada.",
+
+"Verificar alinhamento, folgas e mecanismo de fechamento conforme manual técnico.",
+
+"Executar apenas o ajuste previsto pelo fabricante.",
+
+"Realizar teste funcional e validar a vedação."
+
+],
+
+"nao_fazer":"Não usar martelo, anilhas ou deformação mecânica como procedimento genérico. O ajuste depende da geometria e do mecanismo específico do equipamento."
+
+},
+
+{
+
+"titulo":"Liga, mas não aquece",
+
+"sintoma":"Painel funciona, mas a temperatura não aumenta adequadamente.",
+
+"cadeia":"Para aquecer, é necessário: comando → elemento de acionamento → circuito de potência → resistência → transferência de calor → leitura correta do sensor.",
+
+"causas":["Resistência aberta ou degradada","Conexão defeituosa","Falha de relé/acionamento","Falha de comando","Sensor com leitura incorreta","Proteção térmica atuada"],
+
+"passos":[
+
+"Identificar em qual momento do ciclo o aquecimento deveria iniciar.",
+
+"Desenergizar e aguardar o equipamento resfriar.",
+
+"Consultar o diagrama elétrico específico do modelo.",
+
+"Separar duas hipóteses: o sistema não está mandando aquecer OU está mandando aquecer e a carga não responde.",
+
+"Verificar conectores e sinais visíveis de falha.",
+
+"Realizar os testes elétricos previstos pelo fabricante.",
+
+"Confirmar se a falha está no comando, na potência ou no elemento de aquecimento.",
+
+"Após a intervenção, validar o comportamento completo."
+
+],
+
+"nao_fazer":"Não fazer jumper permanente em termostatos, sensores ou dispositivos de segurança para 'testar'. Um componente de dois fios pode exercer função crítica de proteção."
+
+},
+
+{
+
+"titulo":"Não atinge a temperatura programada",
+
+"sintoma":"A temperatura sobe, mas não alcança o comportamento esperado.",
+
+"cadeia":"Pode haver geração insuficiente de calor, perda de energia, leitura errada ou controle inadequado.",
+
+"causas":["Aquecimento insuficiente","Vazamento","Sensor incorreto","Falha de alimentação","Falha de controle"],
+
+"passos":[
+
+"Confirmar o comportamento real e a configuração do ciclo.",
+
+"Verificar se existem vazamentos.",
+
+"Observar o tempo de subida de temperatura.",
+
+"Separar sensor → controle → acionamento → resistência.",
+
+"Utilizar instrumentos de teste adequados.",
+
+"Validar o ciclo após a correção."
+
+],
+
+"nao_fazer":"Não alterar parâmetros do ciclo para mascarar uma falha técnica."
+
 }
 
-# ==========================================================
-# INTERFACE STREAMLIT - ESTRUTURA DE TABS
-# ==========================================================
+]
 
-# Header
-st.markdown(
-    """
-<div class="hero">
-    <h1>🩺 Engenharia Clínica — Guia Técnico V5</h1>
-    <p>Manutenção Preventiva, Corretiva, Princípios Físicos e Manuais Práticos de Reparo (Padrão iFixit Medical)</p>
-</div>
+},
+
+
+
+"📈 Eletrocardiógrafo": {
+
+"tipo":"Aquisição de sinais bioelétricos cardíacos",
+
+"imagem":None,
+
+"objetivo":"""
+
+O eletrocardiógrafo registra diferenças de potencial elétrico relacionadas à atividade
+
+elétrica cardíaca. Ele não “mede a indução do coração” da mesma forma que um sensor
+
+indutivo mede um campo magnético.
+
+
+
+Os eletrodos fazem contato elétrico com o corpo e permitem medir diferenças de potencial
+
+entre pontos do corpo. O sistema eletrônico precisa amplificar sinais pequenos e rejeitar
+
+ruídos sem distorcer o traçado.
+
 """,
-    unsafe_allow_html=True,
-)
 
-# Seleção do Equipamento no Topo/Sidebar
-equip_selecionado = st.sidebar.selectbox(
-    "🔬 Selecione o Equipamento Médico:", list(EQUIPAMENTOS.keys())
-)
+"raciocinio":[
 
-dados_eq = EQUIPAMENTOS[equip_selecionado]
+("1. O coração gera atividade elétrica?",
 
-# Navegação Principal por Abas
-tab_conceito, tab_hardware, tab_problemas, tab_passo_a_passo, tab_ifixit = (
-    st.tabs(
-        [
-            "🧠 Princípio & Lógica",
-            "🧩 Hardware & Componentes",
-            "⚠️ Mapeamento de Defeitos",
-            "🛠️ Guia Técnico de Reparo Step-by-Step",
-            "📚 Integração iFixit & Documentação",
-        ]
-    )
-)
+ "Sim. A despolarização e a repolarização do tecido cardíaco produzem campos elétricos que resultam em diferenças de potencial detectáveis na superfície corporal."),
 
-# ----------------------------------------------------------
-# TAB 1: PRINCIPIO E LOGICA
-# ----------------------------------------------------------
-with tab_conceito:
-    st.header(f"Princípio de Funcionamento: {equip_selecionado}")
-    st.caption(f"Tipo: {dados_eq['tipo']}")
+("2. Como o ECG captura isso?",
 
-    st.markdown(
-        f"<div class='concept'>{dados_eq['objetivo']}</div>",
-        unsafe_allow_html=True,
-    )
+ "Por eletrodos em contato com a pele. O equipamento mede diferenças de potencial entre entradas."),
 
-    st.subheader("💡 Raciocínio Clínico e Físico de Diagnóstico")
-    col1, col2 = st.columns(2)
-    for i, (titulo, desc) in enumerate(dados_eq["raciocinio"]):
-        with col1 if i % 2 == 0 else col2:
-            st.info(f"**{titulo}**\n\n{desc}")
+("3. Por que o sinal é sensível?",
 
-    st.markdown(dados_eq["principio"])
+ "Porque os sinais de interesse são relativamente pequenos e o ambiente possui diversas fontes de interferência."),
 
-    if "interferencia" in dados_eq:
-        st.markdown(dados_eq["interferencia"])
+("4. O que o amplificador faz?",
 
-# ----------------------------------------------------------
-# TAB 2: HARDWARE E COMPONENTES
-# ----------------------------------------------------------
-with tab_hardware:
-    st.header(f"Anatomia de Hardware e Subsistemas: {equip_selecionado}")
-    st.write(
-        "Avaliação estrutural de componentes críticos para isolamento de falhas:"
-    )
+ "Amplifica principalmente a diferença entre entradas e busca rejeitar sinais comuns às duas entradas."),
 
-    df_comp = pd.DataFrame(
-        dados_eq["componentes"],
-        columns=["Componente / Subsistema", "Função Técnica", "Modo de Falha Comum"],
-    )
-    st.dataframe(df_comp, use_container_width=True, hide_index=True)
+("5. Como uma interferência aparece?",
 
-# ----------------------------------------------------------
-# TAB 3: MAPEAMENTO DE DEFEITOS
-# ----------------------------------------------------------
-with tab_problemas:
-    st.header(f"Sintomas, Cadeia Térmica/Elétrica e Causas Raiz")
+ "Um campo elétrico ou magnético externo pode acoplar energia aos cabos e circuitos, gerando sinais indesejados.")
 
-    for prob in dados_eq["problemas"]:
-        with st.expander(f"🔴 Defeito: {prob['titulo']}", expanded=True):
-            st.write(f"**Sintoma Clínico:** {prob['sintoma']}")
-            st.write(f"**Cadeia Funcional:** `{prob['cadeia']}`")
+],
 
-            st.subheader("Possíveis Causas Raiz:")
-            for c in prob["causas"]:
-                st.markdown(f"- {c}")
+"principio":"""
 
-            st.subheader("Passos Diagnósticos Iniciais:")
-            for p in prob["passos_diagnostico"]:
-                st.markdown(f"1. {p}")
+### Cadeia de aquisição
 
-# ----------------------------------------------------------
-# TAB 4: GUIA TECNICO DE REPARO PASSO A PASSO (NOVA ABA REQUISITADA)
-# ----------------------------------------------------------
-with tab_passo_a_passo:
-    st.header(
-        f"🛠️ Manual Técnico de Intervenção e Reparo Passo a Passo — {equip_selecionado}"
-    )
-    st.write(
-        "Procedimentos operacionais padrão (POP) focados em resolução física, substituição e calibração de componentes."
-    )
 
-    tem_guia = False
-    for prob in dados_eq["problemas"]:
-        if "guia_reparo_passo_a_passo" in prob:
-            tem_guia = True
-            guia = prob["guia_reparo_passo_a_passo"]
 
-            st.markdown(
-                f"--- \n### 🔧 Procedimento de Reparo para: *{prob['titulo']}*"
-            )
+**Atividade elétrica cardíaca → propagação pelo corpo → eletrodos →
 
-            # Dashboard de Informações do Reparo
-            m1, m2 = st.columns(2)
-            m1.metric("Nível de Dificuldade Técnico", guia["dificuldade"])
-            m2.metric("Componente Alvo", prob["titulo"].split()[-1].capitalize())
+cabos → proteção/isolação → amplificador diferencial → filtros →
 
-            st.markdown(
-                f"<div class='danger-box'><b>⚡ AVISO CRÍTICO DE SEGURANÇA E BPF:</b><br>{guia['seguranca']}</div>",
-                unsafe_allow_html=True,
-            )
+conversão/processamento → tela ou impressão.**
 
-            col_ferramentas, col_passos = st.columns([1, 2])
 
-            with col_ferramentas:
-                st.subheader("🧰 Ferramental & Insumos")
-                for f in guia["ferramentas"]:
-                    st.markdown(f"- {f}")
 
-            with col_passos:
-                st.subheader("📋 Roteiro de Execução Passo a Passo")
-                for passo in guia["passos"]:
-                    st.markdown(f"{passo}")
-                    st.markdown("---")
+### Ponto essencial: ECG ≠ leitura por indução
 
-    if not tem_guia:
-        st.warning(
-            "Selecione um equipamento com guia de instrução direta técnica disponível no menu lateral."
-        )
 
-# ----------------------------------------------------------
-# TAB 5: INTEGRAÇÃO IFIXIT & DOCUMENTAÇÃO
-# ----------------------------------------------------------
-with tab_ifixit:
-    st.header("📚 Referências do iFixit Medical Device e Manuais Técnicos")
-    st.markdown(
-        """
-    O repositório **iFixit Medical Device Project** é uma plataforma comunitária aberta de direito ao reparo (Right to Repair) 
-    que centraliza manuais de serviço, guias de desmontagem e solução de problemas para equipamentos médicos de diversas marcas.
-    """
-    )
 
-    st.markdown(
-        """
-    <div class='tech-box'>
-        <h4>🔗 Link Direto para o Portal iFixit Medical:</h4>
-        <p>Acesse os manuais originais de serviço e guias fotográficos desmontagem:</p>
-        <a href="https://pt.ifixit.com/Device/Medical_Device" target="_blank" style="color: #38bdf8; font-weight: bold; font-size: 1.1rem;">
-            🌐 https://pt.ifixit.com/Device/Medical_Device
-        </a>
-    </div>
-    """,
-        unsafe_allow_html=True,
-    )
+O ECG normalmente mede **biopotenciais por eletrodos**, e não utiliza um princípio
 
-    st.subheader("💡 Como Utilizar o Padrão iFixit em Ambientes Hospitalares:")
-    st.markdown(
-        """
-    1. **Identificação Amostral por Fotos:** Utilize a documentação visual do iFixit para verificar a localização exata de fusíveis internos, placas SMD e conectores pneumáticos antes da desmontagem.
-    2. **Ordem de Parafusos e Torques:** Siga o padrão iFixit organizando os parafusos retirados em organizadores magnéticos por tamanho e tipo (Torx, Phillips, Hexagonal) para evitar perfurações em placas de circuito.
-    3. **Proteção ESD (Descarga Eletrostática):** Sempre utilize pulseira ou manta antiestática com cabo de aterramento ao manusear placas mães e controladores de equipamentos médicos.
-    4. **Validação de Segurança Pós-Reparo (NBR IEC 60601-1):** Qualquer substituição de componente listada nos guias DEVE obrigatoriamente ser seguida por um ensaio de segurança elétrica (medindo correntes de fuga no chassis e partes aplicadas).
-    """
-    )
+de indução eletromagnética como mecanismo principal de aquisição.
 
-# Sidebar - Footer Info
-st.sidebar.markdown("---")
-st.sidebar.caption("Engenharia Clínica V5 | Padrão iFixit Medical Manual")
-st.sidebar.caption("Foco em Resolução Prática de Campo")
+
+
+Porém, a **indução eletromagnética pode explicar uma fonte de interferência**.
+
+São duas coisas diferentes:
+
+
+
+- **Sinal desejado:** diferença de potencial bioelétrica do paciente.
+
+- **Interferência indesejada:** tensão ou ruído induzido/coplado ao sistema.
+
+
+
+Essa diferença é fundamental para diagnosticar problemas.
+
+""",
+
+"componentes":[
+
+("Eletrodo","Cria a interface elétrica entre a pele e o sistema.","Mau contato aumenta impedância e facilita ruído e artefatos."),
+
+("Cabo do paciente","Transporta os sinais até o equipamento.","Funciona como possível caminho de captação de interferências."),
+
+("Amplificador diferencial","Amplifica a diferença entre sinais das entradas.","Ajuda a rejeitar sinais comuns, mas a rejeição não é infinita."),
+
+("Filtros","Reduzem faixas específicas de ruído.","Filtros inadequados ou excessivos podem alterar a interpretação do sinal."),
+
+("Sistema de isolação","Ajuda a manter a segurança elétrica do paciente.","Falhas exigem avaliação especializada e testes de segurança."),
+
+("Conversor/processador","Digitaliza e processa o sinal.","Falhas podem causar comportamento incorreto no registro."),
+
+],
+
+"interferencia":"""
+
+## Transformadores e interferência: qual é a relação?
+
+
+
+Um transformador utiliza **indução eletromagnética** para transferir energia entre enrolamentos.
+
+
+
+### Funcionamento simplificado
+
+
+
+**Corrente alternada no enrolamento primário → campo magnético variável no núcleo →
+
+fluxo magnético variável → tensão induzida no enrolamento secundário.**
+
+
+
+A relação com o ECG aparece porque campos eletromagnéticos externos podem produzir
+
+**acoplamento indesejado**.
+
+
+
+Isso pode ocorrer por:
+
+
+
+### 1. Acoplamento magnético
+
+Um campo magnético variável pode induzir tensão em um condutor. Cabos longos podem
+
+funcionar como uma área suscetível à captação.
+
+
+
+### 2. Acoplamento capacitivo
+
+Existe acoplamento por campo elétrico entre condutores próximos.
+
+
+
+### 3. Interferência conduzida
+
+Ruído pode chegar pela alimentação elétrica ou pelo aterramento.
+
+
+
+### 4. Loop de terra
+
+Diferenças de potencial entre pontos de aterramento podem criar correntes indesejadas.
+
+
+
+### Atenção ao caso da bancada metálica
+
+
+
+Uma bancada metálica **não deve ser automaticamente considerada a causa** de amplitudes
+
+anormais. O metal pode participar do ambiente eletromagnético e alterar caminhos de
+
+acoplamento, mas isso precisa ser demonstrado com teste controlado.
+
+
+
+O método correto é mudar **uma variável por vez**.
+
+""",
+
+"problemas":[
+
+{
+
+"titulo":"Traçado com ruído excessivo",
+
+"sintoma":"Linha instável, oscilação ou interferência.",
+
+"cadeia":"Paciente/eletrodo → cabo → ambiente → entrada analógica → processamento.",
+
+"causas":["Mau contato","Movimento","Eletrodos inadequados","Cabo danificado","Interferência de rede elétrica","Equipamentos próximos","Problema de aterramento"],
+
+"passos":[
+
+"Classificar visualmente o ruído: contínuo, periódico, aleatório ou relacionado ao movimento.",
+
+"Verificar eletrodos e preparação da pele conforme procedimento.",
+
+"Inspecionar cabos e conectores.",
+
+"Afastar possíveis fontes de interferência.",
+
+"Comparar o equipamento em outro ambiente.",
+
+"Quando disponível, utilizar simulador de ECG.",
+
+"Trocar uma variável por vez.",
+
+"Se o defeito persistir com simulador e em ambiente controlado, investigar o equipamento."
+
+],
+
+"nao_fazer":"Não concluir que um transformador ou bancada é a causa sem teste comparativo."
+
+},
+
+{
+
+"titulo":"Amplitude muito alta ou muito baixa",
+
+"sintoma":"Traçado aparentemente desregulado.",
+
+"cadeia":"Amplitude observada depende do sinal real + ganho configurado + qualidade da aquisição + possíveis artefatos.",
+
+"causas":["Ganho/configuração","Artefato","Problema de eletrodo","Cabo","Interferência","Falha do circuito de aquisição"],
+
+"passos":[
+
+"Verificar configuração de ganho.",
+
+"Registrar quais derivações são afetadas.",
+
+"Testar com simulador de ECG, quando disponível.",
+
+"Comparar com outro equipamento sob condições controladas.",
+
+"Trocar uma variável por vez: equipamento, cabo, ambiente, tomada.",
+
+"Somente após isolar causas externas, investigar a eletrônica interna."
+
+],
+
+"nao_fazer":"Não interpretar amplitude anormal diretamente como defeito de transformador interno."
+
+}
+
+]
+
+},
+
+
+
+"💨 Compressor": {
+
+"tipo":"Sistema pneumático",
+
+"imagem":None,
+
+"objetivo":"""
+
+O compressor converte energia elétrica em energia pneumática ao aumentar a pressão do ar.
+
+Em aplicações odontológicas, o ar comprimido pode alimentar instrumentos e outros subsistemas.
+
+
+
+Para diagnosticar corretamente, pense em uma cadeia de energia:
+
+**energia elétrica → motor → movimento mecânico → compressão → pressão → distribuição do ar.**
+
+""",
+
+"raciocinio":[
+
+("Energia elétrica","Alimenta o motor."),
+
+("Motor","Converte energia elétrica em movimento."),
+
+("Compressão","O mecanismo reduz o volume disponível para o ar e aumenta sua pressão."),
+
+("Armazenamento","O reservatório acumula energia pneumática."),
+
+("Controle","O pressostato monitora a pressão e controla o funcionamento."),
+
+("Distribuição","O ar segue por mangueiras, filtros e reguladores.")
+
+],
+
+"principio":"""
+
+### Fluxo de funcionamento
+
+
+
+**Tomada → circuito elétrico → motor → pistão/cabeçote → compressão →
+
+reservatório → pressostato → mangueiras → equipamento.**
+
+
+
+Um defeito deve ser localizado na cadeia.
+
+
+
+Exemplo:
+
+
+
+**Não enche o reservatório**
+
+
+
+Pode ser:
+
+- motor não gira;
+
+- motor gira, mas não há compressão;
+
+- há compressão, mas existe vazamento;
+
+- existe problema de medição ou controle de pressão.
+
+""",
+
+"componentes":[
+
+("Motor","Gera movimento mecânico.","Se não gira, investigue alimentação, comando e circuito de partida."),
+
+("Cabeçote/pistão","Realiza compressão do ar.","Desgaste pode reduzir desempenho."),
+
+("Reservatório","Armazena ar pressurizado.","Exige atenção especial por ser um recipiente pressurizado."),
+
+("Pressostato","Controla acionamento conforme pressão.","Falha pode impedir partida ou desligamento."),
+
+("Manômetro","Indica pressão.","Uma indicação incorreta pode confundir o diagnóstico."),
+
+("Válvula de retenção","Evita retorno de ar.","Falha pode prejudicar pressão e partida."),
+
+("Válvula de segurança","Protege contra sobrepressão.","É componente de segurança."),
+
+("Purgador","Remove condensado.","Acúmulo de água pode causar problemas."),
+
+],
+
+"problemas":[
+
+{
+
+"titulo":"Compressor não liga",
+
+"sintoma":"Motor não inicia.",
+
+"cadeia":"Alimentação → proteção → comando → circuito de partida → motor.",
+
+"causas":["Sem alimentação","Pressostato","Proteção térmica","Capacitor","Motor"],
+
+"passos":[
+
+"Confirmar alimentação.",
+
+"Registrar se há ruído ou tentativa de partida.",
+
+"Verificar a pressão atual.",
+
+"Consultar a lógica do pressostato.",
+
+"Seguir o procedimento técnico para o circuito de partida.",
+
+"Confirmar a causa antes de substituir componentes."
+
+],
+
+"nao_fazer":"Não trabalhar em reservatório pressurizado sem despressurização e procedimento seguro."
+
+},
+
+{
+
+"titulo":"Enche lentamente",
+
+"sintoma":"Tempo excessivo para atingir pressão.",
+
+"cadeia":"Capacidade de compressão deve ser maior que perdas por vazamentos e consumo.",
+
+"causas":["Vazamento","Filtro obstruído","Desgaste","Válvula defeituosa"],
+
+"passos":[
+
+"Comparar tempo de enchimento com referência do equipamento.",
+
+"Verificar vazamentos.",
+
+"Inspecionar filtro.",
+
+"Investigar conjunto de compressão e válvulas.",
+
+"Validar pressão de corte e recuperação."
+
+],
+
+"nao_fazer":"Não exceder a pressão nominal durante testes."
+
+}
+
+]
+
+},
+
+
+
+"❄️ Câmara fria / Câmara de vacina": {
+
+"tipo":"Refrigeração e controle térmico",
+
+"imagem":None,
+
+"objetivo":"""
+
+Uma câmara fria ou câmara de vacina precisa manter produtos sensíveis em uma faixa térmica
+
+especificada. O conceito central é **remover calor do interior e controlar continuamente
+
+a temperatura**.
+
+
+
+Não basta verificar se o equipamento está frio. É necessário analisar estabilidade,
+
+uniformidade, alarmes, histórico e comportamento ao longo do tempo.
+
+""",
+
+"raciocinio":[
+
+("O que é temperatura?","É uma medida relacionada ao estado térmico do sistema."),
+
+("Como resfriar?","É necessário retirar energia térmica do ambiente interno."),
+
+("Quem retira o calor?","O ciclo de refrigeração transporta calor de uma região para outra."),
+
+("Quem decide quando ligar?","O controlador utiliza informações de sensores."),
+
+("Como ocorre uma falha?","Pode ser problema de refrigeração, circulação de ar, porta, sensor ou controle.")
+
+],
+
+"principio":"""
+
+### Ciclo de refrigeração simplificado
+
+
+
+**Compressor → refrigerante comprimido → condensador libera calor →
+
+expansão reduz pressão → evaporador absorve calor da câmara → compressor.**
+
+
+
+### Controle
+
+
+
+**Sensor → controlador → decisão → compressor/atuadores → nova medição.**
+
+
+
+Assim, uma falha de temperatura pode ocorrer mesmo que o compressor esteja funcionando.
+
+""",
+
+"componentes":[
+
+("Compressor","Movimenta o refrigerante pelo sistema.","Falha pode impedir remoção adequada de calor."),
+
+("Condensador","Libera calor para o ambiente.","Sujeira e ventilação inadequada podem reduzir eficiência."),
+
+("Evaporador","Absorve calor do ambiente interno.","Gelo excessivo pode reduzir desempenho."),
+
+("Ventilador","Ajuda a distribuir ar.","Falha pode gerar gradientes de temperatura."),
+
+("Sensor","Mede temperatura.","Leitura errada pode levar a controle incorreto."),
+
+("Controlador","Decide acionamento.","Falha pode causar ciclos inadequados."),
+
+("Gaxeta","Reduz entrada de ar quente e umidade.","Falha pode aumentar carga térmica."),
+
+],
+
+"problemas":[
+
+{
+
+"titulo":"Temperatura acima da faixa",
+
+"sintoma":"Temperatura interna não retorna ao setpoint.",
+
+"cadeia":"Carga térmica + remoção de calor + circulação + medição + controle.",
+
+"causas":["Porta aberta","Gaxeta","Condensador obstruído","Ventilador","Compressor","Sensor","Controlador"],
+
+"passos":[
+
+"Priorizar imediatamente a proteção do conteúdo conforme protocolo institucional.",
+
+"Confirmar a leitura por método autorizado.",
+
+"Verificar porta e vedação.",
+
+"Verificar circulação de ar.",
+
+"Consultar histórico de temperatura.",
+
+"Separar falha de refrigeração de falha de medição.",
+
+"Investigar componentes conforme manual."
+
+],
+
+"nao_fazer":"Não ajustar o setpoint apenas para compensar uma falha."
+
+}
+
+]
+
+},
+
+
+
+"🦷 Cadeira e caneta odontológica": {
+
+"tipo":"Sistema eletromecânico, pneumático e hidráulico",
+
+"imagem":None,
+
+"objetivo":"""
+
+A cadeira odontológica é um sistema integrado. Ela pode combinar eletrônica, motores,
+
+atuadores, válvulas, ar comprimido, água e mecanismos.
+
+
+
+A melhor estratégia de diagnóstico é não pensar nela como um único equipamento,
+
+mas como vários subsistemas conectados.
+
+""",
+
+"raciocinio":[
+
+("Comando","O operador pressiona botão ou pedal."),
+
+("Controle","O circuito interpreta o comando."),
+
+("Atuação","Motor, válvula ou atuador recebe energia."),
+
+("Movimento/fluxo","O mecanismo executa a função."),
+
+("Feedback","Sensores ou fins de curso podem limitar ou informar posição.")
+
+],
+
+"principio":"""
+
+### Pergunta principal
+
+
+
+**Qual subsistema está falhando?**
+
+
+
+- Elétrico?
+
+- Eletrônico?
+
+- Mecânico?
+
+- Pneumático?
+
+- Hidráulico?
+
+
+
+Exemplo: a cadeira não sobe.
+
+
+
+Isso não significa automaticamente “motor queimado”.
+
+
+
+Pode ser:
+
+
+
+**Botão → placa → relé → motor → transmissão mecânica → fim de curso.**
+
+""",
+
+"componentes":[
+
+("Placa de controle","Interpreta comandos.","Falha pode afetar uma ou várias funções."),
+
+("Pedal","Envia comandos.","Problemas podem ser mecânicos ou elétricos."),
+
+("Motor/atuador","Produz movimento.","Pode falhar por alimentação, comando ou defeito próprio."),
+
+("Fim de curso","Limita movimentos.","Falha pode impedir deslocamento."),
+
+("Mangueiras","Transportam ar ou água.","Vazamentos reduzem pressão ou fluxo."),
+
+("Válvulas","Controlam fluxo.","Obstrução ou falha altera funcionamento."),
+
+("Regulador","Controla pressão.","Pressão inadequada afeta instrumentos.")
+
+],
+
+"problemas":[
+
+{
+
+"titulo":"Cadeira não sobe/desce",
+
+"sintoma":"Movimento não ocorre.",
+
+"cadeia":"Comando → controle → potência → motor/atuador → mecânica.",
+
+"causas":["Comando","Alimentação","Fim de curso","Placa","Motor","Travamento mecânico"],
+
+"passos":[
+
+"Verificar se nenhuma função funciona ou apenas um movimento.",
+
+"Verificar comando.",
+
+"Observar ruídos de acionamento.",
+
+"Separar ausência de comando de travamento mecânico.",
+
+"Consultar esquema técnico antes de medir a placa.",
+
+"Validar movimento após correção."
+
+],
+
+"nao_fazer":"Não trabalhar sob partes móveis sem suporte mecânico seguro."
+
+}
+
+]
+
+},
+
+
+
+"🔊 Ultrassom odontológico": {
+
+"tipo":"Conversão eletromecânica em alta frequência",
+
+"imagem":None,
+
+"objetivo":"""
+
+O ultrassom odontológico converte energia elétrica em vibração mecânica de alta frequência.
+
+O circuito eletrônico fornece energia ao transdutor, que converte essa energia em movimento.
+
+
+
+Dependendo da tecnologia, o sistema pode ser piezoelétrico ou magnetoestritivo.
+
+""",
+
+"raciocinio":[
+
+("Energia elétrica","O circuito gera sinal elétrico adequado."),
+
+("Transdutor","Converte energia elétrica em vibração mecânica."),
+
+("Ressonância","O conjunto é projetado para operar adequadamente em determinadas frequências."),
+
+("Ponta","Transmite a vibração."),
+
+("Água","Auxilia irrigação e, conforme o sistema, resfriamento.")
+
+],
+
+"principio":"""
+
+### Cadeia
+
+
+
+**Comando → gerador eletrônico → transdutor → vibração →
+
+caneta/inserto → ação mecânica.**
+
+
+
+Um problema de “sem vibração” pode estar no comando, na placa, no cabo,
+
+no transdutor ou no inserto.
+
+""",
+
+"componentes":[
+
+("Placa geradora","Produz o sinal elétrico.","Falha pode impedir excitação."),
+
+("Transdutor","Converte energia elétrica em mecânica.","É elemento central do funcionamento."),
+
+("Caneta","Transmite a energia.","Cabos e conexões devem ser avaliados."),
+
+("Inserto","Elemento vibratório ativo.","Desgaste ou incompatibilidade afetam desempenho."),
+
+("Sistema de água","Fornece irrigação.","Obstrução reduz fluxo.")
+
+],
+
+"problemas":[
+
+{
+
+"titulo":"Sem vibração",
+
+"sintoma":"Instrumento não apresenta funcionamento esperado.",
+
+"cadeia":"Comando → geração → cabo → transdutor → inserto.",
+
+"causas":["Inserto","Cabo","Transdutor","Placa","Pedal"],
+
+"passos":[
+
+"Confirmar alimentação.",
+
+"Confirmar comando.",
+
+"Verificar encaixe e compatibilidade do inserto.",
+
+"Inspecionar cabo.",
+
+"Comparar com componente conhecido em boas condições quando permitido.",
+
+"Investigar eletrônica conforme documentação."
+
+],
+
+"nao_fazer":"Não utilizar componentes incompatíveis."
+
+}
+
+]
+
+},
+
+
+
+"🔍 Colposcópio": {
+
+"tipo":"Sistema óptico e de iluminação",
+
+"imagem":None,
+
+"objetivo":"""
+
+O colposcópio utiliza ampliação e iluminação para observação detalhada.
+
+A qualidade da imagem depende de uma cadeia óptica e mecânica.
+
+
+
+Para diagnosticar, separe:
+
+**iluminação → óptica → foco → posicionamento → captura digital, quando presente.**
+
+""",
+
+"raciocinio":[
+
+("Iluminação","O campo precisa receber luz adequada."),
+
+("Reflexão","A luz interage com a superfície observada."),
+
+("Lentes","A óptica coleta e organiza a luz."),
+
+("Foco","A posição relativa das lentes determina nitidez."),
+
+("Ampliação","O sistema altera o campo observado."),
+
+("Imagem","O profissional observa diretamente ou por câmera.")
+
+],
+
+"principio":"""
+
+### Cadeia óptica
+
+
+
+**Fonte de luz → campo observado → reflexão → lentes → ampliação →
+
+ocular/câmera → imagem.**
+
+
+
+Se a imagem está ruim, não significa necessariamente defeito eletrônico.
+
+Pode ser:
+
+
+
+- lente suja;
+
+- foco inadequado;
+
+- distância de trabalho;
+
+- iluminação;
+
+- desalinhamento óptico.
+
+""",
+
+"componentes":[
+
+("Fonte de luz","Ilumina o campo.","Falhas reduzem visualização."),
+
+("Lentes","Formam imagem.","Sujeira ou dano alteram qualidade."),
+
+("Sistema de foco","Ajusta nitidez.","Falha mecânica impede focalização."),
+
+("Braço","Posiciona o conjunto.","Folgas afetam estabilidade."),
+
+("Câmera","Captura imagem, quando presente.","Falha pode ser óptica, eletrônica ou de software.")
+
+],
+
+"problemas":[
+
+{
+
+"titulo":"Imagem desfocada",
+
+"sintoma":"Imagem não apresenta nitidez.",
+
+"cadeia":"Posicionamento → distância → foco → lente → alinhamento óptico.",
+
+"causas":["Foco","Distância","Lente suja","Problema mecânico","Problema óptico"],
+
+"passos":[
+
+"Verificar ajuste de foco.",
+
+"Verificar distância de trabalho.",
+
+"Inspecionar lentes.",
+
+"Limpar somente conforme orientação do fabricante.",
+
+"Se persistir, investigar mecanismo de foco e sistema óptico."
+
+],
+
+"nao_fazer":"Não utilizar produtos ou materiais abrasivos nas lentes."
+
+}
+
+]
+
+}
+
+,
+
+"🩸 Esfigmomanômetro": {
+
+"tipo": "Medição não invasiva da pressão arterial",
+
+"imagem": None,
+
+"objetivo": """
+
+O esfigmomanômetro é utilizado para estimar a pressão arterial de forma não invasiva.
+
+No modelo eletrônico automático, o equipamento combina um **manguito**, um sistema pneumático,
+
+um **sensor de pressão** e um algoritmo de processamento.
+
+
+
+A ideia central para Engenharia Clínica é separar duas coisas:
+
+
+
+**o fenômeno fisiológico → a alteração mecânica da artéria**
+
+
+
+E:
+
+
+
+**a alteração mecânica → pressão/oscilações detectadas → processamento → valor exibido.**
+
+
+
+O equipamento não mede diretamente a pressão dentro da artéria. Em métodos automáticos,
+
+a estimativa depende do método de medição, da qualidade do sinal e do algoritmo do fabricante.
+
+""",
+
+"raciocinio": [
+
+("1. O que o equipamento controla?", "A pressão aplicada pelo manguito ao redor do membro."),
+
+("2. O que acontece no corpo?", "A compressão externa interage com a artéria e modifica o fluxo e as oscilações associadas ao pulso."),
+
+("3. Como o equipamento percebe isso?", "Um sensor converte a pressão do sistema pneumático em sinal elétrico."),
+
+("4. O que faz o controlador?", "Controla inflação/deflação, lê o sensor e processa o sinal conforme o método implementado."),
+
+("5. Como pensar em falhas?", "Separar manguito e mangueira → vazamento → bomba → válvula → sensor → eletrônica → algoritmo/exibição.")
+
+],
+
+"principio": """
+
+### Cadeia funcional
+
+
+
+**Manguito → pressão externa no membro → interação com a artéria →
+
+variações de pressão no sistema pneumático → sensor → condicionamento/
+
+processamento → estimativa → tela.**
+
+
+
+⚠️ O método exato depende do tipo de esfigmomanômetro.
+
+
+
+- **Auscultatório/manual:** utiliza estetoscópio e sons relacionados ao fluxo sanguíneo.
+
+- **Automático oscilométrico:** analisa oscilações de pressão durante a deflação.
+
+
+
+A manutenção deve respeitar o manual do fabricante e os procedimentos de verificação e
+
+calibração aplicáveis ao modelo.
+
+""",
+
+"componentes": [
+
+("Manguito", "Aplica pressão externa controlada ao membro.", "Tamanho inadequado, dano ou instalação incorreta podem comprometer a medição."),
+
+("Mangueira pneumática", "Conduz o ar entre os componentes.", "Dobras, desconexões ou vazamentos alteram a dinâmica de pressão."),
+
+("Bomba de ar", "Eleva a pressão do sistema pneumático.", "Falha pode causar ausência de inflação ou inflação insuficiente."),
+
+("Válvula de deflação", "Controla a liberação de ar e a queda de pressão.", "Deflação muito rápida, lenta ou irregular pode comprometer a aquisição."),
+
+("Sensor de pressão", "Converte a pressão pneumática em sinal elétrico.", "Deriva, falha, obstrução do caminho pneumático ou erro eletrônico podem alterar a leitura."),
+
+("Controlador eletrônico", "Controla a sequência de medição e processa os sinais.", "Separar erro de entrada, sensor, acionamento e processamento antes de atribuir a falha à placa."),
+
+("Fonte/bateria", "Fornece energia ao sistema.", "Baixa tensão pode afetar bomba, controle e estabilidade da medição."),
+
+("Display", "Apresenta resultados e informações do ciclo.", "Falha de exibição não significa necessariamente falha de medição.")
+
+],
+
+"problemas": [
+
+{
+
+"titulo":"Não infla o manguito",
+
+"sintoma":"O ciclo inicia, mas a pressão não aumenta adequadamente.",
+
+"cadeia":"Alimentação → controlador → acionamento → bomba → mangueira → manguito.",
+
+"causas":["Bateria/fonte", "Comando ausente", "Bomba", "Mangueira desconectada", "Vazamento", "Válvula aberta"],
+
+"passos":["Verificar alimentação.", "Verificar conexões pneumáticas externas.", "Observar se existe comando/acionamento conforme procedimento técnico.", "Separar vazamento de falha de bomba.", "Consultar manual antes de desmontagem."],
+
+"nao_fazer":"Não ajustar parâmetros de calibração ou modificar o circuito pneumático sem procedimento autorizado."
+
+},
+
+{
+
+"titulo":"Infla, mas apresenta erro ou valor inconsistente",
+
+"sintoma":"O ciclo pneumático ocorre, porém a leitura é rejeitada, instável ou inconsistente.",
+
+"cadeia":"Manguito/posição → sinal fisiológico → pressão → sensor → processamento → resultado.",
+
+"causas":["Movimento", "Manguito inadequado", "Vazamento", "Sensor", "Deflação irregular", "Interferência no sinal", "Processamento"],
+
+"passos":["Confirmar condições de uso previstas pelo fabricante.", "Verificar integridade
