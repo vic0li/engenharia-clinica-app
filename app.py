@@ -1479,3 +1479,4 @@ calibração aplicáveis ao modelo.
 "causas":["Movimento", "Manguito inadequado", "Vazamento", "Sensor", "Deflação irregular", "Interferência no sinal", "Processamento"],
 
 "passos":["Confirmar condições de uso previstas pelo fabricante.", "Verificar integridade"]
+}
