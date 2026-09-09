@@ -1,10 +1,10 @@
-import json
-from datetime import datetime
-import pandas as pd
 import streamlit as st
+import pandas as pd
+from datetime import datetime
+import json
 
 # ==========================================================
-# ENGENHARIA CLÍNICA - GUIA DE CAMPO V5
+# ENGENHARIA CLÍNICA - GUIA DE CAMPO V2
 # Filosofia:
 # PRINCÍPIO FÍSICO → COMPONENTE → SINTOMA → HIPÓTESE
 # → TESTE → CONCLUSÃO → CORREÇÃO AUTORIZADA → VALIDAÇÃO
@@ -18,85 +18,57 @@ st.set_page_config(
 )
 
 # ----------------------------------------------------------
-# ESTILO CUSTOMIZADO - DARK MODE COM ALTO CONTRASTE
+# ESTILO (Cores ajustadas para fundo escuro com alto contraste)
 # ----------------------------------------------------------
-st.markdown(
-    """
+st.markdown("""
 <style>
-    /* Fundo da aplicação */
-    .stApp {
-        background-color: #0d1117;
-        color: #c9d1d9;
-    }
-
-    /* Cards e Caixas Personalizadas */
     .hero {
         padding: 1.5rem;
-        border-radius: 12px;
-        background: linear-gradient(135deg, #161b22, #21262d);
-        border: 1px solid #30363d;
-        color: #f0f6fc !important;
+        border-radius: 18px;
+        background: #1e293b;
+        border: 1px solid #3b82f6;
+        color: #f8fafc;
         margin-bottom: 1rem;
     }
-    
     .concept {
         padding: 1rem;
-        border-left: 5px solid #388bfd;
-        background-color: #161b22;
-        color: #f0f6fc !important;
-        border-radius: 0 8px 8px 0;
+        border-left: 5px solid #3b82f6;
+        background-color: #0f172a;
+        border-radius: 8px;
         margin: 0.7rem 0;
-        border-top: 1px solid #30363d;
-        border-right: 1px solid #30363d;
-        border-bottom: 1px solid #30363d;
+        color: #f8fafc;
+        border-top: 1px solid #1e293b;
+        border-right: 1px solid #1e293b;
+        border-bottom: 1px solid #1e293b;
     }
-    
     .warning-box {
         padding: 1rem;
-        border-left: 5px solid #d29922;
-        background-color: #261c14;
-        color: #f0f6fc !important;
-        border-radius: 0 8px 8px 0;
-        margin: 0.7rem 0;
-        border-top: 1px solid #30363d;
-        border-right: 1px solid #30363d;
-        border-bottom: 1px solid #30363d;
+        border-left: 5px solid #f59e0b;
+        background-color: #2e1000;
+        border-radius: 8px;
+        color: #f8fafc;
+        border-top: 1px solid #1e293b;
+        border-right: 1px solid #1e293b;
+        border-bottom: 1px solid #1e293b;
     }
-
-    /* Forçar legibilidade em todos os textos */
-    h1, h2, h3, h4, h5, h6, p, li, span, div {
-        color: #f0f6fc !important;
-    }
-
-    /* Ajuste para componentes Streamlit nativos */
-    .stMarkdown, .stText {
-        color: #c9d1d9 !important;
-    }
-
-    /* Tabelas e Caixas de Código */
-    code {
-        color: #58a6ff !important;
-        background-color: #161b22 !important;
-    }
-    
-    table {
-        color: #f0f6fc !important;
-        background-color: #161b22 !important;
+    .hero h1, .hero h2, .hero h3, .hero h4, .hero p,
+    .concept h1, .concept h2, .concept h3, .concept h4, .concept p,
+    .warning-box h1, .warning-box h2, .warning-box h3, .warning-box h4, .warning-box p {
+        color: #f8fafc !important;
     }
 </style>
-""",
-    unsafe_allow_html=True,
-)
+""", unsafe_allow_html=True)
 
 # ==========================================================
 # BASE TÉCNICA
 # ==========================================================
 
 EQUIPAMENTOS = {
-    "♨️ Autoclave": {
-        "tipo": "Esterilização por calor úmido",
-        "imagem": None,
-        "objetivo": """
+
+"♨️ Autoclave": {
+"tipo": "Esterilização por calor úmido",
+"imagem": None,
+"objetivo": """
 A autoclave é um equipamento utilizado para esterilizar artigos compatíveis por meio
 de vapor sob condições controladas. Seu objetivo não é simplesmente “esquentar o material”.
 O processo depende de uma combinação controlada de **tempo, temperatura, qualidade do vapor,
@@ -105,29 +77,19 @@ remoção de ar e contato adequado entre vapor e carga**.
 Em odontologia, enfermagem e outras áreas da saúde, a esterilização adequada é uma barreira
 fundamental contra a transmissão de microrganismos por instrumentos e materiais.
 """,
-        "raciocinio": [
-            (
-                "1. O que precisa acontecer?",
-                "O calor precisa chegar de forma adequada às superfícies da carga durante tempo suficiente.",
-            ),
-            (
-                "2. Por que o vapor é importante?",
-                "O vapor condensa ao encontrar uma superfície mais fria e transfere grande quantidade de energia térmica.",
-            ),
-            (
-                "3. Por que o ar pode ser um problema?",
-                "Bolsões de ar podem dificultar o contato eficiente do vapor com determinadas superfícies.",
-            ),
-            (
-                "4. O que controla o processo?",
-                "Sensores fornecem informações ao controlador, que decide quando aquecer, manter condições e finalizar etapas.",
-            ),
-            (
-                "5. Como pensar em uma falha?",
-                "Primeiro identifique em qual etapa o processo falha: alimentação, aquecimento, vedação, controle, sensores ou finalização.",
-            ),
-        ],
-        "principio": """
+"raciocinio": [
+("1. O que precisa acontecer?",
+ "O calor precisa chegar de forma adequada às superfícies da carga durante tempo suficiente."),
+("2. Por que o vapor é importante?",
+ "O vapor condensa ao encontrar uma superfície mais fria e transfere grande quantidade de energia térmica."),
+("3. Por que o ar pode ser um problema?",
+ "Bolsões de ar podem dificultar o contato eficiente do vapor com determinadas superfícies."),
+("4. O que controla o processo?",
+ "Sensores fornecem informações ao controlador, que decide quando aquecer, manter condições e finalizar etapas."),
+("5. Como pensar em uma falha?",
+ "Primeiro identifique em qual etapa o processo falha: alimentação, aquecimento, vedação, controle, sensores ou finalização.")
+],
+"principio": """
 ### Cadeia de funcionamento
 
 **Energia elétrica → sistema de controle → aquecimento/geração de vapor →
@@ -139,124 +101,73 @@ funcionar de forma diferente de autoclaves hospitalares de grande porte.
 ⚠️ Portanto, não assuma que toda autoclave possui bomba de vácuo, osmose reversa ou
 gerador de vapor separado.
 """,
-        "componentes": [
-            (
-                "Câmara",
-                "Recipiente onde a carga é processada. Deve suportar as condições térmicas e mecânicas previstas.",
-                "Se houver problema estrutural ou perda de vedação, o ciclo pode não manter as condições necessárias.",
-            ),
-            (
-                "Resistência / sistema de aquecimento",
-                "Transforma energia elétrica em energia térmica.",
-                "Se o controlador solicita aquecimento mas a temperatura não sobe, investigue a cadeia de potência e o elemento de aquecimento.",
-            ),
-            (
-                "Sensor de temperatura",
-                "Informa ao controlador a temperatura do sistema.",
-                "Uma leitura incorreta pode fazer o sistema aquecer pouco, demais ou interromper o ciclo.",
-            ),
-            (
-                "Controle eletrônico",
-                "Executa a lógica do ciclo com base em sensores e parâmetros.",
-                "Uma falha de controle pode parecer falha de resistência, por isso é necessário separar comando de carga.",
-            ),
-            (
-                "Porta",
-                "Fecha a câmara e integra o sistema de vedação.",
-                "Desalinhamento pode produzir vazamento localizado.",
-            ),
-            (
-                "Gaxeta",
-                "Promove vedação entre porta e câmara.",
-                "Sujeira, ressecamento ou deformação podem permitir fuga de vapor.",
-            ),
-            (
-                "Trava/sistema de segurança",
-                "Impede abertura em condições inseguras e confirma condição da porta.",
-                "Falhas podem impedir o início do ciclo ou gerar alarmes.",
-            ),
-            (
-                "Válvulas",
-                "Controlam ou protegem fluxos de vapor, água e pressão, conforme o modelo.",
-                "Obstrução ou falha pode alterar pressão e comportamento do ciclo.",
-            ),
-        ],
-        "problemas": [
-            {
-                "titulo": "Vazamento de vapor na porta",
-                "sintoma": "Escape de vapor ou água pela região da porta.",
-                "cadeia": "Vedação depende de: geometria correta + força de fechamento adequada + gaxeta íntegra + superfície de contato adequada.",
-                "causas": [
-                    "Gaxeta suja ou danificada",
-                    "Gaxeta deformada",
-                    "Porta desalinhada",
-                    "Fechamento com força desigual",
-                    "Folga mecânica",
-                    "Superfície de vedação danificada",
-                ],
-                "passos": [
-                    "Retirar o equipamento de uso e aguardar resfriamento e despressurização completa.",
-                    "Registrar o ponto exato do vazamento.",
-                    "Verificar se o vazamento ocorre sempre no mesmo lado.",
-                    "Inspecionar visualmente toda a gaxeta.",
-                    "Comparar o lado que vaza com o lado que apresenta vedação adequada.",
-                    "Verificar alinhamento, folgas e mecanismo de fechamento conforme manual técnico.",
-                    "Executar apenas o ajuste previsto pelo fabricante.",
-                    "Realizar teste funcional e validar a vedação.",
-                ],
-                "nao_fazer": "Não usar martelo, anilhas ou deformação mecânica como procedimento genérico. O ajuste depende da geometria e do mecanismo específico do equipamento.",
-            },
-            {
-                "titulo": "Liga, mas não aquece",
-                "sintoma": "Painel funciona, mas a temperatura não aumenta adequadamente.",
-                "cadeia": "Para aquecer, é necessário: comando → elemento de acionamento → circuito de potência → resistência → transferência de calor → leitura correta do sensor.",
-                "causas": [
-                    "Resistência aberta ou degradada",
-                    "Conexão defeituosa",
-                    "Falha de relé/acionamento",
-                    "Falha de comando",
-                    "Sensor com leitura incorreta",
-                    "Proteção térmica atuada",
-                ],
-                "passos": [
-                    "Identificar em qual momento do ciclo o aquecimento deveria iniciar.",
-                    "Desenergizar e aguardar o equipamento resfriar.",
-                    "Consultar o diagrama elétrico específico do modelo.",
-                    "Separar duas hipóteses: o sistema não está mandando aquecer OU está mandando aquecer e a carga não responde.",
-                    "Verificar conectores e sinais visíveis de falha.",
-                    "Realizar os testes elétricos previstos pelo fabricante.",
-                    "Confirmar se a falha está no comando, na potência ou no elemento de aquecimento.",
-                    "Após a intervenção, validar o comportamento completo.",
-                ],
-                "nao_fazer": "Não fazer jumper permanente em termostatos, sensores ou dispositivos de segurança para 'testar'. Um componente de dois fios pode exercer função crítica de proteção.",
-            },
-            {
-                "titulo": "Não atinge a temperatura programada",
-                "sintoma": "A temperatura sobe, mas não alcança o comportamento esperado.",
-                "cadeia": "Pode haver geração insuficiente de calor, perda de energia, leitura errada ou controle inadequado.",
-                "causas": [
-                    "Aquecimento insuficiente",
-                    "Vazamento",
-                    "Sensor incorreto",
-                    "Falha de alimentação",
-                    "Falha de controle",
-                ],
-                "passos": [
-                    "Confirmar o comportamento real e a configuração do ciclo.",
-                    "Verificar se existem vazamentos.",
-                    "Observar o tempo de subida de temperatura.",
-                    "Separar sensor → controle → acionamento → resistência.",
-                    "Utilizar instrumentos de teste adequados.",
-                    "Validar o ciclo após a correção.",
-                ],
-                "nao_fazer": "Não alterar parâmetros do ciclo para mascarar uma falha técnica.",
-            },
-        ],
-    },
-    "📈 Eletrocardiógrafo": {
-        "tipo": "Aquisição de sinais bioelétricos cardíacos",
-        "imagem": None,
-        "objetivo": """
+"componentes": [
+("Câmara", "Recipiente onde a carga é processada. Deve suportar as condições térmicas e mecânicas previstas.", "Se houver problema estrutural ou perda de vedação, o ciclo pode não manter as condições necessárias."),
+("Resistência / sistema de aquecimento", "Transforma energia elétrica em energia térmica.", "Se o controlador solicita aquecimento mas a temperatura não sobe, investigue a cadeia de potência e o elemento de aquecimento."),
+("Sensor de temperatura", "Informa ao controlador a temperatura do sistema.", "Uma leitura incorreta pode fazer o sistema aquecer pouco, demais ou interromper o ciclo."),
+("Controle eletrônico", "Executa a lógica do ciclo com base em sensores e parâmetros.", "Uma falha de controle pode parecer falha de resistência, por isso é necessário separar comando de carga."),
+("Porta", "Fecha a câmara e integra o sistema de vedação.", "Desalinhamento pode produzir vazamento localizado."),
+("Gaxeta", "Promove vedação entre porta e câmara.", "Sujeira, ressecamento ou deformação podem permitir fuga de vapor."),
+("Trava/sistema de segurança", "Impede abertura em condições inseguras e confirma condição da porta.", "Falhas podem impedir o início do ciclo ou gerar alarmes."),
+("Válvulas", "Controlam ou protegem fluxos de vapor, água e pressão, conforme o modelo.", "Obstrução ou falha pode alterar pressão e comportamento do ciclo."),
+],
+"problemas": [
+{
+"titulo":"Vazamento de vapor na porta",
+"sintoma":"Escape de vapor ou água pela região da porta.",
+"cadeia":"Vedação depende de: geometria correta + força de fechamento adequada + gaxeta íntegra + superfície de contato adequada.",
+"causas":["Gaxeta suja ou danificada","Gaxeta deformada","Porta desalinhada","Fechamento com força desigual","Folga mecânica","Superfície de vedação danificada"],
+"passos":[
+"Retirar o equipamento de uso e aguardar resfriamento e despressurização completa.",
+"Registrar o ponto exato do vazamento.",
+"Verificar se o vazamento ocorre sempre no mesmo lado.",
+"Inspecionar visualmente toda a gaxeta.",
+"Comparar o lado que vaza com o lado que apresenta vedação adequada.",
+"Verificar alinhamento, folgas e mecanismo de fechamento conforme manual técnico.",
+"Executar apenas o ajuste previsto pelo fabricante.",
+"Realizar teste funcional e validar a vedação."
+],
+"nao_fazer":"Não usar martelo, anilhas ou deformação mecânica como procedimento genérico. O ajuste depende da geometria e do mecanismo específico do equipamento."
+},
+{
+"titulo":"Liga, mas não aquece",
+"sintoma":"Painel funciona, mas a temperatura não aumenta adequadamente.",
+"cadeia":"Para aquecer, é necessário: comando → elemento de acionamento → circuito de potência → resistência → transferência de calor → leitura correta do sensor.",
+"causas":["Resistência aberta ou degradada","Conexão defeituosa","Falha de relé/acionamento","Falha de comando","Sensor com leitura incorreta","Proteção térmica atuada"],
+"passos":[
+"Identificar em qual momento do ciclo o aquecimento deveria iniciar.",
+"Desenergizar e aguardar o equipamento resfriar.",
+"Consultar o diagrama elétrico específico do modelo.",
+"Separar duas hipóteses: o sistema não está mandando aquecer OU está mandando aquecer e a carga não responde.",
+"Verificar conectores e sinais visíveis de falha.",
+"Realizar os testes elétricos previstos pelo fabricante.",
+"Confirmar se a falha está no comando, na potência ou no elemento de aquecimento.",
+"Após a intervenção, validar o comportamento completo."
+],
+"nao_fazer":"Não fazer jumper permanente em termostatos, sensores ou dispositivos de segurança para 'testar'. Um componente de dois fios pode exercer função crítica de proteção."
+},
+{
+"titulo":"Não atinge a temperatura programada",
+"sintoma":"A temperatura sobe, mas não alcança o comportamento esperado.",
+"cadeia":"Pode haver geração insuficiente de calor, perda de energia, leitura errada ou controle inadequado.",
+"causas":["Aquecimento insuficiente","Vazamento","Sensor incorreto","Falha de alimentação","Falha de controle"],
+"passos":[
+"Confirmar o comportamento real e a configuração do ciclo.",
+"Verificar se existem vazamentos.",
+"Observar o tempo de subida de temperatura.",
+"Separar sensor → controle → acionamento → resistência.",
+"Utilizar instrumentos de teste adequados.",
+"Validar o ciclo após a correção."
+],
+"nao_fazer":"Não alterar parâmetros do ciclo para mascarar uma falha técnica."
+}
+]
+},
+
+"📈 Eletrocardiógrafo": {
+"tipo":"Aquisição de sinais bioelétricos cardíacos",
+"imagem":None,
+"objetivo":"""
 O eletrocardiógrafo registra diferenças de potencial elétrico relacionadas à atividade
 elétrica cardíaca. Ele não “mede a indução do coração” da mesma forma que um sensor
 indutivo mede um campo magnético.
@@ -265,29 +176,19 @@ Os eletrodos fazem contato elétrico com o corpo e permitem medir diferenças de
 entre pontos do corpo. O sistema eletrônico precisa amplificar sinais pequenos e rejeitar
 ruídos sem distorcer o traçado.
 """,
-        "raciocinio": [
-            (
-                "1. O coração gera atividade elétrica?",
-                "Sim. A despolarização e a repolarização do tecido cardíaco produzem campos elétricos que resultam em diferenças de potencial detectáveis na superfície corporal.",
-            ),
-            (
-                "2. Como o ECG captura isso?",
-                "Por eletrodos em contato com a pele. O equipamento mede diferenças de potencial entre entradas.",
-            ),
-            (
-                "3. Por que o sinal é sensível?",
-                "Porque os sinais de interesse são relativamente pequenos e o ambiente possui diversas fontes de interferência.",
-            ),
-            (
-                "4. O que o amplificador faz?",
-                "Amplifica principalmente a diferença entre entradas e busca rejeitar sinais comuns às duas entradas.",
-            ),
-            (
-                "5. Como uma interferência aparece?",
-                "Um campo elétrico ou magnético externo pode acoplar energia aos cabos e circuitos, gerando sinais indesejados.",
-            ),
-        ],
-        "principio": """
+"raciocinio":[
+("1. O coração gera atividade elétrica?",
+ "Sim. A despolarização e a repolarização do tecido cardíaco produzem campos elétricos que resultam em diferenças de potencial detectáveis na superfície corporal."),
+("2. Como o ECG captura isso?",
+ "Por eletrodos em contato com a pele. O equipamento mede diferenças de potencial entre entradas."),
+("3. Por que o sinal é sensível?",
+ "Porque os sinais de interesse são relativamente pequenos e o ambiente possui diversas fontes de interferência."),
+("4. O que o amplificador faz?",
+ "Amplifica principalmente a diferença entre entradas e busca rejeitar sinais comuns às duas entradas."),
+("5. Como uma interferência aparece?",
+ "Um campo elétrico ou magnético externo pode acoplar energia aos cabos e circuitos, gerando sinais indesejados.")
+],
+"principio":"""
 ### Cadeia de aquisição
 
 **Atividade elétrica cardíaca → propagação pelo corpo → eletrodos →
@@ -307,39 +208,15 @@ São duas coisas diferentes:
 
 Essa diferença é fundamental para diagnosticar problemas.
 """,
-        "componentes": [
-            (
-                "Eletrodo",
-                "Cria a interface elétrica entre a pele e o sistema.",
-                "Mau contato aumenta impedância e facilita ruído e artefatos.",
-            ),
-            (
-                "Cabo do paciente",
-                "Transporta os sinais até o equipamento.",
-                "Funciona como possível caminho de captação de interferências.",
-            ),
-            (
-                "Amplificador diferencial",
-                "Amplifica a diferença entre sinais das entradas.",
-                "Ajuda a rejeitar sinais comuns, mas a rejeição não é infinita.",
-            ),
-            (
-                "Filtros",
-                "Reduzem faixas específicas de ruído.",
-                "Filtros inadequados ou excessivos podem alterar a interpretação do sinal.",
-            ),
-            (
-                "Sistema de isolação",
-                "Ajuda a manter a segurança elétrica do paciente.",
-                "Falhas exigem avaliação especializada e testes de segurança.",
-            ),
-            (
-                "Conversor/processador",
-                "Digitaliza e processa o sinal.",
-                "Falhas podem causar comportamento incorreto no registro.",
-            ),
-        ],
-        "interferencia": """
+"componentes":[
+("Eletrodo","Cria a interface elétrica entre a pele e o sistema.","Mau contato aumenta impedância e facilita ruído e artefatos."),
+("Cabo do paciente","Transporta os sinais até o equipamento.","Funciona como possível caminho de captação de interferências."),
+("Amplificador diferencial","Amplifica a diferença entre sinais das entradas.","Ajuda a rejeitar sinais comuns, mas a rejeição não é infinita."),
+("Filtros","Reduzem faixas específicas de ruído.","Filtros inadequados ou excessivos podem alterar a interpretação do sinal."),
+("Sistema de isolação","Ajuda a manter a segurança elétrica do paciente.","Falhas exigem avaliação especializada e testes de segurança."),
+("Conversor/processador","Digitaliza e processa o sinal.","Falhas podem causar comportamento incorreto no registro."),
+],
+"interferencia":"""
 ## Transformadores e interferência: qual é a relação?
 
 Um transformador utiliza **indução eletromagnética** para transferir energia entre enrolamentos.
@@ -375,84 +252,61 @@ acoplamento, mas isso precisa ser demonstrado com teste controlado.
 
 O método correto é mudar **uma variável por vez**.
 """,
-        "problemas": [
-            {
-                "titulo": "Traçado com ruído excessivo",
-                "sintoma": "Linha instável, oscilação ou interferência.",
-                "cadeia": "Paciente/eletrodo → cabo → ambiente → entrada analógica → processamento.",
-                "causas": [
-                    "Mau contato",
-                    "Movimento",
-                    "Eletrodos inadequados",
-                    "Cabo danificado",
-                    "Interferência de rede elétrica",
-                    "Equipamentos próximos",
-                    "Problema de aterramento",
-                ],
-                "passos": [
-                    "Classificar visualmente o ruído: contínuo, periódico, aleatório ou relacionado ao movimento.",
-                    "Verificar eletrodos e preparação da pele conforme procedimento.",
-                    "Inspecionar cabos e conectores.",
-                    "Afastar possíveis fontes de interferência.",
-                    "Comparar o equipamento em outro ambiente.",
-                    "Quando disponível, utilizar simulador de ECG.",
-                    "Trocar uma variável por vez.",
-                    "Se o defeito persistir com simulador e em ambiente controlado, investigar o equipamento.",
-                ],
-                "nao_fazer": "Não concluir que um transformador ou bancada é a causa sem teste comparativo.",
-            },
-            {
-                "titulo": "Amplitude muito alta ou muito baixa",
-                "sintoma": "Traçado aparentemente desregulado.",
-                "cadeia": "Amplitude observada depende do sinal real + ganho configurado + qualidade da aquisição + possíveis artefatos.",
-                "causas": [
-                    "Ganho/configuração",
-                    "Artefato",
-                    "Problema de eletrodo",
-                    "Cabo",
-                    "Interferência",
-                    "Falha do circuito de aquisição",
-                ],
-                "passos": [
-                    "Verificar configuração de ganho.",
-                    "Registrar quais derivações são afetadas.",
-                    "Testar com simulador de ECG, quando disponível.",
-                    "Comparar com outro equipamento sob condições controladas.",
-                    "Trocar uma variável por vez: equipamento, cabo, ambiente, tomada.",
-                    "Somente após isolar causas externas, investigar a eletrônica interna.",
-                ],
-                "nao_fazer": "Não interpretar amplitude anormal diretamente como defeito de transformador interno.",
-            },
-        ],
-    },
-    "💨 Compressor": {
-        "tipo": "Sistema pneumático",
-        "imagem": None,
-        "objetivo": """
+"problemas":[
+{
+"titulo":"Traçado com ruído excessivo",
+"sintoma":"Linha instável, oscilação ou interferência.",
+"cadeia":"Paciente/eletrodo → cabo → ambiente → entrada analógica → processamento.",
+"causas":["Mau contato","Movimento","Eletrodos inadequados","Cabo danificado","Interferência de rede elétrica","Equipamentos próximos","Problema de aterramento"],
+"passos":[
+"Classificar visualmente o ruído: contínuo, periódico, aleatório ou relacionado ao movimento.",
+"Verificar eletrodos e preparação da pele conforme procedimento.",
+"Inspecionar cabos e conectores.",
+"Afastar possíveis fontes de interferência.",
+"Comparar o equipamento em outro ambiente.",
+"Quando disponível, utilizar simulador de ECG.",
+"Trocar uma variável por vez.",
+"Se o defeito persistir com simulador e em ambiente controlado, investigar o equipamento."
+],
+"nao_fazer":"Não concluir que um transformador ou bancada é a causa sem teste comparativo."
+},
+{
+"titulo":"Amplitude muito alta ou muito baixa",
+"sintoma":"Traçado aparentemente desregulado.",
+"cadeia":"Amplitude observada depende do sinal real + ganho configurado + qualidade da aquisição + possíveis artefatos.",
+"causas":["Ganho/configuração","Artefato","Problema de eletrodo","Cabo","Interferência","Falha do circuito de aquisição"],
+"passos":[
+"Verificar configuração de ganho.",
+"Registrar quais derivações são afetadas.",
+"Testar com simulador de ECG, quando disponível.",
+"Comparar com outro equipamento sob condições controladas.",
+"Trocar uma variável por vez: equipamento, cabo, ambiente, tomada.",
+"Somente após isolar causas externas, investigar a eletrônica interna."
+],
+"nao_fazer":"Não interpretar amplitude anormal diretamente como defeito de transformador interno."
+}
+]
+},
+
+"💨 Compressor": {
+"tipo":"Sistema pneumático",
+"imagem":None,
+"objetivo":"""
 O compressor converte energia elétrica em energia pneumática ao aumentar a pressão do ar.
 Em aplicações odontológicas, o ar comprimido pode alimentar instrumentos e outros subsistemas.
 
 Para diagnosticar corretamente, pense em uma cadeia de energia:
 **energia elétrica → motor → movimento mecânico → compressão → pressão → distribuição do ar.**
 """,
-        "raciocinio": [
-            ("Energia elétrica", "Alimenta o motor."),
-            ("Motor", "Converte energia elétrica em movimento."),
-            (
-                "Compressão",
-                "O mecanismo reduz o volume disponível para o ar e aumenta sua pressão.",
-            ),
-            ("Armazenamento", "O reservatório acumula energia pneumática."),
-            (
-                "Controle",
-                "O pressostato monitora a pressão e controla o funcionamento.",
-            ),
-            (
-                "Distribuição",
-                "O ar segue por mangueiras, filtros e reguladores.",
-            ),
-        ],
-        "principio": """
+"raciocinio":[
+("Energia elétrica","Alimenta o motor."),
+("Motor","Converte energia elétrica em movimento."),
+("Compressão","O mecanismo reduz o volume disponível para o ar e aumenta sua pressão."),
+("Armazenamento","O reservatório acumula energia pneumática."),
+("Controle","O pressostato monitora a pressão e controla o funcionamento."),
+("Distribuição","O ar segue por mangueiras, filtros e reguladores.")
+],
+"principio":"""
 ### Fluxo de funcionamento
 
 **Tomada → circuito elétrico → motor → pistão/cabeçote → compressão →
@@ -470,95 +324,53 @@ Pode ser:
 - há compressão, mas existe vazamento;
 - existe problema de medição ou controle de pressão.
 """,
-        "componentes": [
-            (
-                "Motor",
-                "Gera movimento mecânico.",
-                "Se não gira, investigue alimentação, comando e circuito de partida.",
-            ),
-            (
-                "Cabeçote/pistão",
-                "Realiza compressão do ar.",
-                "Desgaste pode reduzir desempenho.",
-            ),
-            (
-                "Reservatório",
-                "Armazena ar pressurizado.",
-                "Exige atenção especial por ser um recipiente pressurizado.",
-            ),
-            (
-                "Pressostato",
-                "Controla acionamento conforme pressão.",
-                "Falha pode impedir partida ou desligamento.",
-            ),
-            (
-                "Manômetro",
-                "Indica pressão.",
-                "Uma indicação incorreta pode confundir o diagnóstico.",
-            ),
-            (
-                "Válvula de retenção",
-                "Evita retorno de ar.",
-                "Falha pode prejudicar pressão e partida.",
-            ),
-            (
-                "Válvula de segurança",
-                "Protege contra sobrepressão.",
-                "É componente de segurança.",
-            ),
-            (
-                "Purgador",
-                "Remove condensado.",
-                "Acúmulo de água pode causar problemas.",
-            ),
-        ],
-        "problemas": [
-            {
-                "titulo": "Compressor não liga",
-                "sintoma": "Motor não inicia.",
-                "cadeia": "Alimentação → proteção → comando → circuito de partida → motor.",
-                "causas": [
-                    "Sem alimentação",
-                    "Pressostato",
-                    "Proteção térmica",
-                    "Capacitor",
-                    "Motor",
-                ],
-                "passos": [
-                    "Confirmar alimentação.",
-                    "Registrar se há ruído ou tentativa de partida.",
-                    "Verificar a pressão atual.",
-                    "Consultar a lógica do pressostato.",
-                    "Seguir o procedimento técnico para o circuito de partida.",
-                    "Confirmar a causa antes de substituir componentes.",
-                ],
-                "nao_fazer": "Não trabalhar em reservatório pressurizado sem despressurização e procedimento seguro.",
-            },
-            {
-                "titulo": "Enche lentamente",
-                "sintoma": "Tempo excessivo para atingir pressão.",
-                "cadeia": "Capacidade de compressão deve ser maior que perdas por vazamentos e consumo.",
-                "causas": [
-                    "Vazamento",
-                    "Filtro obstruído",
-                    "Desgaste",
-                    "Válvula defeituosa",
-                ],
-                "passos": [
-                    "Comparar tempo de enchimento com referência do equipamento.",
-                    "Verificar vazamentos.",
-                    "Inspecionar filtro.",
-                    "Investigar conjunto de compressão e válvulas.",
-                    "Validar pressão de corte e recuperação.",
-                ],
-                "nao_fazer": "Não exceder a pressão nominal durante testes.",
-            },
-        ],
-    },
-    "❄️ Câmara fria / Câmara de vacina": {
-        "tipo": "Refrigeração e controle térmico",
-        "imagem": None,
-        "objetivo": """
+"componentes":[
+("Motor","Gera movimento mecânico.","Se não gira, investigue alimentação, comando e circuito de partida."),
+("Cabeçote/pistão","Realiza compressão do ar.","Desgaste pode reduzir desempenho."),
+("Reservatório","Armazena ar pressurizado.","Exige atenção especial por ser um recipiente pressurizado."),
+("Pressostato","Controla acionamento conforme pressão.","Falha pode impedir partida ou desligamento."),
+("Manômetro","Indica pressão.","Uma indicação incorreta pode confundir o diagnóstico."),
+("Válvula de retenção","Evita retorno de ar.","Falha pode prejudicar pressão e partida."),
+("Válvula de segurança","Protege contra sobrepressão.","É componente de segurança."),
+("Purgador","Remove condensado.","Acúmulo de água pode causar problemas."),
+],
+"problemas":[
+{
+"titulo":"Compressor não liga",
+"sintoma":"Motor não inicia.",
+"cadeia":"Alimentação → proteção → comando → circuito de partida → motor.",
+"causas":["Sem alimentação","Pressostato","Proteção térmica","Capacitor","Motor"],
+"passos":[
+"Confirmar alimentação.",
+"Registrar se há ruído ou tentativa de partida.",
+"Verificar a pressão atual.",
+"Consultar a lógica do pressostato.",
+"Seguir o procedimento técnico para o circuito de partida.",
+"Confirmar a causa antes de substituir componentes."
+],
+"nao_fazer":"Não trabalhar em reservatório pressurizado sem despressurização e procedimento seguro."
+},
+{
+"titulo":"Enche lentamente",
+"sintoma":"Tempo excessivo para atingir pressão.",
+"cadeia":"Capacidade de compressão deve ser maior que perdas por vazamentos e consumo.",
+"causas":["Vazamento","Filtro obstruído","Desgaste","Válvula defeituosa"],
+"passos":[
+"Comparar tempo de enchimento com referência do equipamento.",
+"Verificar vazamentos.",
+"Inspecionar filtro.",
+"Investigar conjunto de compressão e válvulas.",
+"Validar pressão de corte e recuperação."
+],
+"nao_fazer":"Não exceder a pressão nominal durante testes."
+}
+]
+},
+
+"❄️ Câmara fria / Câmara de vacina": {
+"tipo":"Refrigeração e controle térmico",
+"imagem":None,
+"objetivo":"""
 Uma câmara fria ou câmara de vacina precisa manter produtos sensíveis em uma faixa térmica
 especificada. O conceito central é **remover calor do interior e controlar continuamente
 a temperatura**.
@@ -566,29 +378,14 @@ a temperatura**.
 Não basta verificar se o equipamento está frio. É necessário analisar estabilidade,
 uniformidade, alarmes, histórico e comportamento ao longo do tempo.
 """,
-        "raciocinio": [
-            (
-                "O que é temperatura?",
-                "É uma medida relacionada ao estado térmico do sistema.",
-            ),
-            (
-                "Como resfriar?",
-                "É necessário retirar energia térmica do ambiente interno.",
-            ),
-            (
-                "Quem retira o calor?",
-                "O ciclo de refrigeração transporta calor de uma região para outra.",
-            ),
-            (
-                "Quem decide quando ligar?",
-                "O controlador utiliza informações de sensores.",
-            ),
-            (
-                "Como ocorre uma falha?",
-                "Pode ser problema de refrigeração, circulação de ar, porta, sensor ou controle.",
-            ),
-        ],
-        "principio": """
+"raciocinio":[
+("O que é temperatura?","É uma medida relacionada ao estado térmico do sistema."),
+("Como resfriar?","É necessário retirar energia térmica do ambiente interno."),
+("Quem retira o calor?","O ciclo de refrigeração transporta calor de uma região para outra."),
+("Quem decide quando ligar?","O controlador utiliza informações de sensores."),
+("Como ocorre uma falha?","Pode ser problema de refrigeração, circulação de ar, porta, sensor ou controle.")
+],
+"principio":"""
 ### Ciclo de refrigeração simplificado
 
 **Compressor → refrigerante comprimido → condensador libera calor →
@@ -600,91 +397,53 @@ expansão reduz pressão → evaporador absorve calor da câmara → compressor.
 
 Assim, uma falha de temperatura pode ocorrer mesmo que o compressor esteja funcionando.
 """,
-        "componentes": [
-            (
-                "Compressor",
-                "Movimenta o refrigerante pelo sistema.",
-                "Falha pode impedir remoção adequada de calor.",
-            ),
-            (
-                "Condensador",
-                "Libera calor para o ambiente.",
-                "Sujeira e ventilação inadequada podem reduzir eficiência.",
-            ),
-            (
-                "Evaporador",
-                "Absorve calor do ambiente interno.",
-                "Gelo excessivo pode reduzir desempenho.",
-            ),
-            (
-                "Ventilador",
-                "Ajuda a distribuir ar.",
-                "Falha pode gerar gradientes de temperatura.",
-            ),
-            (
-                "Sensor",
-                "Mede temperatura.",
-                "Leitura errada pode levar a controle incorreto.",
-            ),
-            (
-                "Controlador",
-                "Decide acionamento.",
-                "Falha pode causar ciclos inadequados.",
-            ),
-            (
-                "Gaxeta",
-                "Reduz entrada de ar quente e umidade.",
-                "Falha pode aumentar carga térmica.",
-            ),
-        ],
-        "problemas": [
-            {
-                "titulo": "Temperatura acima da faixa",
-                "sintoma": "Temperatura interna não retorna ao setpoint.",
-                "cadeia": "Carga térmica + remoção de calor + circulação + medição + controle.",
-                "causas": [
-                    "Porta aberta",
-                    "Gaxeta",
-                    "Condensador obstruído",
-                    "Ventilador",
-                    "Compressor",
-                    "Sensor",
-                    "Controlador",
-                ],
-                "passos": [
-                    "Priorizar imediatamente a proteção do conteúdo conforme protocolo institucional.",
-                    "Confirmar a leitura por método autorizado.",
-                    "Verificar porta e vedação.",
-                    "Verificar circulação de ar.",
-                    "Consultar histórico de temperatura.",
-                    "Separar falha de refrigeração de falha de medição.",
-                    "Investigar componentes conforme manual.",
-                ],
-                "nao_fazer": "Não ajustar o setpoint apenas para compensar uma falha.",
-            }
-        ],
-    },
-    "🦷 Cadeira e caneta odontológica": {
-        "tipo": "Sistema eletromecânico, pneumático e hidráulico",
-        "imagem": None,
-        "objetivo": """
+"componentes":[
+("Compressor","Movimenta o refrigerante pelo sistema.","Falha pode impedir remoção adequada de calor."),
+("Condensador","Libera calor para o ambiente.","Sujeira e ventilação inadequada podem reduzir eficiência."),
+("Evaporador","Absorve calor do ambiente interno.","Gelo excessivo pode reduzir desempenho."),
+("Ventilador","Ajuda a distribuir ar.","Falha pode gerar gradientes de temperatura."),
+("Sensor","Mede temperatura.","Leitura errada pode levar a controle incorreto."),
+("Controlador","Decide acionamento.","Falha pode causar ciclos inadequados."),
+("Gaxeta","Reduz entrada de ar quente e umidade.","Falha pode aumentar carga térmica."),
+],
+"problemas":[
+{
+"titulo":"Temperatura acima da faixa",
+"sintoma":"Temperatura interna não retorna ao setpoint.",
+"cadeia":"Carga térmica + remoção de calor + circulação + medição + controle.",
+"causas":["Porta aberta","Gaxeta","Condensador obstruído","Ventilador","Compressor","Sensor","Controlador"],
+"passos":[
+"Priorizar imediatamente a proteção do conteúdo conforme protocolo institucional.",
+"Confirmar a leitura por método autorizado.",
+"Verificar porta e vedação.",
+"Verificar circulação de ar.",
+"Consultar histórico de temperatura.",
+"Separar falha de refrigeração de falha de medição.",
+"Investigar componentes conforme manual."
+],
+"nao_fazer":"Não ajustar o setpoint apenas para compensar uma falha."
+}
+]
+},
+
+"🦷 Cadeira e caneta odontológica": {
+"tipo":"Sistema eletromecânico, pneumático e hidráulico",
+"imagem":None,
+"objetivo":"""
 A cadeira odontológica é um sistema integrado. Ela pode combinar eletrônica, motores,
 atuadores, válvulas, ar comprimido, água e mecanismos.
 
 A melhor estratégia de diagnóstico é não pensar nela como um único equipamento,
 mas como vários subsistemas conectados.
 """,
-        "raciocinio": [
-            ("Comando", "O operador pressiona botão ou pedal."),
-            ("Controle", "O circuito interpreta o comando."),
-            ("Atuação", "Motor, válvula ou atuador recebe energia."),
-            ("Movimento/fluxo", "O mecanismo executa a função."),
-            (
-                "Feedback",
-                "Sensores ou fins de curso podem limitar ou informar posição.",
-            ),
-        ],
-        "principio": """
+"raciocinio":[
+("Comando","O operador pressiona botão ou pedal."),
+("Controle","O circuito interpreta o comando."),
+("Atuação","Motor, válvula ou atuador recebe energia."),
+("Movimento/fluxo","O mecanismo executa a função."),
+("Feedback","Sensores ou fins de curso podem limitar ou informar posição.")
+],
+"principio":"""
 ### Pergunta principal
 
 **Qual subsistema está falhando?**
@@ -703,97 +462,51 @@ Pode ser:
 
 **Botão → placa → relé → motor → transmissão mecânica → fim de curso.**
 """,
-        "componentes": [
-            (
-                "Placa de controle",
-                "Interpreta comandos.",
-                "Falha pode afetar uma ou várias funções.",
-            ),
-            (
-                "Pedal",
-                "Envia comandos.",
-                "Problemas podem ser mecânicos ou elétricos.",
-            ),
-            (
-                "Motor/atuador",
-                "Produz movimento.",
-                "Pode falhar por alimentação, comando ou defeito próprio.",
-            ),
-            (
-                "Fim de curso",
-                "Limita movimentos.",
-                "Falha pode impedir deslocamento.",
-            ),
-            (
-                "Mangueiras",
-                "Transportam ar ou água.",
-                "Vazamentos reduzem pressão ou fluxo.",
-            ),
-            (
-                "Válvulas",
-                "Controlam fluxo.",
-                "Obstrução ou falha altera funcionamento.",
-            ),
-            (
-                "Regulador",
-                "Controla pressão.",
-                "Pressão inadequada afeta instrumentos.",
-            ),
-        ],
-        "problemas": [
-            {
-                "titulo": "Cadeira não sobe/desce",
-                "sintoma": "Movimento não ocorre.",
-                "cadeia": "Comando → controle → potência → motor/atuador → mecânica.",
-                "causas": [
-                    "Comando",
-                    "Alimentação",
-                    "Fim de curso",
-                    "Placa",
-                    "Motor",
-                    "Travamento mecânico",
-                ],
-                "passos": [
-                    "Verificar se nenhuma função funciona ou apenas um movimento.",
-                    "Verificar comando.",
-                    "Observar ruídos de acionamento.",
-                    "Separar ausência de comando de travamento mecânico.",
-                    "Consultar esquema técnico antes de medir a placa.",
-                    "Validar movimento após correção.",
-                ],
-                "nao_fazer": "Não trabalhar sob partes móveis sem suporte mecânico seguro.",
-            }
-        ],
-    },
-    "🔊 Ultrassom odontológico": {
-        "tipo": "Conversão eletromecânica em alta frequência",
-        "imagem": None,
-        "objetivo": """
+"componentes":[
+("Placa de controle","Interpreta comandos.","Falha pode afetar uma ou várias funções."),
+("Pedal","Envia comandos.","Problemas podem ser mecânicos ou elétricos."),
+("Motor/atuador","Produz movimento.","Pode falhar por alimentação, comando ou defeito próprio."),
+("Fim de curso","Limita movimentos.","Falha pode impedir deslocamento."),
+("Mangueiras","Transportam ar ou água.","Vazamentos reduzem pressão ou fluxo."),
+("Válvulas","Controlam fluxo.","Obstrução ou falha altera funcionamento."),
+("Regulador","Controla pressão.","Pressão inadequada afeta instrumentos.")
+],
+"problemas":[
+{
+"titulo":"Cadeira não sobe/desce",
+"sintoma":"Movimento não ocorre.",
+"cadeia":"Comando → controle → potência → motor/atuador → mecânica.",
+"causas":["Comando","Alimentação","Fim de curso","Placa","Motor","Travamento mecânico"],
+"passos":[
+"Verificar se nenhuma função funciona ou apenas um movimento.",
+"Verificar comando.",
+"Observar ruídos de acionamento.",
+"Separar ausência de comando de travamento mecânico.",
+"Consultar esquema técnico antes de medir a placa.",
+"Validar movimento após correção."
+],
+"nao_fazer":"Não trabalhar sob partes móveis sem suporte mecânico seguro."
+}
+]
+},
+
+"🔊 Ultrassom odontológico": {
+"tipo":"Conversão eletromecânica em alta frequência",
+"imagem":None,
+"objetivo":"""
 O ultrassom odontológico converte energia elétrica em vibração mecânica de alta frequência.
 O circuito eletrônico fornece energia ao transdutor, que converte essa energia em movimento.
 
 Dependendo da tecnologia, o sistema pode ser piezoelétrico ou magnetoestritivo.
 """,
-        "raciocinio": [
-            (
-                "Energia elétrica",
-                "O circuito gera sinal elétrico adequado.",
-            ),
-            (
-                "Transdutor",
-                "Converte energia elétrica em vibração mecânica.",
-            ),
-            (
-                "Ressonância",
-                "O conjunto é projetado para operar adequadamente em determinadas frequências.",
-            ),
-            ("Ponta", "Transmite a vibração."),
-            (
-                "Água",
-                "Auxilia irrigação e, conforme o sistema, resfriamento.",
-            ),
-        ],
-        "principio": """
+"raciocinio":[
+("Energia elétrica","O circuito gera sinal elétrico adequado."),
+("Transdutor","Converte energia elétrica em vibração mecânica."),
+("Ressonância","O conjunto é projetado para operar adequadamente em determinadas frequências."),
+("Ponta","Transmite a vibração."),
+("Água","Auxilia irrigação e, conforme o sistema, resfriamento.")
+],
+"principio":"""
 ### Cadeia
 
 **Comando → gerador eletrônico → transdutor → vibração →
@@ -802,73 +515,51 @@ caneta/inserto → ação mecânica.**
 Um problema de “sem vibração” pode estar no comando, na placa, no cabo,
 no transdutor ou no inserto.
 """,
-        "componentes": [
-            (
-                "Placa geradora",
-                "Produz o sinal elétrico.",
-                "Falha pode impedir excitação.",
-            ),
-            (
-                "Transdutor",
-                "Converte energia elétrica em mecânica.",
-                "É elemento central do funcionamento.",
-            ),
-            (
-                "Caneta",
-                "Transmite a energia.",
-                "Cabos e conexões devem ser avaliados.",
-            ),
-            (
-                "Inserto",
-                "Elemento vibratório ativo.",
-                "Desgaste ou incompatibilidade afetam desempenho.",
-            ),
-            (
-                "Sistema de água",
-                "Fornece irrigação.",
-                "Obstrução reduz fluxo.",
-            ),
-        ],
-        "problemas": [
-            {
-                "titulo": "Sem vibração",
-                "sintoma": "Instrumento não apresenta funcionamento esperado.",
-                "cadeia": "Comando → geração → cabo → transdutor → inserto.",
-                "causas": ["Inserto", "Cabo", "Transdutor", "Placa", "Pedal"],
-                "passos": [
-                    "Confirmar alimentação.",
-                    "Confirmar comando.",
-                    "Verificar encaixe e compatibilidade do inserto.",
-                    "Inspecionar cabo.",
-                    "Comparar com componente conhecido em boas condições quando permitido.",
-                    "Investigar eletrônica conforme documentação.",
-                ],
-                "nao_fazer": "Não utilizar componentes incompatíveis.",
-            }
-        ],
-    },
-    "🔍 Colposcópio": {
-        "tipo": "Sistema óptico e de iluminação",
-        "imagem": None,
-        "objetivo": """
+"componentes":[
+("Placa geradora","Produz o sinal elétrico.","Falha pode impedir excitação."),
+("Transdutor","Converte energia elétrica em mecânica.","É elemento central do funcionamento."),
+("Caneta","Transmite a energia.","Cabos e conexões devem ser avaliados."),
+("Inserto","Elemento vibratório ativo.","Desgaste ou incompatibilidade afetam desempenho."),
+("Sistema de água","Fornece irrigação.","Obstrução reduz fluxo.")
+],
+"problemas":[
+{
+"titulo":"Sem vibração",
+"sintoma":"Instrumento não apresenta funcionamento esperado.",
+"cadeia":"Comando → geração → cabo → transdutor → inserto.",
+"causas":["Inserto","Cabo","Transdutor","Placa","Pedal"],
+"passos":[
+"Confirmar alimentação.",
+"Confirmar comando.",
+"Verificar encaixe e compatibilidade do inserto.",
+"Inspecionar cabo.",
+"Comparar com componente conhecido em boas condições quando permitido.",
+"Investigar eletrônica conforme documentação."
+],
+"nao_fazer":"Não utilizar componentes incompatíveis."
+}
+]
+},
+
+"🔍 Colposcópio": {
+"tipo":"Sistema óptico e de iluminação",
+"imagem":None,
+"objetivo":"""
 O colposcópio utiliza ampliação e iluminação para observação detalhada.
 A qualidade da imagem depende de uma cadeia óptica e mecânica.
 
 Para diagnosticar, separe:
 **iluminação → óptica → foco → posicionamento → captura digital, quando presente.**
 """,
-        "raciocinio": [
-            ("Iluminação", "O campo precisa receber luz adequada."),
-            ("Reflexão", "A luz interage com a superfície observada."),
-            ("Lentes", "A óptica coleta e organiza a luz."),
-            ("Foco", "A posição relativa das lentes determina nitidez."),
-            ("Ampliação", "O sistema altera o campo observado."),
-            (
-                "Imagem",
-                "O profissional observa diretamente ou por câmera.",
-            ),
-        ],
-        "principio": """
+"raciocinio":[
+("Iluminação","O campo precisa receber luz adequada."),
+("Reflexão","A luz interage com a superfície observada."),
+("Lentes","A óptica coleta e organiza a luz."),
+("Foco","A posição relativa das lentes determina nitidez."),
+("Ampliação","O sistema altera o campo observado."),
+("Imagem","O profissional observa diretamente ou por câmera.")
+],
+"principio":"""
 ### Cadeia óptica
 
 **Fonte de luz → campo observado → reflexão → lentes → ampliação →
@@ -883,53 +574,37 @@ Pode ser:
 - iluminação;
 - desalinhamento óptico.
 """,
-        "componentes": [
-            ("Fonte de luz", "Ilumina o campo.", "Falhas reduzem visualização."),
-            (
-                "Lentes",
-                "Formam imagem.",
-                "Sujeira ou dano alteram qualidade.",
-            ),
-            (
-                "Sistema de foco",
-                "Ajusta nitidez.",
-                "Falha mecânica impede focalização.",
-            ),
-            ("Braço", "Posiciona o conjunto.", "Folgas afetam estabilidade."),
-            (
-                "Câmera",
-                "Captura imagem, quando presente.",
-                "Falha pode ser óptica, eletrônica ou de software.",
-            ),
-        ],
-        "problemas": [
-            {
-                "titulo": "Imagem desfocada",
-                "sintoma": "Imagem não apresenta nitidez.",
-                "cadeia": "Posicionamento → distância → foco → lente → alinhamento óptico.",
-                "causas": [
-                    "Foco",
-                    "Distância",
-                    "Lente suja",
-                    "Problema mecânico",
-                    "Problema óptico",
-                ],
-                "passos": [
-                    "Verificar ajuste de foco.",
-                    "Verificar distância de trabalho.",
-                    "Inspecionar lentes.",
-                    "Limpar somente conforme orientação do fabricante.",
-                    "Se persistir, investigar mecanismo de foco e sistema óptico.",
-                ],
-                "nao_fazer": "Não utilizar produtos ou materiais abrasivos nas lentes.",
-            }
-        ],
-    },
+"componentes":[
+("Fonte de luz","Ilumina o campo.","Falhas reduzem visualização."),
+("Lentes","Formam imagem.","Sujeira ou dano alteram qualidade."),
+("Sistema de foco","Ajusta nitidez.","Falha mecânica impede focalização."),
+("Braço","Posiciona o conjunto.","Folgas afetam estabilidade."),
+("Câmera","Captura imagem, quando presente.","Falha pode ser óptica, eletrônica ou de software.")
+],
+"problemas":[
+{
+"titulo":"Imagem desfocada",
+"sintoma":"Imagem não apresenta nitidez.",
+"cadeia":"Posicionamento → distância → foco → lente → alinhamento óptico.",
+"causas":["Foco","Distância","Lente suja","Problema mecânico","Problema óptico"],
+"passos":[
+"Verificar ajuste de foco.",
+"Verificar distância de trabalho.",
+"Inspecionar lentes.",
+"Limpar somente conforme orientação do fabricante.",
+"Se persistir, investigar mecanismo de foco e sistema óptico."
+],
+"nao_fazer":"Não utilizar produtos ou materiais abrasivos nas lentes."
+}
+]
+}
 }
 
 
 # ==========================================================
 # CAMADA TÉCNICA AVANÇADA — V3
+# Princípios físicos → subsistemas → componentes → relações
+# → falhas → testes → decisão → validação
 # ==========================================================
 
 TECNICO = {
@@ -950,76 +625,28 @@ Em um sistema de vapor saturado, pressão e temperatura estão relacionadas. Ent
 Ar residual pode prejudicar a distribuição do vapor. A eficiência depende da arquitetura da autoclave, do carregamento e do ciclo utilizado.
 """,
         "interno": [
-            (
-                "Entrada e proteção",
-                "A alimentação chega ao equipamento e passa por dispositivos de proteção e distribuição.",
-            ),
-            (
-                "Controle",
-                "A placa/controlador lê sensores, verifica condições de segurança e executa a sequência programada.",
-            ),
-            (
-                "Geração de calor",
-                "A resistência transfere energia ao sistema térmico e possibilita a geração/aquecimento do meio de processo.",
-            ),
-            (
-                "Câmara e vedação",
-                "A porta, gaxeta e mecanismo de fechamento precisam manter a integridade do volume pressurizado.",
-            ),
-            (
-                "Medição",
-                "Sensores fornecem temperatura e, conforme o modelo, pressão ou outras condições.",
-            ),
-            (
-                "Sequência do ciclo",
-                "O controlador conduz condicionamento, aquecimento, exposição, exaustão e secagem conforme a arquitetura.",
-            ),
-            (
-                "Segurança",
-                "Intertravamentos e dispositivos de proteção impedem condições inseguras.",
-            ),
+            ("Entrada e proteção", "A alimentação chega ao equipamento e passa por dispositivos de proteção e distribuição."),
+            ("Controle", "A placa/controlador lê sensores, verifica condições de segurança e executa a sequência programada."),
+            ("Geração de calor", "A resistência transfere energia ao sistema térmico e possibilita a geração/aquecimento do meio de processo."),
+            ("Câmara e vedação", "A porta, gaxeta e mecanismo de fechamento precisam manter a integridade do volume pressurizado."),
+            ("Medição", "Sensores fornecem temperatura e, conforme o modelo, pressão ou outras condições."),
+            ("Sequência do ciclo", "O controlador conduz condicionamento, aquecimento, exposição, exaustão e secagem conforme a arquitetura."),
+            ("Segurança", "Intertravamentos e dispositivos de proteção impedem condições inseguras.")
         ],
         "subsistemas": {
-            "Elétrico/Potência": [
-                "alimentação",
-                "fusíveis/proteções",
-                "relé/acionamento",
-                "resistência",
-            ],
-            "Térmico": [
-                "resistência",
-                "transferência de calor",
-                "sensor de temperatura",
-            ],
+            "Elétrico/Potência": ["alimentação", "fusíveis/proteções", "relé/acionamento", "resistência"],
+            "Térmico": ["resistência", "transferência de calor", "sensor de temperatura"],
             "Pressão/Vapor": ["câmara", "válvulas", "linhas de fluxo", "exaustão"],
-            "Vedação/Mecânico": [
-                "porta",
-                "gaxeta",
-                "dobradiça",
-                "mecanismo de fechamento",
-            ],
-            "Controle/Sensores": [
-                "placa",
-                "sensor",
-                "lógica do ciclo",
-                "intertravamentos",
-            ],
-            "Segurança": [
-                "trava",
-                "proteções térmicas",
-                "dispositivos previstos pelo fabricante",
-            ],
+            "Vedação/Mecânico": ["porta", "gaxeta", "dobradiça", "mecanismo de fechamento"],
+            "Controle/Sensores": ["placa", "sensor", "lógica do ciclo", "intertravamentos"],
+            "Segurança": ["trava", "proteções térmicas", "dispositivos previstos pelo fabricante"]
         },
         "relacoes": [
             ("Controle", "Resistência", "comanda aquecimento"),
             ("Resistência", "Câmara", "fornece energia térmica"),
-            (
-                "Sensor de temperatura",
-                "Controle",
-                "fecha a malha de controle",
-            ),
+            ("Sensor de temperatura", "Controle", "fecha a malha de controle"),
             ("Porta/Gaxeta", "Câmara", "mantém vedação"),
-            ("Válvulas", "Câmara", "controlam fluxo/condições"),
+            ("Válvulas", "Câmara", "controlam fluxo/condições")
         ],
         "diagrama": """ALIMENTAÇÃO
     ↓
@@ -1031,64 +658,26 @@ ACIONAMENTO → RESISTÊNCIA
                   ↓
         VEDAÇÃO → EXPOSIÇÃO → EXAUSTÃO""",
         "falhas": {
-            "Vedação/Mecânico": [
-                "Vazamento localizado na porta",
-                "Gaxeta deformada/suja",
-                "Desalinhamento",
-                "Fechamento desigual",
-            ],
-            "Elétrico/Potência": [
-                "Não liga",
-                "Liga mas não aquece",
-                "Proteção atuada",
-                "Falha de acionamento",
-            ],
-            "Térmico": [
-                "Subida lenta de temperatura",
-                "Não atinge condição prevista",
-                "Oscilação de leitura",
-            ],
-            "Controle/Sensores": [
-                "Ciclo interrompe",
-                "Leitura incoerente",
-                "Comando inadequado",
-            ],
-            "Pressão/Vapor": [
-                "Comportamento anormal de pressão",
-                "Fluxo/exaustão inadequado",
-            ],
+            "Vedação/Mecânico": ["Vazamento localizado na porta", "Gaxeta deformada/suja", "Desalinhamento", "Fechamento desigual"],
+            "Elétrico/Potência": ["Não liga", "Liga mas não aquece", "Proteção atuada", "Falha de acionamento"],
+            "Térmico": ["Subida lenta de temperatura", "Não atinge condição prevista", "Oscilação de leitura"],
+            "Controle/Sensores": ["Ciclo interrompe", "Leitura incoerente", "Comando inadequado"],
+            "Pressão/Vapor": ["Comportamento anormal de pressão", "Fluxo/exaustão inadequado"]
         },
         "testes": [
-            (
-                "Vazamento sempre no mesmo lado?",
-                "Sim → aumenta a suspeita de assimetria mecânica; não → investigar gaxeta/superfície em todo o perímetro.",
-            ),
-            (
-                "Controlador solicita aquecimento?",
-                "Separar falha de comando de falha da cadeia de potência, conforme documentação técnica.",
-            ),
-            (
-                "Temperatura medida externamente e leitura interna concordam?",
-                "Divergência controlada sugere investigar medição/calibração; usar método autorizado.",
-            ),
-            (
-                "Falha ocorre com ciclo repetido?",
-                "Reprodutibilidade ajuda a separar evento aleatório de defeito sistemático.",
-            ),
+            ("Vazamento sempre no mesmo lado?", "Sim → aumenta a suspeita de assimetria mecânica; não → investigar gaxeta/superfície em todo o perímetro."),
+            ("Controlador solicita aquecimento?", "Separar falha de comando de falha da cadeia de potência, conforme documentação técnica."),
+            ("Temperatura medida externamente e leitura interna concordam?", "Divergência controlada sugere investigar medição/calibração; usar método autorizado."),
+            ("Falha ocorre com ciclo repetido?", "Reprodutibilidade ajuda a separar evento aleatório de defeito sistemático.")
         ],
         "arvore": """SINTOMA
 ├── Não liga → alimentação? → proteção? → comando?
 ├── Liga/não aquece → comando? → potência? → elemento térmico?
 ├── Aquece/não conclui → sensor? → controle? → condição de processo?
 └── Vaza na porta → ponto fixo? → gaxeta? → alinhamento? → fechamento?""",
-        "validacao": [
-            "Inspeção visual e montagem correta",
-            "Ausência do sintoma original",
-            "Ciclo funcional completo conforme fabricante",
-            "Verificação dos intertravamentos",
-            "Registro dos parâmetros/testes exigidos pelo procedimento institucional",
-        ],
+        "validacao": ["Inspeção visual e montagem correta", "Ausência do sintoma original", "Ciclo funcional completo conforme fabricante", "Verificação dos intertravamentos", "Registro dos parâmetros/testes exigidos pelo procedimento institucional"]
     },
+
     "📈 Eletrocardiógrafo": {
         "fisica": """
 ### Princípios físicos
@@ -1106,73 +695,13 @@ O front-end amplifica diferenças entre entradas e busca rejeitar sinais comuns.
 Cabos podem captar interferência por acoplamento capacitivo, magnético ou conduzido. O ambiente deve ser tratado como variável experimental.
 """,
         "interno": [
-            (
-                "Interface paciente",
-                "Eletrodos estabelecem contato elétrico com a pele.",
-            ),
-            (
-                "Cabos",
-                "Transportam sinais de baixa amplitude e podem captar interferências.",
-            ),
-            (
-                "Proteção/isolação",
-                "A entrada do paciente possui arquitetura de segurança específica.",
-            ),
-            (
-                "Front-end analógico",
-                "Amplifica o sinal diferencial e condiciona o sinal.",
-            ),
-            (
-                "Filtragem",
-                "Atenua componentes indesejados dentro da estratégia do equipamento.",
-            ),
+            ("Interface paciente", "Eletrodos estabelecem contato elétrico com a pele."),
+            ("Cabos", "Transportam sinais de baixa amplitude e podem captar interferências."),
+            ("Proteção/isolação", "A entrada do paciente possui arquitetura de segurança específica."),
+            ("Front-end analógico", "Amplifica o sinal diferencial e condiciona o sinal."),
+            ("Filtragem", "Atenua componentes indesejados dentro da estratégia do equipamento."),
             ("Conversão", "O sinal condicionado é digitalizado."),
-            (
-                "Processamento",
-                "O software/processador organiza a exibição e os registros.",
-            ),
-        ],
-    },
+            ("Processamento", "O software/processador organiza a exibição e os registros.")
+        ]
+    }
 }
-
-# ==========================================================
-# RENDERIZAÇÃO NA INTERFACE
-# ==========================================================
-
-st.title("🩺 Guia de Campo de Engenharia Clínica V5")
-
-# Apresentação do Hero Box
-st.markdown(
-    """
-<div class="hero">
-    <h3 style="margin: 0 0 0.5rem 0;">Filosofia de Diagnóstico</h3>
-    <p style="margin: 0;">PRINCÍPIO FÍSICO → COMPONENTE → SINTOMA → HIPÓTESE → TESTE → CONCLUSÃO → CORREÇÃO AUTORIZADA → VALIDAÇÃO</p>
-</div>
-""",
-    unsafe_allow_html=True,
-)
-
-equipamento_selecionado = st.sidebar.selectbox(
-    "Selecione o Equipamento:", list(EQUIPAMENTOS.keys())
-)
-
-dados = EQUIPAMENTOS[equipamento_selecionado]
-
-st.header(equipamento_selecionado)
-st.write(f"**Tipo de Processo:** {dados['tipo']}")
-
-st.markdown(
-    f"""
-<div class="concept">
-    <h4 style="margin-top:0;">Objetivo</h4>
-    {dados['objetivo']}
-</div>
-""",
-    unsafe_allow_html=True,
-)
-
-st.subheader("Componentes Principais")
-df_comp = pd.DataFrame(
-    dados["componentes"], columns=["Componente", "Função", "Falha Típica"]
-)
-st.table(df_comp)
