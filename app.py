@@ -11,125 +11,37 @@ import json
 # ==========================================================
 
 st.set_page_config(
-    page_title="Engenharia Clínica | Guia de Campo",
-    #page_icon="🩺",
+    page_title="Engenharia Clínica | Guia de Campo V5",
+    page_icon="🩺",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
 # ----------------------------------------------------------
-# ESTILO — ALTO CONTRASTE / LEGIBILIDADE
+# ESTILO
 # ----------------------------------------------------------
 st.markdown("""
 <style>
-/* Fundo geral */
-.stApp {
-    background: #0f172a;
-    color: #f8fafc;
-}
-
-/* Área principal */
-.main .block-container {
-    max-width: 1400px;
-    padding-top: 2rem;
-    padding-bottom: 3rem;
-}
-
-/* Texto: evita o problema de texto claro em fundo branco */
-h1, h2, h3, h4, h5, h6,
-p, li, label, .stMarkdown, .stMarkdown p, .stCaption {
-    color: #f8fafc !important;
-}
-
-/* Cards personalizados */
-.hero {
-    padding: 1.8rem;
-    border-radius: 18px;
-    background: linear-gradient(135deg, #172554, #0f766e);
-    border: 1px solid #38bdf8;
-    color: #ffffff !important;
-    margin-bottom: 1rem;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-}
-.hero h1, .hero h2, .hero h3, .hero p { color: #ffffff !important; }
-
-.concept {
-    padding: 1rem;
-    border-left: 5px solid #38bdf8;
-    background-color: #172554;
-    color: #f8fafc !important;
-    border-radius: 8px;
-    margin: 0.7rem 0;
-}
-.concept * { color: #f8fafc !important; }
-
-.warning-box {
-    padding: 1rem;
-    border-left: 5px solid #f59e0b;
-    background-color: #422006;
-    color: #fff7ed !important;
-    border-radius: 8px;
-}
-.warning-box * { color: #fff7ed !important; }
-
-/* Expansores */
-details {
-    background-color: #1e293b !important;
-    border: 1px solid #475569 !important;
-    border-radius: 10px !important;
-    margin-bottom: 0.5rem !important;
-}
-details summary, details p, details div { color: #f8fafc !important; }
-
-/* Inputs e selectbox */
-.stSelectbox > div > div,
-.stTextInput input,
-.stTextArea textarea {
-    background-color: #1e293b !important;
-    color: #ffffff !important;
-    border-color: #64748b !important;
-}
-
-/* Tabs */
-button[data-baseweb="tab"] {
-    color: #cbd5e1 !important;
-    font-weight: 600 !important;
-}
-button[data-baseweb="tab"][aria-selected="true"] {
-    color: #ffffff !important;
-}
-
-/* Sidebar */
-section[data-testid="stSidebar"] {
-    background-color: #111827 !important;
-}
-section[data-testid="stSidebar"] * {
-    color: #f8fafc !important;
-}
-
-/* Dataframes e tabelas */
-.stDataFrame, [data-testid="stDataFrame"] {
-    background-color: #1e293b !important;
-}
-
-/* Código e diagramas */
-pre, code {
-    background-color: #020617 !important;
-    color: #e2e8f0 !important;
-}
-
-/* Métricas */
-[data-testid="stMetric"] {
-    background-color: #1e293b;
-    border: 1px solid #475569;
-    padding: 0.8rem;
-    border-radius: 10px;
-}
-
-/* Alertas Streamlit */
-[data-testid="stAlert"] {
-    border-radius: 10px;
-}
+    .hero {
+        padding: 1.5rem;
+        border-radius: 18px;
+        background: linear-gradient(135deg, #eef6ff, #f7fbff);
+        border: 1px solid #d8e8f8;
+        margin-bottom: 1rem;
+    }
+    .concept {
+        padding: 1rem;
+        border-left: 5px solid #2d7ff9;
+        background-color: #f7fbff;
+        border-radius: 8px;
+        margin: 0.7rem 0;
+    }
+    .warning-box {
+        padding: 1rem;
+        border-left: 5px solid #f59e0b;
+        background-color: #fffaf0;
+        border-radius: 8px;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -672,78 +584,6 @@ Pode ser:
 }
 ]
 }
-,
-"🩸 Esfigmomanômetro": {
-"tipo": "Medição não invasiva da pressão arterial",
-"imagem": None,
-"objetivo": """
-O esfigmomanômetro é utilizado para estimar a pressão arterial de forma não invasiva.
-No modelo eletrônico automático, o equipamento combina um **manguito**, um sistema pneumático,
-um **sensor de pressão** e um algoritmo de processamento.
-
-A ideia central para Engenharia Clínica é separar duas coisas:
-
-**o fenômeno fisiológico → a alteração mecânica da artéria**
-
-E:
-
-**a alteração mecânica → pressão/oscilações detectadas → processamento → valor exibido.**
-
-O equipamento não mede diretamente a pressão dentro da artéria. Em métodos automáticos,
-a estimativa depende do método de medição, da qualidade do sinal e do algoritmo do fabricante.
-""",
-"raciocinio": [
-("1. O que o equipamento controla?", "A pressão aplicada pelo manguito ao redor do membro."),
-("2. O que acontece no corpo?", "A compressão externa interage com a artéria e modifica o fluxo e as oscilações associadas ao pulso."),
-("3. Como o equipamento percebe isso?", "Um sensor converte a pressão do sistema pneumático em sinal elétrico."),
-("4. O que faz o controlador?", "Controla inflação/deflação, lê o sensor e processa o sinal conforme o método implementado."),
-("5. Como pensar em falhas?", "Separar manguito e mangueira → vazamento → bomba → válvula → sensor → eletrônica → algoritmo/exibição.")
-],
-"principio": """
-### Cadeia funcional
-
-**Manguito → pressão externa no membro → interação com a artéria →
-variações de pressão no sistema pneumático → sensor → condicionamento/
-processamento → estimativa → tela.**
-
-⚠️ O método exato depende do tipo de esfigmomanômetro.
-
-- **Auscultatório/manual:** utiliza estetoscópio e sons relacionados ao fluxo sanguíneo.
-- **Automático oscilométrico:** analisa oscilações de pressão durante a deflação.
-
-A manutenção deve respeitar o manual do fabricante e os procedimentos de verificação e
-calibração aplicáveis ao modelo.
-""",
-"componentes": [
-("Manguito", "Aplica pressão externa controlada ao membro.", "Tamanho inadequado, dano ou instalação incorreta podem comprometer a medição."),
-("Mangueira pneumática", "Conduz o ar entre os componentes.", "Dobras, desconexões ou vazamentos alteram a dinâmica de pressão."),
-("Bomba de ar", "Eleva a pressão do sistema pneumático.", "Falha pode causar ausência de inflação ou inflação insuficiente."),
-("Válvula de deflação", "Controla a liberação de ar e a queda de pressão.", "Deflação muito rápida, lenta ou irregular pode comprometer a aquisição."),
-("Sensor de pressão", "Converte a pressão pneumática em sinal elétrico.", "Deriva, falha, obstrução do caminho pneumático ou erro eletrônico podem alterar a leitura."),
-("Controlador eletrônico", "Controla a sequência de medição e processa os sinais.", "Separar erro de entrada, sensor, acionamento e processamento antes de atribuir a falha à placa."),
-("Fonte/bateria", "Fornece energia ao sistema.", "Baixa tensão pode afetar bomba, controle e estabilidade da medição."),
-("Display", "Apresenta resultados e informações do ciclo.", "Falha de exibição não significa necessariamente falha de medição.")
-],
-"problemas": [
-{
-"titulo":"Não infla o manguito",
-"sintoma":"O ciclo inicia, mas a pressão não aumenta adequadamente.",
-"cadeia":"Alimentação → controlador → acionamento → bomba → mangueira → manguito.",
-"causas":["Bateria/fonte", "Comando ausente", "Bomba", "Mangueira desconectada", "Vazamento", "Válvula aberta"],
-"passos":["Verificar alimentação.", "Verificar conexões pneumáticas externas.", "Observar se existe comando/acionamento conforme procedimento técnico.", "Separar vazamento de falha de bomba.", "Consultar manual antes de desmontagem."],
-"nao_fazer":"Não ajustar parâmetros de calibração ou modificar o circuito pneumático sem procedimento autorizado."
-},
-{
-"titulo":"Infla, mas apresenta erro ou valor inconsistente",
-"sintoma":"O ciclo pneumático ocorre, porém a leitura é rejeitada, instável ou inconsistente.",
-"cadeia":"Manguito/posição → sinal fisiológico → pressão → sensor → processamento → resultado.",
-"causas":["Movimento", "Manguito inadequado", "Vazamento", "Sensor", "Deflação irregular", "Interferência no sinal", "Processamento"],
-"passos":["Confirmar condições de uso previstas pelo fabricante.", "Verificar integridade do manguito e das conexões.", "Investigar estabilidade da pressão e comportamento da deflação.", "Diferenciar problema pneumático de problema de sensor/processamento.", "Realizar testes de desempenho apenas com método e instrumentos adequados."],
-"nao_fazer":"Não concluir que o equipamento está calibrado apenas porque apresenta números plausíveis."
-}
-]
-}
-
 }
 
 
@@ -1032,103 +872,151 @@ CAMPO → LUZ REFLETIDA → LENTES → FOCO/AMPLIAÇÃO → OCULAR/CÂMERA
 │                       └── Sim → alinhamento/câmera/óptica especializada""",
         "validacao": ["Iluminação uniforme", "Foco e ampliação funcionais", "Imagem estável", "Movimento mecânico sem folgas anormais", "Captura digital, quando aplicável"]
     }
-,
-    "🩸 Esfigmomanômetro": {
-        "fisica": """
-### Princípios físicos
-
-**1. Pressão em um sistema pneumático**  
-A bomba aumenta a pressão do ar no conjunto manguito–mangueira. O sensor mede a pressão do sistema e a eletrônica acompanha sua variação.
-
-**2. Transdução de pressão**  
-O sensor transforma uma grandeza mecânica — pressão — em um sinal elétrico que pode ser condicionado e convertido para processamento.
-
-**3. Dinâmica de inflação e deflação**  
-A bomba aumenta a pressão; a válvula controla a liberação de ar. Vazamentos e restrições modificam a dinâmica do sistema.
-
-**4. Método oscilométrico**  
-Em equipamentos automáticos, pequenas oscilações de pressão associadas à pulsação arterial são analisadas durante a deflação. O algoritmo do fabricante estima valores a partir dessas informações.
-
-⚠️ O método de cálculo não deve ser presumido como universal entre fabricantes.
-""",
-        "interno": [
-            ("Alimentação", "Fonte ou bateria fornece energia para eletrônica e atuadores."),
-            ("Controle", "O controlador inicia o ciclo e monitora condições do sistema."),
-            ("Inflação", "A bomba pressuriza o conjunto pneumático."),
-            ("Medição", "O sensor acompanha a pressão e suas variações."),
-            ("Deflação controlada", "A válvula libera ar segundo a estratégia do equipamento."),
-            ("Processamento", "O sinal é filtrado/processado para extrair informações relevantes."),
-            ("Resultado", "O sistema apresenta a estimativa e possíveis mensagens de erro.")
-        ],
-        "subsistemas": {
-            "Pneumático": ["manguito", "mangueira", "bomba", "válvula", "conexões"],
-            "Sensoriamento": ["sensor de pressão", "condicionamento do sinal"],
-            "Eletrônico/Controle": ["microcontrolador", "driver", "lógica do ciclo"],
-            "Alimentação": ["bateria/fonte", "regulação", "proteções"],
-            "Interface": ["botão", "display", "indicadores"],
-            "Processamento": ["aquisição", "filtragem", "algoritmo", "detecção de erro"]
-        },
-        "relacoes": [
-            ("Controlador", "Bomba", "comanda a inflação"),
-            ("Bomba", "Manguito", "aumenta a pressão do sistema"),
-            ("Manguito", "Artéria", "aplica pressão externa"),
-            ("Sistema pneumático", "Sensor de pressão", "gera a grandeza medida"),
-            ("Sensor", "Controlador", "fornece informação para processamento"),
-            ("Controlador", "Válvula", "controla a deflação"),
-            ("Processamento", "Display", "apresenta o resultado")
-        ],
-        "diagrama": """BOTÃO/COMANDO → CONTROLADOR → DRIVER → BOMBA
-                                      ↓
-BATERIA/FONTE → REGULAÇÃO → ELETRÔNICA
-
-BOMBA → MANGUEIRA → MANGUITO → PRESSÃO EXTERNA NO MEMBRO
-                         ↓
-                    ARTÉRIA/PULSO
-                         ↓
-MANGUITO/SISTEMA → SENSOR DE PRESSÃO → CONDICIONAMENTO → PROCESSAMENTO → DISPLAY
-                         ↑
-                      VÁLVULA
-                         ↑
-                    CONTROLADOR""",
-        "falhas": {
-            "Pneumático": ["Não infla", "Perde pressão", "Deflação irregular", "Vazamento"],
-            "Bomba": ["Sem acionamento", "Baixa capacidade de inflação", "Ruído anormal"],
-            "Válvula": ["Deflação muito rápida", "Deflação muito lenta", "Travamento"],
-            "Sensor": ["Leitura instável", "Deriva", "Valor incompatível"],
-            "Controle/Processamento": ["Erro de ciclo", "Interrupção", "Resultado inconsistente"],
-            "Alimentação": ["Não liga", "Desliga durante a medição", "Bomba fraca"]
-        },
-        "testes": [
-            ("A pressão aumenta e se mantém?", "Ajuda a separar falha de bomba de vazamento."),
-            ("A deflação ocorre de forma controlada?", "Direciona a investigação para válvula/fluxo/controle."),
-            ("O comportamento pneumático está normal, mas o resultado é inconsistente?", "Aumenta a suspeita sobre sensor, aquisição ou processamento."),
-            ("O problema aparece com outro manguito compatível e íntegro?", "Ajuda a separar acessório de equipamento, conforme compatibilidade prevista."),
-            ("O display está errado ou a medição realmente falhou?", "Separar subsistema de interface da cadeia de medição.")
-        ],
-        "arvore": """ERRO DE MEDIÇÃO
-├── Equipamento liga?
-│   ├── Não → alimentação/fonte/bateria/proteções
-│   └── Sim → manguito infla?
-│             ├── Não → comando → driver → bomba → conexões/vazamento
-│             └── Sim → mantém pressão?
-│                       ├── Não → vazamento/válvula/manguito/mangueira
-│                       └── Sim → deflação é controlada?
-│                                 ├── Não → válvula/fluxo/controle
-│                                 └── Sim → resultado inconsistente?
-│                                           ├── Sim → condições de medição/sensor/processamento
-│                                           └── Não → validar desempenho conforme procedimento""",
-        "validacao": [
-            "Inspeção visual do equipamento e acessórios", 
-            "Integridade do manguito, mangueiras e conexões",
-            "Ciclo de inflação e deflação conforme comportamento previsto",
-            "Ausência de vazamentos anormais",
-            "Verificação de desempenho/calibração com método e instrumento apropriados",
-            "Registro da intervenção e do resultado",
-            "Liberação somente conforme procedimento institucional e orientação do fabricante"]
-    }
-
 }
 
+
+
+
+# ==========================================================
+# REFERÊNCIAS DE MANUTENÇÃO
+# Base complementar: iFixit + materiais audiovisuais fornecidos
+# pelo usuário. Manual do fabricante e procedimento institucional
+# sempre têm prioridade sobre fontes externas.
+# ==========================================================
+REFERENCIAS_MANUTENCAO = {
+    "iFixit — Medical Device": "https://pt.ifixit.com/Device/Medical_Device",
+    "iFixit — Clinical Equipment": "https://www.ifixit.com/Device/Clinical_Equipment",
+    "iFixit — Repair Guides": "https://pt.ifixit.com/Guide",
+    "Odonto — vídeo 1": "https://youtu.be/5bCWR88T7ns?si=FAkTCJgFiFvrm2Ll",
+    "Odonto — vídeo 2": "https://youtu.be/Ib8PQ5szmhM?si=A9BWU1S7p1oq5aFg",
+    "Odonto — vídeo 3": "https://youtu.be/9kh7lYyU3Io?si=AflDO6fTiBYUXvLl",
+    "Odonto — vídeo 4": "https://youtu.be/g9MzIPmuFYs?si=jjb5NAh6UOoOVqnB",
+    "Odonto — vídeo 5": "https://youtu.be/MtDXFsNyVsc?si=fNlDE6-7qowSEoX7",
+}
+
+CORRECOES_TECNICAS = {
+    "Vazamento de vapor na porta": [
+        "Retirar de uso, aguardar resfriamento e confirmar despressurização completa.",
+        "Identificar exatamente onde a fuga aparece e registrar se o ponto se repete sempre no mesmo lado.",
+        "Inspecionar gaxeta, canaleta, superfície de contato, porta, dobradiças e mecanismo de fechamento.",
+        "Limpar somente com método/material permitido pelo fabricante; não raspar nem deformar a superfície de vedação.",
+        "Comparar alinhamento e fechamento com a condição especificada no manual de serviço.",
+        "Se houver desalinhamento, executar somente o ajuste mecânico previsto pelo fabricante e com a ferramenta indicada.",
+        "Se a gaxeta estiver deformada, ressecada ou danificada, substituir pela peça especificada para o modelo.",
+        "Montar novamente, repetir o teste funcional e verificar a vedação em todo o ciclo aplicável.",
+        "Registrar causa, peça/ajuste realizado e resultado da validação."
+    ],
+    "Liga, mas não aquece": [
+        "Retirar de uso e desenergizar o equipamento antes de abrir qualquer tampa ou acessar a parte elétrica.",
+        "Confirmar no diagrama do fabricante qual circuito deveria alimentar a resistência.",
+        "Verificar visualmente conectores, terminais, sinais de aquecimento, fusíveis e proteções, sem energizar o circuito de forma improvisada.",
+        "Diferenciar falha de comando de falha de potência: confirmar, por procedimento autorizado, se o acionamento chega ao estágio de potência.",
+        "Com o equipamento isolado, verificar a continuidade/resistência do elemento de aquecimento conforme especificação do fabricante.",
+        "Se a resistência estiver dentro da especificação, investigar relé/SSR, termostato, proteção térmica, cabos e comando.",
+        "Substituir somente o componente confirmado como defeituoso e pela especificação correta.",
+        "Remontar todas as proteções, executar ciclo funcional e validar aquecimento e controle de temperatura.",
+        "Nunca deixar jumper ou bypass permanente em sensor, termostato ou proteção."
+    ],
+    "Não atinge a temperatura programada": [
+        "Registrar o ciclo, temperatura indicada e tempo necessário para atingir cada etapa.",
+        "Confirmar se a carga e o programa utilizados são compatíveis com o equipamento.",
+        "Inspecionar vazamentos e condição da vedação antes de culpar o sistema de aquecimento.",
+        "Confirmar, com método de referência autorizado, se a indicação do sensor representa adequadamente a condição térmica.",
+        "Separar as hipóteses: baixa potência térmica, perda de calor, erro de medição ou controle inadequado.",
+        "Testar resistência, acionamento e sensores conforme o manual de serviço.",
+        "Corrigir a causa confirmada; não aumentar parâmetros do ciclo para compensar defeito.",
+        "Repetir o ciclo e confirmar estabilidade, temperatura, tempo e demais critérios de aceitação aplicáveis.",
+        "Registrar a intervenção e os resultados."
+    ],
+    "Traçado com ruído excessivo": [
+        "Confirmar se o ruído é reproduzível e caracterizar seu padrão: rede, movimento, deriva de linha de base ou ruído aleatório.",
+        "Verificar eletrodos, contato com a pele e posicionamento conforme procedimento de uso.",
+        "Inspecionar cabo do paciente, conectores e sinais de dano mecânico.",
+        "Afastar fontes próximas de interferência e testar uma variável por vez.",
+        "Repetir o teste em outro ambiente/tomada quando permitido pelo procedimento.",
+        "Utilizar simulador de ECG apropriado, quando disponível, para separar problema do paciente/interface de problema interno.",
+        "Se o ruído persistir com simulador em ambiente controlado, investigar aquisição, alimentação, blindagem, filtros e isolamento conforme manual.",
+        "Corrigir ou substituir apenas o elemento confirmado.",
+        "Validar todas as derivações e realizar os testes de segurança aplicáveis."
+    ],
+    "Amplitude muito alta ou muito baixa": [
+        "Confirmar configuração de ganho, velocidade e derivações antes de abrir o equipamento.",
+        "Verificar se o comportamento ocorre em uma derivação ou em várias.",
+        "Inspecionar eletrodos, cabos e conexões.",
+        "Repetir a aquisição em condições controladas e, quando disponível, com simulador de ECG.",
+        "Comparar o resultado com equipamento de referência sob condições equivalentes.",
+        "Se o defeito acompanhar o cabo, substituir/testar o cabo conforme especificação.",
+        "Se persistir com simulador, investigar front-end, ganho, alimentação e processamento segundo documentação técnica.",
+        "Após correção, repetir teste de amplitude e estabilidade.",
+        "Registrar a condição antes/depois."
+    ],
+    "Compressor não liga": [
+        "Desligar o equipamento e garantir condição segura antes de acessar qualquer componente elétrico.",
+        "Confirmar pressão existente no reservatório e despressurizar conforme procedimento do fabricante quando houver intervenção no circuito pneumático.",
+        "Verificar alimentação, proteção e comando conforme esquema elétrico.",
+        "Avaliar pressostato e condição de partida sem realizar bypass permanente.",
+        "Investigar capacitor/circuito de partida quando previsto no modelo.",
+        "Se houver comando e alimentação adequados, verificar motor e possíveis travamentos mecânicos conforme manual.",
+        "Corrigir a causa confirmada e remontar todas as proteções.",
+        "Testar partida, corte por pressão e retorno à operação.",
+        "Validar também os dispositivos de segurança previstos."
+    ],
+    "Enche lentamente": [
+        "Registrar o tempo de enchimento e comparar com a referência do fabricante.",
+        "Inspecionar vazamentos em conexões, mangueiras, válvulas e reservatório.",
+        "Verificar filtro de admissão e demais restrições de fluxo.",
+        "Observar se o motor apresenta ruído, aquecimento ou comportamento anormal.",
+        "Investigar capacidade de compressão, válvulas e desgaste do cabeçote conforme manual.",
+        "Corrigir vazamento/obstrução ou substituir o componente confirmado como defeituoso.",
+        "Repetir o teste de enchimento e verificar pressão de corte/retorno.",
+        "Confirmar ausência de vazamentos e funcionamento dos dispositivos de segurança.",
+        "Registrar tempo, pressão e intervenção realizada."
+    ],
+    "Temperatura acima da faixa": [
+        "Priorizar imediatamente a proteção do conteúdo conforme protocolo institucional; não esperar o diagnóstico terminar para tomar a ação de contingência prevista.",
+        "Confirmar a temperatura com método/instrumento autorizado e rastreável quando disponível.",
+        "Verificar porta, gaxeta, carga, circulação de ar e condições ambientais.",
+        "Consultar histórico para identificar início e duração do desvio.",
+        "Verificar se compressor e ventilação estão operando, sem concluir que o compressor está bom apenas porque liga.",
+        "Investigar condensador, evaporador, circulação e controle conforme manual e competência técnica.",
+        "Se houver suspeita de sensor, comparar a indicação com método de referência antes da substituição.",
+        "Corrigir a causa confirmada e monitorar a recuperação e estabilidade térmica.",
+        "Documentar o desvio, ação de contingência, causa e resultado."
+    ],
+    "Cadeira não sobe/desce": [
+        "Retirar a cadeira de uso se houver risco mecânico ou movimento imprevisível.",
+        "Confirmar se apenas uma função falhou ou se várias funções estão indisponíveis.",
+        "Verificar alimentação e comando do pedal/botão conforme o esquema do modelo.",
+        "Observar se existe acionamento audível sem movimento, diferenciando comando elétrico de travamento mecânico.",
+        "Verificar fins de curso, sensores e intertravamentos previstos pelo fabricante.",
+        "Se houver comando no atuador, investigar motor/atuador, transmissão e travamento mecânico.",
+        "Corrigir a causa confirmada; não trabalhar sob partes móveis sem suporte mecânico adequado.",
+        "Repetir todos os movimentos e verificar suavidade, limites e segurança.",
+        "Registrar a intervenção e a validação."
+    ],
+    "Sem vibração": [
+        "Retirar de uso se houver comportamento anormal, aquecimento ou dano no cabo/caneta.",
+        "Confirmar alimentação e comando do equipamento.",
+        "Verificar se o inserto correto está instalado e corretamente fixado conforme fabricante.",
+        "Inspecionar cabo, conector e caneta quanto a dano, folga ou mau contato.",
+        "Verificar sistema de irrigação, pois falta de fluxo pode acompanhar ou causar comportamento inadequado dependendo do modelo.",
+        "Quando permitido, comparar com caneta/inserto de referência compatível e conhecido em boas condições.",
+        "Se a falha persistir, investigar gerador/transdutor conforme manual de serviço e instrumentos apropriados.",
+        "Substituir somente o componente confirmado e compatível.",
+        "Validar vibração, irrigação, comandos e condição do inserto após a intervenção."
+    ],
+    "Imagem desfocada": [
+        "Confirmar se o desfoque ocorre na observação óptica, na câmera ou apenas no monitor/software.",
+        "Verificar distância de trabalho e ajuste de foco.",
+        "Inspecionar lentes, objetivas, oculares e janela óptica quanto a sujeira ou dano.",
+        "Realizar limpeza somente com produto, material e procedimento autorizados pelo fabricante.",
+        "Verificar estabilidade do braço e possíveis folgas que alterem o foco durante o uso.",
+        "Se a imagem direta estiver boa e a digital ruim, investigar câmera, cabo, alimentação e software separadamente.",
+        "Se persistir, avaliar alinhamento/foco óptico conforme manual e encaminhar para serviço especializado quando necessário.",
+        "Repetir teste com objeto/padrão de referência adequado.",
+        "Registrar condição antes/depois e acessórios utilizados no teste."
+    ]
+}
 
 # ==========================================================
 # V4 - FUNDAMENTOS, COMPONENTES INTERATIVOS E ANATOMIA
@@ -1241,8 +1129,6 @@ COMPONENTES_BASE = {
 }
 
 ANATOMIA = {
-
-    "🩸 Esfigmomanômetro": {"sistema":"Sistema cardiovascular, especialmente coração, vasos sanguíneos e circulação periférica.","relacao":"A pressão arterial está relacionada à força exercida pelo sangue sobre as paredes arteriais. O esfigmomanômetro aplica pressão externa ao membro e utiliza um método de medição para obter uma estimativa. No método oscilométrico, o equipamento analisa variações de pressão associadas à pulsação arterial; no método auscultatório, a interpretação depende da ausculta durante a deflação.","conexao":"Coração → ejeção de sangue → artérias → pulso/pressão arterial → membro → manguito → pressão no sistema pneumático → sensor → processamento → resultado."},
     "♨️ Autoclave": {"sistema":"Não mede diretamente uma função anatômica; atua sobre instrumentos e materiais usados no cuidado ao paciente.","relacao":"A relação com o corpo humano é indireta e ocorre pela prevenção de transmissão de microrganismos. O entendimento básico de microbiologia e barreiras de controle de infecção é mais relevante que uma anatomia de órgão específico.","conexao":"Paciente → procedimento → instrumentos/material → processamento correto → redução do risco associado ao reuso."},
     "📈 Eletrocardiógrafo": {"sistema":"Sistema cardiovascular e sistema de condução elétrica cardíaca.","relacao":"O nó sinoatrial inicia a ativação elétrica fisiológica; a condução pelo miocárdio produz campos elétricos que resultam em diferenças de potencial detectáveis na superfície corporal. O ECG registra essas diferenças por eletrodos.","conexao":"Coração → atividade elétrica → propagação pelo volume condutor corporal → pele → eletrodos → cabos → aquisição eletrônica → traçado."},
     "💨 Compressor": {"sistema":"Não mede diretamente anatomia humana; fornece ar comprimido para sistemas que podem ser utilizados em procedimentos clínicos/odontológicos.","relacao":"No contexto odontológico, sua relação é indireta: o ar comprimido permite o funcionamento de instrumentos que atuam na cavidade oral. A segurança depende da qualidade do ar e da aplicação prevista.","conexao":"Compressor → tratamento/distribuição do ar → equipamento odontológico → instrumento → procedimento no paciente."},
@@ -1434,12 +1320,25 @@ def render_problema(problema):
         st.markdown("### 🧭 Princípio do diagnóstico")
         st.write(
             "Não pule diretamente para a troca de uma peça. "
-            "Tente localizar em qual ponto da cadeia o comportamento deixa de ser esperado."
+            "Localize primeiro em qual ponto da cadeia o comportamento deixa de ser esperado."
         )
 
-    st.markdown("### 🛠️ Roteiro de investigação")
+    st.markdown("### 🔎 Roteiro de investigação")
     for i, passo in enumerate(problema["passos"], 1):
         st.markdown(f"**{i}. {passo}**")
+
+    # Nova camada: depois de localizar a causa, o guia mostra como agir como técnico.
+    st.markdown("### 🧰 Como corrigir — passo a passo técnico")
+    st.caption("A sequência abaixo começa somente depois da confirmação da causa. O manual de serviço do modelo e o procedimento institucional prevalecem.")
+    correcao = CORRECOES_TECNICAS.get(problema["titulo"], [])
+    if correcao:
+        for i, passo in enumerate(correcao, 1):
+            st.markdown(f"**{i}.** {passo}")
+    else:
+        st.info("Para este defeito, siga o procedimento específico do fabricante e registre a causa confirmada antes da substituição/ajuste.")
+
+    st.markdown("### 🧪 Critério de encerramento")
+    st.write("Não considere o reparo concluído apenas porque o equipamento voltou a ligar. Repita o teste que reproduzia o defeito, verifique funções relacionadas e execute os testes de segurança/aceitação aplicáveis.")
 
     st.markdown("### ⛔ O que não fazer")
     st.warning(problema["nao_fazer"])
@@ -1564,7 +1463,22 @@ def equipamento_page(nome, info):
         if not encontrados: st.info("Nenhum problema encontrado.")
         else:
             escolha = st.selectbox("Selecione o problema", [p["titulo"] for p in encontrados], key=f"problema_{nome}")
-            render_problema(next(p for p in encontrados if p["titulo"] == escolha))
+            problema_selecionado = next(p for p in encontrados if p["titulo"] == escolha)
+            render_problema(problema_selecionado)
+
+        st.divider()
+        st.markdown("## 📚 Referências complementares de manutenção")
+        st.caption("Use estas fontes para estudar técnicas e arquitetura de reparo. Para intervenção em equipamento médico, confirme sempre o procedimento no manual de serviço do modelo.")
+        col_ref1, col_ref2 = st.columns(2)
+        with col_ref1:
+            st.markdown("### 🔧 iFixit")
+            st.markdown("A base do iFixit organiza equipamentos médicos por categorias e reúne guias, técnicas e discussões de reparo. Ela é uma fonte complementar, não substituta do fabricante.")
+            for titulo, url in list(REFERENCIAS_MANUTENCAO.items())[:3]:
+                st.markdown(f"- [{titulo}]({url})")
+        with col_ref2:
+            st.markdown("### 🎥 Materiais odontológicos")
+            for titulo, url in list(REFERENCIAS_MANUTENCAO.items())[3:]:
+                st.markdown(f"- [{titulo}]({url})")
 
 # ==========================================================
 # REGISTRO
@@ -1668,7 +1582,7 @@ def estudo_page():
 # ==========================================================
 
 st.sidebar.title("🩺 Engenharia Clínica")
-st.sidebar.caption("Guia de Campo V4")
+st.sidebar.caption("Guia de Campo V5 | Técnico")
 
 menu = st.sidebar.radio(
     "Navegação",
@@ -1694,7 +1608,7 @@ Não substitui:
 """)
 
 if menu == "🏠 Início":
-    st.markdown('<div class="hero"><h1> Guia de Campo de Engenharia Clínica</h1></div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero"><h1>🩺 Guia de Campo de Engenharia Clínica</h1><h3>Versão 2 — aprender a pensar, não apenas decorar defeitos</h3></div>', unsafe_allow_html=True)
 
     st.markdown("""
     ## A lógica do aplicativo
@@ -1711,6 +1625,13 @@ if menu == "🏠 Início":
     Essa abordagem ajuda a trabalhar mesmo quando aparece um equipamento ou defeito que
     você nunca viu antes.
     """)
+
+    st.markdown("""
+    <div class="concept">
+    <b>🧰 Fluxo técnico de campo</b><br>
+    Segurança → confirmar sintoma → identificar subsistema → testar uma variável por vez → confirmar causa → corrigir → validar → registrar.
+    </div>
+    """, unsafe_allow_html=True)
 
     c1, c2, c3 = st.columns(3)
     c1.metric("Equipamentos", len(EQUIPAMENTOS))
