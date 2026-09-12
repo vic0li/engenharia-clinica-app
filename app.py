@@ -11,51 +11,125 @@ import json
 # ==========================================================
 
 st.set_page_config(
-    page_title="Engenharia Clínica | Guia de Campo V5",
+    page_title="Engenharia Clínica | Guia de Campo V4",
     page_icon="🩺",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
 # ----------------------------------------------------------
-# ESTILO (Cores ajustadas para fundo escuro com alto contraste)
+# ESTILO — ALTO CONTRASTE / LEGIBILIDADE
 # ----------------------------------------------------------
 st.markdown("""
 <style>
-    .hero {
-        padding: 1.5rem;
-        border-radius: 18px;
-        background: #1e293b;
-        border: 1px solid #3b82f6;
-        color: #f8fafc;
-        margin-bottom: 1rem;
-    }
-    .concept {
-        padding: 1rem;
-        border-left: 5px solid #3b82f6;
-        background-color: #0f172a;
-        border-radius: 8px;
-        margin: 0.7rem 0;
-        color: #f8fafc;
-        border-top: 1px solid #1e293b;
-        border-right: 1px solid #1e293b;
-        border-bottom: 1px solid #1e293b;
-    }
-    .warning-box {
-        padding: 1rem;
-        border-left: 5px solid #f59e0b;
-        background-color: #2e1000;
-        border-radius: 8px;
-        color: #f8fafc;
-        border-top: 1px solid #1e293b;
-        border-right: 1px solid #1e293b;
-        border-bottom: 1px solid #1e293b;
-    }
-    .hero h1, .hero h2, .hero h3, .hero h4, .hero p,
-    .concept h1, .concept h2, .concept h3, .concept h4, .concept p,
-    .warning-box h1, .warning-box h2, .warning-box h3, .warning-box h4, .warning-box p {
-        color: #f8fafc !important;
-    }
+/* Fundo geral */
+.stApp {
+    background: #0f172a;
+    color: #f8fafc;
+}
+
+/* Área principal */
+.main .block-container {
+    max-width: 1400px;
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+}
+
+/* Texto: evita o problema de texto claro em fundo branco */
+h1, h2, h3, h4, h5, h6,
+p, li, label, .stMarkdown, .stMarkdown p, .stCaption {
+    color: #f8fafc !important;
+}
+
+/* Cards personalizados */
+.hero {
+    padding: 1.8rem;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #172554, #0f766e);
+    border: 1px solid #38bdf8;
+    color: #ffffff !important;
+    margin-bottom: 1rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+}
+.hero h1, .hero h2, .hero h3, .hero p { color: #ffffff !important; }
+
+.concept {
+    padding: 1rem;
+    border-left: 5px solid #38bdf8;
+    background-color: #172554;
+    color: #f8fafc !important;
+    border-radius: 8px;
+    margin: 0.7rem 0;
+}
+.concept * { color: #f8fafc !important; }
+
+.warning-box {
+    padding: 1rem;
+    border-left: 5px solid #f59e0b;
+    background-color: #422006;
+    color: #fff7ed !important;
+    border-radius: 8px;
+}
+.warning-box * { color: #fff7ed !important; }
+
+/* Expansores */
+details {
+    background-color: #1e293b !important;
+    border: 1px solid #475569 !important;
+    border-radius: 10px !important;
+    margin-bottom: 0.5rem !important;
+}
+details summary, details p, details div { color: #f8fafc !important; }
+
+/* Inputs e selectbox */
+.stSelectbox > div > div,
+.stTextInput input,
+.stTextArea textarea {
+    background-color: #1e293b !important;
+    color: #ffffff !important;
+    border-color: #64748b !important;
+}
+
+/* Tabs */
+button[data-baseweb="tab"] {
+    color: #cbd5e1 !important;
+    font-weight: 600 !important;
+}
+button[data-baseweb="tab"][aria-selected="true"] {
+    color: #ffffff !important;
+}
+
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background-color: #111827 !important;
+}
+section[data-testid="stSidebar"] * {
+    color: #f8fafc !important;
+}
+
+/* Dataframes e tabelas */
+.stDataFrame, [data-testid="stDataFrame"] {
+    background-color: #1e293b !important;
+}
+
+/* Código e diagramas */
+pre, code {
+    background-color: #020617 !important;
+    color: #e2e8f0 !important;
+}
+
+/* Métricas */
+[data-testid="stMetric"] {
+    background-color: #1e293b;
+    border: 1px solid #475569;
+    padding: 0.8rem;
+    border-radius: 10px;
+}
+
+/* Alertas Streamlit */
+[data-testid="stAlert"] {
+    border-radius: 10px;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -598,6 +672,78 @@ Pode ser:
 }
 ]
 }
+,
+"🩸 Esfigmomanômetro": {
+"tipo": "Medição não invasiva da pressão arterial",
+"imagem": None,
+"objetivo": """
+O esfigmomanômetro é utilizado para estimar a pressão arterial de forma não invasiva.
+No modelo eletrônico automático, o equipamento combina um **manguito**, um sistema pneumático,
+um **sensor de pressão** e um algoritmo de processamento.
+
+A ideia central para Engenharia Clínica é separar duas coisas:
+
+**o fenômeno fisiológico → a alteração mecânica da artéria**
+
+E:
+
+**a alteração mecânica → pressão/oscilações detectadas → processamento → valor exibido.**
+
+O equipamento não mede diretamente a pressão dentro da artéria. Em métodos automáticos,
+a estimativa depende do método de medição, da qualidade do sinal e do algoritmo do fabricante.
+""",
+"raciocinio": [
+("1. O que o equipamento controla?", "A pressão aplicada pelo manguito ao redor do membro."),
+("2. O que acontece no corpo?", "A compressão externa interage com a artéria e modifica o fluxo e as oscilações associadas ao pulso."),
+("3. Como o equipamento percebe isso?", "Um sensor converte a pressão do sistema pneumático em sinal elétrico."),
+("4. O que faz o controlador?", "Controla inflação/deflação, lê o sensor e processa o sinal conforme o método implementado."),
+("5. Como pensar em falhas?", "Separar manguito e mangueira → vazamento → bomba → válvula → sensor → eletrônica → algoritmo/exibição.")
+],
+"principio": """
+### Cadeia funcional
+
+**Manguito → pressão externa no membro → interação com a artéria →
+variações de pressão no sistema pneumático → sensor → condicionamento/
+processamento → estimativa → tela.**
+
+⚠️ O método exato depende do tipo de esfigmomanômetro.
+
+- **Auscultatório/manual:** utiliza estetoscópio e sons relacionados ao fluxo sanguíneo.
+- **Automático oscilométrico:** analisa oscilações de pressão durante a deflação.
+
+A manutenção deve respeitar o manual do fabricante e os procedimentos de verificação e
+calibração aplicáveis ao modelo.
+""",
+"componentes": [
+("Manguito", "Aplica pressão externa controlada ao membro.", "Tamanho inadequado, dano ou instalação incorreta podem comprometer a medição."),
+("Mangueira pneumática", "Conduz o ar entre os componentes.", "Dobras, desconexões ou vazamentos alteram a dinâmica de pressão."),
+("Bomba de ar", "Eleva a pressão do sistema pneumático.", "Falha pode causar ausência de inflação ou inflação insuficiente."),
+("Válvula de deflação", "Controla a liberação de ar e a queda de pressão.", "Deflação muito rápida, lenta ou irregular pode comprometer a aquisição."),
+("Sensor de pressão", "Converte a pressão pneumática em sinal elétrico.", "Deriva, falha, obstrução do caminho pneumático ou erro eletrônico podem alterar a leitura."),
+("Controlador eletrônico", "Controla a sequência de medição e processa os sinais.", "Separar erro de entrada, sensor, acionamento e processamento antes de atribuir a falha à placa."),
+("Fonte/bateria", "Fornece energia ao sistema.", "Baixa tensão pode afetar bomba, controle e estabilidade da medição."),
+("Display", "Apresenta resultados e informações do ciclo.", "Falha de exibição não significa necessariamente falha de medição.")
+],
+"problemas": [
+{
+"titulo":"Não infla o manguito",
+"sintoma":"O ciclo inicia, mas a pressão não aumenta adequadamente.",
+"cadeia":"Alimentação → controlador → acionamento → bomba → mangueira → manguito.",
+"causas":["Bateria/fonte", "Comando ausente", "Bomba", "Mangueira desconectada", "Vazamento", "Válvula aberta"],
+"passos":["Verificar alimentação.", "Verificar conexões pneumáticas externas.", "Observar se existe comando/acionamento conforme procedimento técnico.", "Separar vazamento de falha de bomba.", "Consultar manual antes de desmontagem."],
+"nao_fazer":"Não ajustar parâmetros de calibração ou modificar o circuito pneumático sem procedimento autorizado."
+},
+{
+"titulo":"Infla, mas apresenta erro ou valor inconsistente",
+"sintoma":"O ciclo pneumático ocorre, porém a leitura é rejeitada, instável ou inconsistente.",
+"cadeia":"Manguito/posição → sinal fisiológico → pressão → sensor → processamento → resultado.",
+"causas":["Movimento", "Manguito inadequado", "Vazamento", "Sensor", "Deflação irregular", "Interferência no sinal", "Processamento"],
+"passos":["Confirmar condições de uso previstas pelo fabricante.", "Verificar integridade do manguito e das conexões.", "Investigar estabilidade da pressão e comportamento da deflação.", "Diferenciar problema pneumático de problema de sensor/processamento.", "Realizar testes de desempenho apenas com método e instrumentos adequados."],
+"nao_fazer":"Não concluir que o equipamento está calibrado apenas porque apresenta números plausíveis."
+}
+]
+}
+
 }
 
 
@@ -651,7 +797,7 @@ Ar residual pode prejudicar a distribuição do vapor. A eficiência depende da 
         "diagrama": """ALIMENTAÇÃO
     ↓
 PROTEÇÃO → CONTROLE ← SENSOR
-    ↓               ↑
+    ↓              ↑
 ACIONAMENTO → RESISTÊNCIA
                   ↓
              CÂMARA / VAPOR
@@ -701,470 +847,935 @@ Cabos podem captar interferência por acoplamento capacitivo, magnético ou cond
             ("Front-end analógico", "Amplifica o sinal diferencial e condiciona o sinal."),
             ("Filtragem", "Atenua componentes indesejados dentro da estratégia do equipamento."),
             ("Conversão", "O sinal condicionado é digitalizado."),
-            ("Processamento", "O software/processador organiza a exibição e os registros.")
-        ]
+            ("Processamento", "O software/processador organiza derivações, visualização e registro.")
+        ],
+        "subsistemas": {
+            "Paciente/Eletrodos": ["eletrodos", "gel", "pele", "impedância de contato"],
+            "Cabos": ["cabo paciente", "conectores", "blindagem"],
+            "Aquisição Analógica": ["proteção", "amplificador diferencial", "referências"],
+            "Filtragem/Conversão": ["filtros", "ADC", "processamento"],
+            "Alimentação/Isolação": ["fonte", "isolação", "segurança elétrica"],
+            "Ambiente": ["rede elétrica", "outros equipamentos", "campos EM", "aterramento"]
+        },
+        "relacoes": [
+            ("Eletrodo", "Amplificador diferencial", "fornece biopotencial"),
+            ("Cabo", "Ambiente", "pode sofrer acoplamento"),
+            ("Amplificador", "Filtros", "entrega sinal condicionado"),
+            ("Filtros", "ADC/Processamento", "prepara o sinal"),
+            ("Ambiente", "Aquisição", "pode introduzir interferência")
+        ],
+        "diagrama": """ATIVIDADE CARDÍACA
+      ↓
+CORPO → ELETRODOS → CABOS ← INTERFERÊNCIA AMBIENTAL
+                         ↓
+              PROTEÇÃO / ISOLAÇÃO
+                         ↓
+             AMPLIFICADOR DIFERENCIAL
+                         ↓
+                  FILTROS → ADC
+                         ↓
+                 PROCESSAMENTO → TELA""",
+        "falhas": {
+            "Paciente/Eletrodos": ["Ruído por mau contato", "Artefato de movimento", "Impedância elevada"],
+            "Cabos": ["Mau contato interno", "Conector danificado", "Captação de ruído"],
+            "Aquisição Analógica": ["Amplitude incoerente", "Ruído persistente", "Falha de canal"],
+            "Ambiente": ["Interferência de rede", "Acoplamento EM", "Problema de aterramento"],
+            "Processamento": ["Configuração de ganho", "Filtros inadequados", "Falha de visualização"]
+        },
+        "testes": [
+            ("Ruído muda com movimento?", "Sim → priorizar artefato/eletrodo/cabo; não → continuar isolamento."),
+            ("Ruído persiste com simulador?", "Sim → reduz a probabilidade de causa fisiológica e aumenta investigação da cadeia técnica."),
+            ("Mudar apenas o ambiente altera o defeito?", "Sim → investigar variável ambiental/acoplamento."),
+            ("Todas as derivações são afetadas?", "Padrão ajuda a localizar entre contato, cabo, canal ou processamento.")
+        ],
+        "arvore": """TRAÇADO ANORMAL
+├── Movimento altera? → eletrodo/pele/cabo
+├── Todas derivações? → configuração/ambiente/cadeia comum
+├── Persiste com simulador?
+│   ├── Não → interface paciente
+│   └── Sim → cabo → ambiente → aquisição interna
+└── Persiste em ambiente controlado → investigar equipamento""",
+        "validacao": ["Teste com simulador apropriado quando disponível", "Verificação de ganho e derivações", "Traçado estável nas condições de teste", "Testes de segurança elétrica aplicáveis", "Registro da condição antes/depois"]
+    },
+
+    "💨 Compressor": {
+        "fisica": """
+### Princípios físicos
+
+**1. Conversão eletromecânica**: motor converte energia elétrica em movimento.
+
+**2. Compressão de gás**: o mecanismo reduz o volume disponível ao ar, elevando sua pressão. A análise real envolve temperatura, vazamentos e eficiência do conjunto.
+
+**3. Energia armazenada**: o reservatório contém energia pneumática e deve ser tratado como recipiente pressurizado.
+
+**4. Controle por realimentação**: pressostato e indicação de pressão participam da lógica de partida e parada.
+""",
+        "interno": [("Alimentação", "Fornece energia ao sistema."), ("Motor/partida", "Produz torque e inicia movimento."), ("Cabeçote", "Comprime o ar."), ("Retenção", "Controla retorno de fluxo."), ("Reservatório", "Acumula ar pressurizado."), ("Controle", "Pressostato decide corte/retorno."), ("Distribuição", "Filtro, regulador e mangueiras entregam o ar.")],
+        "subsistemas": {"Elétrico": ["alimentação", "proteção", "capacitor", "motor"], "Mecânico": ["pistão", "cabeçote", "rolamentos"], "Pneumático": ["válvulas", "reservatório", "mangueiras"], "Controle": ["pressostato", "manômetro"], "Segurança": ["válvula de segurança", "purgador", "proteções"]},
+        "relacoes": [("Pressostato","Motor","liga/desliga"),("Motor","Cabeçote","fornece movimento"),("Cabeçote","Reservatório","fornece ar comprimido"),("Reservatório","Manômetro","fornece pressão para indicação"),("Válvula de retenção","Cabeçote","evita retorno")],
+        "diagrama": """REDE → PROTEÇÃO → MOTOR → CABEÇOTE → RETENÇÃO → RESERVATÓRIO
+                     ↑                              ↓
+                 PRESSOSTATO ← PRESSÃO ← MANÔMETRO
+                                                    ↓
+                                      FILTRO/REGULADOR → USO""",
+        "falhas": {"Elétrico": ["Não liga", "Tentativa de partida", "Proteção atua"], "Mecânico": ["Ruído", "Baixa compressão", "Desgaste"], "Pneumático": ["Vazamento", "Enchimento lento", "Retorno de ar"], "Controle": ["Não corta", "Não religa", "Indicação incoerente"]},
+        "testes": [("Motor gira?", "Não → cadeia elétrica/comando; sim → seguir para compressão."), ("Pressão sobe?", "Não → capacidade de compressão versus vazamento."), ("Tempo de enchimento está fora da referência?", "Comparar com especificação do equipamento."), ("Pressão de corte é coerente?", "Avaliar controle e medição sem exceder limites nominais.")],
+        "arvore": """NÃO ATINGE PRESSÃO
+├── Motor não gira → alimentação/proteção/comando/partida
+├── Motor gira → pressão sobe?
+│   ├── Não → compressão/válvula/vazamento
+│   └── Sim, lentamente → vazamento/filtro/desgaste
+└── Pressão sobe demais → retirar de uso e investigar controle/segurança""",
+        "validacao": ["Estanqueidade", "Tempo de enchimento dentro da referência", "Pressão de corte/retorno conforme fabricante", "Ausência de vazamento anormal", "Função dos dispositivos previstos de segurança"]
+    },
+
+    "❄️ Câmara fria / Câmara de vacina": {
+        "fisica": """
+### Princípios físicos
+
+**1. Conservação de energia e transferência de calor**: o sistema remove energia térmica do interior.
+
+**2. Ciclo de refrigeração**: o refrigerante circula entre regiões de maior e menor pressão, absorvendo calor no evaporador e rejeitando calor no condensador.
+
+**3. Convecção**: ventiladores e circulação de ar influenciam a uniformidade espacial da temperatura.
+
+**4. Controle em malha fechada**: sensor → controlador → atuador → nova medição.
+""",
+        "interno": [("Sensor", "Mede temperatura."), ("Controlador", "Compara medição e estratégia de controle."), ("Compressor", "Mantém circulação do refrigerante."), ("Condensador", "Rejeita calor ao ambiente."), ("Expansão", "Reduz pressão do fluido."), ("Evaporador", "Absorve calor do interior."), ("Ventilação", "Distribui ar e reduz gradientes."), ("Porta/gaxeta", "Limita entrada de calor e umidade.")],
+        "subsistemas": {"Refrigeração": ["compressor","condensador","expansão","evaporador"], "Circulação de ar": ["ventiladores","dutos","distribuição"], "Controle": ["sensor","controlador","alarmes"], "Vedação": ["porta","gaxeta"], "Ambiente": ["temperatura externa","ventilação do condensador","carga térmica"]},
+        "relacoes": [("Sensor","Controlador","realimenta"),("Controlador","Compressor","aciona"),("Compressor","Condensador","circula refrigerante"),("Evaporador","Ar interno","absorve calor"),("Ventilador","Temperatura interna","melhora uniformidade")],
+        "diagrama": """SENSOR → CONTROLADOR → COMPRESSOR
+   ↑                         ↓
+TEMPERATURA ← EVAPORADOR ← EXPANSÃO
+                    ↑
+CONDENSADOR ← COMPRESSOR
+                    ↓
+             AMBIENTE EXTERNO""",
+        "falhas": {"Refrigeração": ["Não resfria", "Recuperação lenta"], "Circulação": ["Gradiente térmico", "Pontos quentes/frios"], "Controle/Sensor": ["Leitura incoerente", "Ciclagem inadequada"], "Vedação": ["Entrada de ar quente", "Condensação"], "Ambiente": ["Condensador sem ventilação", "Carga térmica elevada"]},
+        "testes": [("Leitura independente confirma o desvio?", "Separar falha real de falha de medição."), ("Compressor opera?", "Operação não garante capacidade frigorífica; continuar investigação."), ("Há circulação de ar?", "Falha pode causar não uniformidade."), ("Porta/gaxeta estão íntegras?", "Investigar carga térmica adicional."), ("Histórico mostra quando começou?", "Ajuda a correlacionar evento, ambiente e degradação.")],
+        "arvore": """TEMPERATURA FORA DA FAIXA
+├── Confirmar leitura por método autorizado
+├── Desvio real?
+│   ├── Não → sensor/medição
+│   └── Sim → porta/carga/ambiente?
+│             ├── Sim → reduzir causa externa conforme protocolo
+│             └── Não → circulação → refrigeração → controle
+└── Proteger conteúdo conforme protocolo institucional""",
+        "validacao": ["Temperatura dentro da faixa especificada", "Estabilidade e recuperação", "Uniformidade conforme procedimento", "Alarmes e registro de dados", "Proteção do conteúdo e documentação"]
+    },
+
+    "🦷 Cadeira e caneta odontológica": {
+        "fisica": """
+### Princípios físicos
+
+A unidade odontológica integra **eletricidade, mecânica, pneumática e hidráulica**. A mesma ação do operador pode disparar diferentes cadeias de energia.
+
+- **Elétrica → mecânica**: motores e atuadores produzem movimento.
+- **Pressão → movimento/rotação**: ar comprimido pode alimentar instrumentos.
+- **Pressão e vazão**: água e ar são controlados por válvulas e reguladores.
+- **Lógica de controle**: comandos são convertidos em acionamentos.
+""",
+        "interno": [("Comando", "Botões e pedal recebem a intenção do operador."), ("Controle", "Placa interpreta permissões e sequências."), ("Potência", "Relés/drivers fornecem energia aos atuadores."), ("Atuação", "Motor, válvula ou atuador executa a ação."), ("Distribuição", "Mangueiras transportam ar/água."), ("Feedback", "Fins de curso e sensores limitam ou informam posição.")],
+        "subsistemas": {"Comando/Controle": ["pedal","botões","placa"], "Elétrico": ["fonte","relés","drivers"], "Mecânico": ["atuadores","transmissão","estrutura"], "Pneumático": ["compressor externo","regulador","válvulas","mangueiras"], "Hidráulico": ["água","válvulas","tubulações"], "Segurança/Posição": ["fim de curso","intertravamentos"]},
+        "relacoes": [("Pedal","Placa","envia comando"),("Placa","Relé/Driver","comanda potência"),("Relé/Driver","Motor/Válvula","aciona"),("Ar comprimido","Caneta","fornece energia pneumática"),("Fim de curso","Controle","informa limite")],
+        "diagrama": """OPERADOR → PEDAL/BOTÃO → CONTROLE → POTÊNCIA → ATUADOR
+                                           ↓
+AR/ÁGUA → REGULAÇÃO → VÁLVULAS → INSTRUMENTOS
+                                           ↓
+                                      MOVIMENTO/FLUXO
+                                           ↑
+                                   SENSOR/FIM DE CURSO""",
+        "falhas": {"Comando/Controle": ["Função não responde", "Comando intermitente"], "Elétrico": ["Motor não aciona", "Sem alimentação"], "Mecânico": ["Travamento", "Folga", "Movimento irregular"], "Pneumático": ["Baixa pressão", "Vazamento", "Sem fluxo"], "Hidráulico": ["Baixa vazão", "Obstrução", "Vazamento"], "Segurança": ["Movimento bloqueado por fim de curso"]},
+        "testes": [("Apenas uma função falha?", "Sim → cadeia específica; não → investigar alimentação/controle comum."), ("Há comando chegando ao atuador?", "Separar comando de potência/atuador conforme esquema."), ("Existe ruído de acionamento sem movimento?", "Sugere separar travamento mecânico de ausência de comando."), ("Pressão/fluxo na entrada está correto?", "Separar falha da unidade de falha no suprimento.")],
+        "arvore": """FUNÇÃO NÃO OPERA
+├── Outras funções operam?
+│   ├── Não → alimentação/controle comum
+│   └── Sim → comando específico
+├── Há acionamento?
+│   ├── Não → comando/controle/potência
+│   └── Sim → atuador/mecânica/fluxo
+└── Movimento bloqueado → verificar sensores/fins de curso conforme fabricante""",
+        "validacao": ["Movimentos completos e suaves", "Comandos e pedal", "Pressão/vazão dentro da referência", "Ausência de vazamentos", "Limites de movimento e segurança"]
+    },
+
+    "🔍 Colposcópio": {
+        "fisica": """
+### Princípios físicos
+
+**1. Óptica geométrica**: lentes coletam e direcionam raios de luz para formar uma imagem.
+
+**2. Foco**: a nitidez depende da posição relativa entre objeto, lentes e plano de observação/captura.
+
+**3. Ampliação e campo de visão**: alterações ópticas modificam a imagem observada e a área visualizada.
+
+**4. Iluminação e reflexão**: a qualidade depende da quantidade, distribuição e direção da luz que retorna do campo observado.
+
+**5. Captura digital, quando presente**: a luz é convertida em sinal por um sensor de imagem e processada.
+""",
+        "interno": [("Fonte de luz", "Produz iluminação controlada."), ("Sistema de iluminação", "Direciona a luz ao campo."), ("Objeto/campo", "Reflete parte da luz."), ("Óptica", "Coleta e forma imagem."), ("Foco/ampliação", "Ajusta nitidez e campo."), ("Ocular/câmera", "Permite observação ou captura."), ("Mecânica", "Mantém alinhamento e posicionamento.")],
+        "subsistemas": {"Iluminação": ["fonte","driver","guia óptico"], "Óptico": ["objetivas","oculares","lentes"], "Foco/Ampliação": ["mecanismo","engrenagens","seletores"], "Mecânico": ["braço","suporte","articulações"], "Imagem Digital": ["câmera","sensor","cabo","software"]},
+        "relacoes": [("Fonte de luz","Campo","ilumina"),("Campo","Lentes","fornece luz refletida"),("Lentes","Foco","formam imagem"),("Foco","Ocular/Câmera","entrega imagem nítida"),("Braço","Sistema óptico","mantém posicionamento")],
+        "diagrama": """FONTE DE LUZ → ILUMINAÇÃO → CAMPO
+                              ↓
+CAMPO → LUZ REFLETIDA → LENTES → FOCO/AMPLIAÇÃO → OCULAR/CÂMERA
+                                                        ↓
+                                                     IMAGEM""",
+        "falhas": {"Iluminação": ["Campo escuro", "Intensidade irregular"], "Óptico": ["Imagem turva", "Sujeira/dano"], "Foco/Ampliação": ["Não focaliza", "Ampliação irregular"], "Mecânico": ["Folga", "Instabilidade", "Desalinhamento"], "Imagem Digital": ["Sem imagem na tela", "Artefatos digitais"]},
+        "testes": [("Imagem direta está boa e digital ruim?", "Separar cadeia óptica de câmera/software."), ("A nitidez muda com distância de trabalho?", "Investigar foco/posicionamento antes de assumir defeito óptico."), ("Iluminação muda sem alterar foco?", "Separar subsistema de iluminação."), ("Há folga mecânica?", "Instabilidade pode simular problema óptico.")],
+        "arvore": """IMAGEM RUIM
+├── Iluminação adequada?
+│   ├── Não → fonte/driver/caminho óptico
+│   └── Sim → foco correto?
+│             ├── Não → posicionamento/mecanismo
+│             └── Sim → lente limpa/íntegra?
+│                       ├── Não → procedimento de limpeza autorizado
+│                       └── Sim → alinhamento/câmera/óptica especializada""",
+        "validacao": ["Iluminação uniforme", "Foco e ampliação funcionais", "Imagem estável", "Movimento mecânico sem folgas anormais", "Captura digital, quando aplicável"]
     }
+,
+    "🩸 Esfigmomanômetro": {
+        "fisica": """
+### Princípios físicos
+
+**1. Pressão em um sistema pneumático**  
+A bomba aumenta a pressão do ar no conjunto manguito–mangueira. O sensor mede a pressão do sistema e a eletrônica acompanha sua variação.
+
+**2. Transdução de pressão**  
+O sensor transforma uma grandeza mecânica — pressão — em um sinal elétrico que pode ser condicionado e convertido para processamento.
+
+**3. Dinâmica de inflação e deflação**  
+A bomba aumenta a pressão; a válvula controla a liberação de ar. Vazamentos e restrições modificam a dinâmica do sistema.
+
+**4. Método oscilométrico**  
+Em equipamentos automáticos, pequenas oscilações de pressão associadas à pulsação arterial são analisadas durante a deflação. O algoritmo do fabricante estima valores a partir dessas informações.
+
+⚠️ O método de cálculo não deve ser presumido como universal entre fabricantes.
+""",
+        "interno": [
+            ("Alimentação", "Fonte ou bateria fornece energia para eletrônica e atuadores."),
+            ("Controle", "O controlador inicia o ciclo e monitora condições do sistema."),
+            ("Inflação", "A bomba pressuriza o conjunto pneumático."),
+            ("Medição", "O sensor acompanha a pressão e suas variações."),
+            ("Deflação controlada", "A válvula libera ar segundo a estratégia do equipamento."),
+            ("Processamento", "O sinal é filtrado/processado para extrair informações relevantes."),
+            ("Resultado", "O sistema apresenta a estimativa e possíveis mensagens de erro.")
+        ],
+        "subsistemas": {
+            "Pneumático": ["manguito", "mangueira", "bomba", "válvula", "conexões"],
+            "Sensoriamento": ["sensor de pressão", "condicionamento do sinal"],
+            "Eletrônico/Controle": ["microcontrolador", "driver", "lógica do ciclo"],
+            "Alimentação": ["bateria/fonte", "regulação", "proteções"],
+            "Interface": ["botão", "display", "indicadores"],
+            "Processamento": ["aquisição", "filtragem", "algoritmo", "detecção de erro"]
+        },
+        "relacoes": [
+            ("Controlador", "Bomba", "comanda a inflação"),
+            ("Bomba", "Manguito", "aumenta a pressão do sistema"),
+            ("Manguito", "Artéria", "aplica pressão externa"),
+            ("Sistema pneumático", "Sensor de pressão", "gera a grandeza medida"),
+            ("Sensor", "Controlador", "fornece informação para processamento"),
+            ("Controlador", "Válvula", "controla a deflação"),
+            ("Processamento", "Display", "apresenta o resultado")
+        ],
+        "diagrama": """BOTÃO/COMANDO → CONTROLADOR → DRIVER → BOMBA
+                                      ↓
+BATERIA/FONTE → REGULAÇÃO → ELETRÔNICA
+
+BOMBA → MANGUEIRA → MANGUITO → PRESSÃO EXTERNA NO MEMBRO
+                         ↓
+                    ARTÉRIA/PULSO
+                         ↓
+MANGUITO/SISTEMA → SENSOR DE PRESSÃO → CONDICIONAMENTO → PROCESSAMENTO → DISPLAY
+                         ↑
+                      VÁLVULA
+                         ↑
+                    CONTROLADOR""",
+        "falhas": {
+            "Pneumático": ["Não infla", "Perde pressão", "Deflação irregular", "Vazamento"],
+            "Bomba": ["Sem acionamento", "Baixa capacidade de inflação", "Ruído anormal"],
+            "Válvula": ["Deflação muito rápida", "Deflação muito lenta", "Travamento"],
+            "Sensor": ["Leitura instável", "Deriva", "Valor incompatível"],
+            "Controle/Processamento": ["Erro de ciclo", "Interrupção", "Resultado inconsistente"],
+            "Alimentação": ["Não liga", "Desliga durante a medição", "Bomba fraca"]
+        },
+        "testes": [
+            ("A pressão aumenta e se mantém?", "Ajuda a separar falha de bomba de vazamento."),
+            ("A deflação ocorre de forma controlada?", "Direciona a investigação para válvula/fluxo/controle."),
+            ("O comportamento pneumático está normal, mas o resultado é inconsistente?", "Aumenta a suspeita sobre sensor, aquisição ou processamento."),
+            ("O problema aparece com outro manguito compatível e íntegro?", "Ajuda a separar acessório de equipamento, conforme compatibilidade prevista."),
+            ("O display está errado ou a medição realmente falhou?", "Separar subsistema de interface da cadeia de medição.")
+        ],
+        "arvore": """ERRO DE MEDIÇÃO
+├── Equipamento liga?
+│   ├── Não → alimentação/fonte/bateria/proteções
+│   └── Sim → manguito infla?
+│             ├── Não → comando → driver → bomba → conexões/vazamento
+│             └── Sim → mantém pressão?
+│                       ├── Não → vazamento/válvula/manguito/mangueira
+│                       └── Sim → deflação é controlada?
+│                                 ├── Não → válvula/fluxo/controle
+│                                 └── Sim → resultado inconsistente?
+│                                           ├── Sim → condições de medição/sensor/processamento
+│                                           └── Não → validar desempenho conforme procedimento""",
+        "validacao": [
+            "Inspeção visual do equipamento e acessórios", 
+            "Integridade do manguito, mangueiras e conexões",
+            "Ciclo de inflação e deflação conforme comportamento previsto",
+            "Ausência de vazamentos anormais",
+            "Verificação de desempenho/calibração com método e instrumento apropriados",
+            "Registro da intervenção e do resultado",
+            "Liberação somente conforme procedimento institucional e orientação do fabricante"]
+    }
+
 }
 
 
 # ==========================================================
-# INTERFACE DO GUIA DE CAMPO
+# V4 - FUNDAMENTOS, COMPONENTES INTERATIVOS E ANATOMIA
+# ==========================================================
+COMPONENTES_BASE = {
+    "Amplificador diferencial": {
+        "o_que_e":"Circuito eletrônico que amplifica principalmente a diferença de tensão entre duas entradas e reduz, dentro dos seus limites, sinais presentes de forma semelhante nas duas entradas.",
+        "como_funciona":"Ele recebe dois sinais, compara V+ e V− e produz uma saída proporcional à diferença. Em equipamentos biomédicos, isso é importante porque o sinal útil pode ser pequeno e o ambiente pode introduzir ruído comum aos dois condutores.",
+        "fisica":"Lei de Ohm, circuitos diferenciais e amplificação. A rejeição de modo comum é uma característica real, mas não elimina qualquer interferência.",
+        "no_equipamento":"No ECG, integra a etapa analógica inicial que recebe os biopotenciais antes do processamento digital.",
+        "falhas":"Saturação, ganho incorreto, ruído, conexão defeituosa ou falha na alimentação podem alterar o sinal. Sempre separar entrada, amplificação e processamento.",
+        "revisar":"Entrada → proteção → amplificador diferencial → filtros → ADC/processamento."
+    },
+    "Relé": {
+        "o_que_e":"Chave eletromecânica controlada eletricamente. Um circuito de comando energiza uma bobina e o campo magnético movimenta contatos para abrir ou fechar outro circuito.",
+        "como_funciona":"Corrente na bobina → campo magnético → armadura móvel → mudança dos contatos. Assim, uma placa de baixa potência pode comandar uma carga maior, respeitando o projeto.",
+        "fisica":"Eletromagnetismo e conversão de energia elétrica em movimento mecânico.",
+        "no_equipamento":"Pode aparecer no acionamento de resistência, motor ou outros atuadores, dependendo do projeto.",
+        "falhas":"Contato queimado/oxidado, bobina aberta, contato travado ou falha do sinal de comando.",
+        "revisar":"Comando ≠ potência: confirmar primeiro se o relé recebe comando e depois se seus contatos entregam energia à carga."
+    },
+    "Filtro passa-baixa": {
+        "o_que_e":"Filtro que permite a passagem das frequências abaixo de uma frequência de corte e atenua progressivamente frequências acima dela.",
+        "como_funciona":"Pode ser implementado com componentes passivos ou circuitos ativos. Em sinais biomédicos, ajuda a limitar componentes de alta frequência antes ou depois da digitalização.",
+        "fisica":"Resposta em frequência. A frequência de corte não significa bloqueio instantâneo: existe uma região de transição e uma inclinação de atenuação.",
+        "no_equipamento":"Pode ser usado em cadeias de aquisição como o ECG, conforme a arquitetura e finalidade do filtro.",
+        "falhas":"Corte inadequado pode deixar ruído passar ou remover informação relevante.",
+        "revisar":"Baixa frequência passa; alta frequência é atenuada."
+    },
+    "Filtro passa-alta": {
+        "o_que_e":"Filtro que atenua componentes abaixo da frequência de corte e permite a passagem das componentes acima dela.",
+        "como_funciona":"Pode reduzir variações muito lentas e componentes de baixa frequência, como derivações de linha de base, dependendo da aplicação.",
+        "fisica":"Resposta em frequência e frequência de corte.",
+        "no_equipamento":"Pode integrar condicionamento de sinais analógicos, especialmente quando há necessidade de reduzir componentes muito lentas.",
+        "falhas":"Um corte excessivo pode distorcer sinais de interesse.",
+        "revisar":"Alta frequência passa; baixa frequência é atenuada."
+    },
+    "Filtro passa-faixa": {
+        "o_que_e":"Combinação funcional que privilegia uma faixa de frequências e atenua componentes abaixo e acima dela.",
+        "como_funciona":"Pode resultar da associação de comportamento passa-alta e passa-baixa ou de outras topologias.",
+        "fisica":"Define uma banda de interesse por limites inferior e superior.",
+        "no_equipamento":"Útil quando o sistema precisa priorizar uma faixa de sinal conhecida.",
+        "falhas":"Faixa mal definida pode reduzir informação ou manter ruído indesejado.",
+        "revisar":"Frequência baixa demais ↓ | faixa de interesse ✓ | frequência alta demais ↓."
+    },
+    "Filtro rejeita-faixa / notch": {
+        "o_que_e":"Filtro projetado para atenuar uma faixa estreita ou uma frequência específica.",
+        "como_funciona":"É usado quando existe uma interferência conhecida que se deseja reduzir, sem necessariamente remover todas as frequências próximas.",
+        "fisica":"Atenuação seletiva em frequência.",
+        "no_equipamento":"Em ECG, pode ser associado à redução de interferência de rede, conforme projeto e configuração. Seu uso deve ser entendido porque filtragem também pode modificar o traçado.",
+        "falhas":"Uso excessivo ou inadequado pode mascarar informação e não substitui a identificação da fonte do ruído.",
+        "revisar":"Filtrar não é o mesmo que eliminar a causa da interferência."
+    },
+    "Conversor A/D": {
+        "o_que_e":"Circuito que transforma um sinal analógico contínuo em representação digital.",
+        "como_funciona":"O sistema amostra o sinal em intervalos e quantiza sua amplitude em níveis digitais. Taxa de amostragem e resolução influenciam a representação.",
+        "fisica":"Amostragem, quantização e processamento digital de sinais.",
+        "no_equipamento":"Após o condicionamento analógico, permite que processadores armazenem, exibam e analisem sinais.",
+        "falhas":"Problemas de referência, clock, resolução ou processamento podem gerar comportamento incorreto.",
+        "revisar":"Analógico → amostragem → quantização → dados digitais."
+    },
+    "Sensor": {
+        "o_que_e":"Elemento que transforma uma grandeza física em um sinal utilizável pelo sistema.",
+        "como_funciona":"Temperatura, pressão, posição ou outra variável altera uma propriedade física e o circuito converte essa alteração em informação.",
+        "fisica":"Depende do tipo: resistivo, termistor, termopar, pressão, óptico, magnético etc.",
+        "no_equipamento":"Fecha o ciclo de controle: processo → sensor → controlador → atuador → processo.",
+        "falhas":"Sensor pode estar correto e a leitura exibida errada por falha de cabo, condicionamento, ADC ou software.",
+        "revisar":"Não confunda: grandeza real, sinal do sensor e valor exibido são três etapas diferentes."
+    },
+    "Controlador eletrônico": {
+        "o_que_e":"Parte responsável por receber informações, aplicar lógica e comandar atuadores.",
+        "como_funciona":"Entrada de sensores/comandos → lógica programada ou analógica → saída para driver, relé, motor, válvula ou resistência.",
+        "fisica":"Eletrônica, lógica de controle e sistemas em malha aberta ou fechada.",
+        "no_equipamento":"É o centro da decisão, mas não deve ser culpado antes de verificar entradas e saídas.",
+        "falhas":"Entrada incorreta, alimentação, software, saída de acionamento ou comunicação.",
+        "revisar":"Pergunte: o controlador recebeu a informação correta? tomou a decisão correta? entregou o comando?"
+    },
+    "Resistência / sistema de aquecimento": {
+        "o_que_e":"Elemento que converte energia elétrica em energia térmica por efeito Joule.",
+        "como_funciona":"A corrente atravessa um material resistivo e parte da energia elétrica é dissipada como calor.",
+        "fisica":"Efeito Joule; potência elétrica depende das relações entre tensão, corrente e resistência.",
+        "no_equipamento":"Autoclaves e outros sistemas térmicos usam aquecimento controlado para atingir condições definidas.",
+        "falhas":"Elemento aberto, conexão, relé/driver, proteção térmica ou comando.",
+        "revisar":"Comando → potência → resistência → transferência de calor → sensor → controle."
+    },
+    "Motor": {
+        "o_que_e":"Conversor eletromecânico que transforma energia elétrica em movimento.",
+        "como_funciona":"O projeto do motor utiliza campos elétricos e magnéticos para produzir torque e rotação ou outro movimento.",
+        "fisica":"Eletromagnetismo e conversão eletromecânica.",
+        "no_equipamento":"Pode movimentar compressor, bomba, ventilador ou mecanismos.",
+        "falhas":"Alimentação, comando, circuito de partida, enrolamentos, rolamentos ou carga mecânica excessiva.",
+        "revisar":"Motor não gira não significa automaticamente motor defeituoso."
+    },
+    "Válvula": {
+        "o_que_e":"Elemento que controla, direciona, interrompe ou protege o fluxo de um fluido ou gás.",
+        "como_funciona":"Uma abertura controlada altera o caminho disponível ao fluxo. Pode ser manual, mecânica, pneumática ou solenóide, conforme o equipamento.",
+        "fisica":"Pressão, diferença de pressão, vazão e resistência ao fluxo.",
+        "no_equipamento":"Autoclaves, compressores e equipamentos odontológicos podem possuir diferentes tipos de válvulas.",
+        "falhas":"Obstrução, vazamento, travamento, comando ausente ou desgaste de vedação.",
+        "revisar":"Verifique o fluxo real e não apenas se existe comando elétrico."
+    },
+    "Fonte de luz": {
+        "o_que_e":"Subsistema que fornece energia luminosa ao campo observado.",
+        "como_funciona":"Energia elétrica é convertida em luz por uma tecnologia de iluminação; a óptica direciona essa luz.",
+        "fisica":"Óptica, emissão luminosa, intensidade e distribuição da luz.",
+        "no_equipamento":"No colposcópio, iluminação é parte da cadeia de formação da imagem.",
+        "falhas":"Fonte, driver, conexão, guia óptico ou controle de intensidade.",
+        "revisar":"Sem iluminação adequada, a óptica pode estar perfeita e a imagem ainda ser inadequada."
+    }
+}
+
+ANATOMIA = {
+
+    "🩸 Esfigmomanômetro": {"sistema":"Sistema cardiovascular, especialmente coração, vasos sanguíneos e circulação periférica.","relacao":"A pressão arterial está relacionada à força exercida pelo sangue sobre as paredes arteriais. O esfigmomanômetro aplica pressão externa ao membro e utiliza um método de medição para obter uma estimativa. No método oscilométrico, o equipamento analisa variações de pressão associadas à pulsação arterial; no método auscultatório, a interpretação depende da ausculta durante a deflação.","conexao":"Coração → ejeção de sangue → artérias → pulso/pressão arterial → membro → manguito → pressão no sistema pneumático → sensor → processamento → resultado."},
+    "♨️ Autoclave": {"sistema":"Não mede diretamente uma função anatômica; atua sobre instrumentos e materiais usados no cuidado ao paciente.","relacao":"A relação com o corpo humano é indireta e ocorre pela prevenção de transmissão de microrganismos. O entendimento básico de microbiologia e barreiras de controle de infecção é mais relevante que uma anatomia de órgão específico.","conexao":"Paciente → procedimento → instrumentos/material → processamento correto → redução do risco associado ao reuso."},
+    "📈 Eletrocardiógrafo": {"sistema":"Sistema cardiovascular e sistema de condução elétrica cardíaca.","relacao":"O nó sinoatrial inicia a ativação elétrica fisiológica; a condução pelo miocárdio produz campos elétricos que resultam em diferenças de potencial detectáveis na superfície corporal. O ECG registra essas diferenças por eletrodos.","conexao":"Coração → atividade elétrica → propagação pelo volume condutor corporal → pele → eletrodos → cabos → aquisição eletrônica → traçado."},
+    "💨 Compressor": {"sistema":"Não mede diretamente anatomia humana; fornece ar comprimido para sistemas que podem ser utilizados em procedimentos clínicos/odontológicos.","relacao":"No contexto odontológico, sua relação é indireta: o ar comprimido permite o funcionamento de instrumentos que atuam na cavidade oral. A segurança depende da qualidade do ar e da aplicação prevista.","conexao":"Compressor → tratamento/distribuição do ar → equipamento odontológico → instrumento → procedimento no paciente."},
+    "❄️ Câmara fria / Câmara de vacina": {"sistema":"Relação indireta com imunologia e conservação de produtos biológicos.","relacao":"O equipamento não atua diretamente no corpo, mas mantém condições ambientais necessárias para preservar produtos utilizados posteriormente em pacientes.","conexao":"Controle térmico → conservação do produto → manutenção das características especificadas → aplicação clínica conforme protocolo."},
+    "🦷 Cadeira e caneta odontológica": {"sistema":"Cavidade oral, dentes, periodonto e estruturas associadas.","relacao":"A cadeira posiciona o paciente e os instrumentos realizam funções mecânicas, pneumáticas e hidráulicas relacionadas ao atendimento odontológico. Para engenharia clínica, é essencial entender que pressão, rotação, irrigação e posicionamento afetam diretamente a execução do procedimento.","conexao":"Paciente → posicionamento → acesso ao campo oral → instrumento → energia mecânica/pneumática + irrigação → procedimento."},
+    "🔊 Ultrassom odontológico": {"sistema":"Estruturas dentárias e periodontais, conforme a aplicação clínica.","relacao":"O equipamento gera vibração mecânica de alta frequência no inserto; a aplicação clínica ocorre sobre estruturas específicas segundo técnica profissional. A engenharia deve compreender a cadeia física sem extrapolar para decisão clínica.","conexao":"Gerador → transdutor → vibração → inserto + irrigação → interação mecânica no campo odontológico."},
+    "🔍 Colposcópio": {"sistema":"Sistema reprodutor feminino, especialmente estruturas observadas durante o exame colposcópico.","relacao":"O equipamento não 'cria' a imagem do tecido: ele ilumina o campo e amplia a luz refletida para permitir observação detalhada. A interpretação anatômica e clínica é responsabilidade profissional específica.","conexao":"Estrutura anatômica → iluminação → reflexão → óptica → ocular/câmera → imagem para observação."}
+}
+
+def get_component_knowledge(nome):
+    nome_l = nome.lower()
+    for chave, dados in COMPONENTES_BASE.items():
+        if chave.lower() in nome_l or nome_l in chave.lower():
+            return dados
+    if "sensor" in nome_l: return COMPONENTES_BASE["Sensor"]
+    if "controle" in nome_l or "placa" in nome_l or "controlador" in nome_l: return COMPONENTES_BASE["Controlador eletrônico"]
+    if "motor" in nome_l: return COMPONENTES_BASE["Motor"]
+    if "válvula" in nome_l: return COMPONENTES_BASE["Válvula"]
+    if "resist" in nome_l or "aquec" in nome_l: return COMPONENTES_BASE["Resistência / sistema de aquecimento"]
+    if "luz" in nome_l: return COMPONENTES_BASE["Fonte de luz"]
+    return {"o_que_e":"Componente específico do equipamento.","como_funciona":"Sua operação exata depende do projeto do fabricante e deve ser correlacionada ao diagrama técnico.","fisica":"Identifique a energia de entrada, transformação e saída.","no_equipamento":"Analise sua posição na cadeia funcional.","falhas":"Separe comando, alimentação, componente e carga.","revisar":"Onde este componente recebe energia/informação e para onde ele envia?"}
+
+def render_componentes_interativos_v4(componentes, nome_eq):
+    st.markdown("## 🔧 Laboratório de componentes interativos")
+    st.caption("Escolha um componente. A ideia é revisar desde os fundamentos: o que é → como funciona → física → papel no equipamento → falhas.")
+    nomes = [c[0] for c in componentes]
+    selecionado = st.selectbox("🎯 Selecione um componente", nomes, key=f"comp_select_{nome_eq}")
+    item = next(c for c in componentes if c[0] == selecionado)
+    nome, funcao, diagnostico = item
+    base = get_component_knowledge(nome)
+    st.markdown(f"### {nome}")
+    cols = st.columns(2)
+    with cols[0]:
+        st.info(f"**Função neste equipamento:** {funcao}")
+        st.markdown("#### ⚙️ Como funciona")
+        st.write(base["como_funciona"])
+        st.markdown("#### ⚛️ Física e engenharia")
+        st.write(base["fisica"])
+    with cols[1]:
+        st.markdown("#### 🧩 O que é")
+        st.write(base["o_que_e"])
+        st.markdown("#### 🏥 Papel no equipamento")
+        st.write(base["no_equipamento"])
+        st.markdown("#### ⚠️ Como pensar na falha")
+        st.write(diagnostico)
+    with st.expander("🧠 Revisão rápida: o que preciso lembrar?"):
+        st.write(base["revisar"])
+        st.write("**Falhas típicas:** " + base["falhas"])
+    st.divider()
+    st.markdown("### 📚 Glossário de eletrônica clínica")
+    fundamentos = ["Amplificador diferencial", "Relé", "Filtro passa-baixa", "Filtro passa-alta", "Filtro passa-faixa", "Filtro rejeita-faixa / notch", "Conversor A/D", "Sensor", "Controlador eletrônico"]
+    escolha = st.selectbox("Relembrar um fundamento", fundamentos, key=f"fund_{nome_eq}")
+    d = COMPONENTES_BASE[escolha]
+    with st.expander(f"📖 {escolha}", expanded=True):
+        st.markdown(f"**O que é:** {d['o_que_e']}")
+        st.markdown(f"**Como funciona:** {d['como_funciona']}")
+        st.markdown(f"**Física:** {d['fisica']}")
+        st.markdown(f"**Aplicação:** {d['no_equipamento']}")
+
+def render_fundamentos_v4(nome):
+    st.markdown("## 🧠 Fundamentos para quem está começando")
+    st.markdown("Esta aba existe para conectar o equipamento à base da Engenharia Biomédica. Antes de decorar defeitos, entenda os blocos fundamentais.")
+    blocos = [
+        ("⚡ Energia elétrica", "Tensão é diferença de potencial; corrente é movimento de carga; resistência se opõe ao fluxo. Em diagnóstico, pergunte sempre: existe alimentação? a tensão chega? a carga responde?"),
+        ("🔁 Sinais analógicos e digitais", "Um sensor pode produzir um sinal contínuo. O condicionamento ajusta esse sinal; o conversor A/D permite processamento digital."),
+        ("🎛️ Ganho e amplificação", "Amplificar é aumentar a amplitude de um sinal. Ganho inadequado pode fazer um sinal parecer maior ou menor sem que o fenômeno físico tenha mudado."),
+        ("📈 Frequência e filtros", "Passa-baixa reduz altas frequências; passa-alta reduz baixas; passa-faixa privilegia uma banda; notch/rejeita-faixa reduz uma região específica."),
+        ("🔄 Controle em malha fechada", "Grandeza real → sensor → controlador → atuador → processo → nova medição. Temperatura, pressão e outros processos podem usar esse princípio."),
+        ("🧲 Eletromagnetismo", "Motores e relés utilizam campos eletromagnéticos para produzir movimento ou comutação. Interferências também podem ocorrer por acoplamento elétrico ou magnético."),
+        ("🛡️ Segurança", "Em equipamentos de saúde, desempenho não basta. Qualquer intervenção deve respeitar fabricante, procedimento, isolamento, aterramento, proteções e testes aplicáveis.")
+    ]
+    for t, txt in blocos:
+        with st.expander(t): st.write(txt)
+
+def render_anatomia_v4(nome):
+    dados = ANATOMIA.get(nome)
+    st.markdown("## 🫀 Relação com anatomia e fisiologia")
+    if not dados:
+        st.info("Relação anatômica a ser adicionada.")
+        return
+    st.markdown("### Sistema ou contexto biológico")
+    st.write(dados["sistema"])
+    st.markdown("### Como o equipamento se relaciona com o corpo humano")
+    st.write(dados["relacao"])
+    st.markdown("### Cadeia corpo ↔ tecnologia")
+    st.info(dados["conexao"])
+    st.warning("⚠️ Esta seção explica a relação técnico-biológica. Diagnóstico e interpretação clínica não devem ser inferidos apenas pelo funcionamento do equipamento.")
+
+
+def render_fisica_avancada(info):
+    st.markdown(info["fisica"])
+
+def render_funcionamento_interno(info):
+    st.markdown("## Funcionamento interno passo a passo")
+    for i, (etapa, descricao) in enumerate(info["interno"], 1):
+        with st.expander(f"{i}. {etapa}", expanded=(i == 1)):
+            st.write(descricao)
+
+def render_mapa_subsistemas(info):
+    st.markdown("## Mapa de subsistemas")
+    for subsistema, itens in info["subsistemas"].items():
+        st.markdown(f"### 🔹 {subsistema}")
+        st.markdown(" → ".join(itens))
+
+def render_componentes_interativos(componentes):
+    st.markdown("## Componentes interativos")
+    st.caption("Clique em cada componente para abrir sua função e relação com o diagnóstico.")
+    for nome, funcao, diagnostico in componentes:
+        with st.expander(f"🔧 {nome}"):
+            st.markdown(f"**Função:** {funcao}")
+            st.markdown(f"**Impacto diagnóstico:** {diagnostico}")
+
+def render_relacoes(info):
+    st.markdown("## Relação entre componentes")
+    for origem, destino, relacao in info["relacoes"]:
+        st.markdown(f"**{origem}** ── *{relacao}* ──▶ **{destino}**")
+
+def render_diagrama(info):
+    st.markdown("## Diagrama funcional")
+    st.code(info["diagrama"], language=None)
+
+def render_falhas_subsistema(info):
+    st.markdown("## Falhas organizadas por subsistema")
+    for subsistema, falhas in info["falhas"].items():
+        with st.expander(f"⚠️ {subsistema}"):
+            for falha in falhas:
+                st.markdown(f"- {falha}")
+
+def render_testes_hipoteses(info):
+    st.markdown("## Testes para diferenciar hipóteses")
+    for pergunta, interpretacao in info["testes"]:
+        st.markdown(f"**Teste/observação:** {pergunta}")
+        st.info(interpretacao)
+
+def render_arvore(info):
+    st.markdown("## Árvore de decisão")
+    st.code(info["arvore"], language=None)
+
+def render_validacao(info):
+    st.markdown("## Validação pós-manutenção")
+    st.warning("A validação deve seguir manual do fabricante, procedimento institucional, competência técnica e requisitos de segurança aplicáveis.")
+    for i, item in enumerate(info["validacao"], 1):
+        st.checkbox(item, key=f"valid_{item}")
+
+
+# ==========================================================
+# FUNÇÕES
 # ==========================================================
 
-def render_html_card(title, body, css_class="concept"):
-    st.markdown(
-        f"""
-        <div class="{css_class}">
-            <h3>{title}</h3>
-            <div>{body}</div>
+def render_image(info):
+    if info.get("imagem"):
+        st.image(info["imagem"], use_container_width=True)
+    else:
+        st.info("📷 Área reservada para foto do equipamento. Adicione imagens na pasta `images/` e atualize o campo `imagem`.")
+
+def render_raciocinio(items):
+    for titulo, texto in items:
+        st.markdown(f"""
+        <div class="concept">
+        <b>{titulo}</b><br>{texto}
         </div>
-        """,
-        unsafe_allow_html=True
-    )
+        """, unsafe_allow_html=True)
 
+def render_componentes(componentes):
+    data = []
+    for nome, funcao, diagnostico in componentes:
+        data.append({
+            "Componente": nome,
+            "O que faz": funcao,
+            "Como pensar na falha": diagnostico
+        })
+    st.dataframe(pd.DataFrame(data), use_container_width=True, hide_index=True)
 
-# ----------------------------------------------------------
-# SIDEBAR
-# ----------------------------------------------------------
+def render_problema(problema):
+    st.subheader(f"⚠️ {problema['titulo']}")
+    st.error(f"**Sintoma:** {problema['sintoma']}")
 
-with st.sidebar:
-    st.markdown(
-        """
-        <div style="padding: 1rem 0 1.2rem 0; text-align:center;">
-            <div style="font-size:42px;">🩺</div>
-            <h2 style="color:#f8fafc; margin:0;">Engenharia Clínica</h2>
-            <p style="color:#cbd5e1; font-size:13px; margin-top:5px;">
-                Guia de Campo
-            </p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    st.markdown("### 🧠 Linha de raciocínio")
+    st.info(problema["cadeia"])
 
-    st.markdown("---")
+    c1, c2 = st.columns(2)
 
-    st.markdown(
-        '<p style="color:#94a3b8;font-size:12px;font-weight:700;'
-        'text-transform:uppercase;letter-spacing:.08em;">Equipamento</p>',
-        unsafe_allow_html=True,
-    )
+    with c1:
+        st.markdown("### 🔍 Possíveis causas")
+        for causa in problema["causas"]:
+            st.markdown(f"- {causa}")
 
-    equipamento_selecionado = st.selectbox(
-        "Selecione o equipamento",
-        list(EQUIPAMENTOS.keys()),
-        label_visibility="collapsed",
-    )
+    with c2:
+        st.markdown("### 🧭 Princípio do diagnóstico")
+        st.write(
+            "Não pule diretamente para a troca de uma peça. "
+            "Tente localizar em qual ponto da cadeia o comportamento deixa de ser esperado."
+        )
 
-    st.markdown("---")
+    st.markdown("### 🛠️ Roteiro de investigação")
+    for i, passo in enumerate(problema["passos"], 1):
+        st.markdown(f"**{i}. {passo}**")
 
-    modo = st.radio(
-        "Modo de visualização",
-        ["📘 Guia de Campo", "🔬 Análise Técnica"],
-    )
+    st.markdown("### ⛔ O que não fazer")
+    st.warning(problema["nao_fazer"])
 
-    st.markdown("---")
+def render_diagnostico(info):
+    st.markdown("""
+    ## 🌳 Método universal de diagnóstico
 
-    st.markdown(
-        """
-        <div style="color:#94a3b8;font-size:11px;line-height:1.55;">
-            <b>FLUXO DE DIAGNÓSTICO</b><br><br>
-            PRINCÍPIO FÍSICO<br>↓<br>
-            COMPONENTE<br>↓<br>
-            SINTOMA<br>↓<br>
-            HIPÓTESE<br>↓<br>
-            TESTE<br>↓<br>
-            CONCLUSÃO<br>↓<br>
-            CORREÇÃO AUTORIZADA<br>↓<br>
-            VALIDAÇÃO
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    A ideia é transformar manutenção em uma investigação.
 
+    **SINTOMA → SUBSISTEMA → HIPÓTESE → TESTE → RESULTADO → DECISÃO**
+    """)
 
-# ----------------------------------------------------------
-# DADOS
-# ----------------------------------------------------------
+    st.markdown("""
+    ### 1. Confirmar o sintoma
 
-dados = EQUIPAMENTOS[equipamento_selecionado]
-tecnico = TECNICO.get(equipamento_selecionado)
+    O defeito é reproduzível?
 
+    ### 2. Descobrir o que ainda funciona
+
+    Se algumas funções funcionam, isso ajuda a eliminar partes da cadeia.
+
+    ### 3. Separar subsistemas
+
+    Elétrico? Mecânico? Pneumático? Hidráulico? Térmico? Eletrônico? Ambiente?
+
+    ### 4. Testar uma variável por vez
+
+    Não altere cinco coisas e depois tente descobrir qual resolveu.
+
+    ### 5. Confirmar antes de reparar
+
+    Hipótese não é diagnóstico.
+
+    ### 6. Validar
+
+    A manutenção não termina quando o equipamento liga. É necessário confirmar funcionamento e segurança.
+    """)
+
+def render_fluxo_ecg():
+    st.markdown("""
+    ## 🌳 Exemplo: ECG com interferência
+
+    **Traçado anormal**
+
+    ↓
+
+    **O problema acontece em todas as derivações?**
+
+    ↓
+
+    **Verificar eletrodos e contato**
+
+    ↓
+
+    **Inspecionar cabos**
+
+    ↓
+
+    **Existe relação com movimento?**
+
+    ↓
+
+    **Testar em ambiente diferente**
+
+    ↓
+
+    **Afastar possíveis fontes de interferência**
+
+    ↓
+
+    **Utilizar simulador de ECG, quando disponível**
+
+    ↓
+
+    **Se persistir em condições controladas → investigar circuito interno**
+    """)
+
+def equipamento_page(nome, info):
+    st.markdown(f'<div class="hero"><h1>{nome}</h1><h4>{info["tipo"]}</h4></div>', unsafe_allow_html=True)
+    render_image(info)
+    avancado = TECNICO.get(nome)
+    tabs = st.tabs([
+        "📚 Visão geral", "🧠 Fundamentos", "🫀 Anatomia", "⚛️ Princípios físicos",
+        "🔬 Funcionamento interno", "🧩 Subsistemas", "🔧 Componentes interativos",
+        "🔗 Relações", "📊 Diagrama funcional", "⚠️ Falhas", "🧪 Testes",
+        "🌳 Árvore de decisão", "✅ Validação", "🛠️ Problemas"
+    ])
+    with tabs[0]:
+        st.markdown("## O que é e para que serve?")
+        st.markdown(info["objetivo"])
+        st.markdown("## Como desenvolver o raciocínio técnico")
+        render_raciocinio(info["raciocinio"])
+    with tabs[1]: render_fundamentos_v4(nome)
+    with tabs[2]: render_anatomia_v4(nome)
+    with tabs[3]:
+        if avancado: render_fisica_avancada(avancado)
+        if nome == "📈 Eletrocardiógrafo":
+            st.divider(); st.markdown(info["interferencia"])
+    with tabs[4]:
+        if avancado: render_funcionamento_interno(avancado)
+        st.divider(); st.markdown("## Cadeia de funcionamento"); st.markdown(info["principio"])
+    with tabs[5]:
+        if avancado: render_mapa_subsistemas(avancado)
+    with tabs[6]: render_componentes_interativos_v4(info["componentes"], nome)
+    with tabs[7]:
+        if avancado: render_relacoes(avancado)
+    with tabs[8]:
+        if avancado: render_diagrama(avancado)
+    with tabs[9]:
+        if avancado: render_falhas_subsistema(avancado)
+    with tabs[10]:
+        if avancado: render_testes_hipoteses(avancado)
+    with tabs[11]:
+        if avancado: render_arvore(avancado)
+    with tabs[12]:
+        if avancado: render_validacao(avancado)
+    with tabs[13]:
+        st.markdown("## Biblioteca de problemas")
+        busca = st.text_input("🔎 Pesquisar", placeholder="Ex.: vazamento, não aquece, ruído, temperatura...", key=f"busca_{nome}").lower()
+        encontrados = [p for p in info["problemas"] if not busca or busca in (p["titulo"] + p["sintoma"] + " ".join(p["causas"])).lower()]
+        if not encontrados: st.info("Nenhum problema encontrado.")
+        else:
+            escolha = st.selectbox("Selecione o problema", [p["titulo"] for p in encontrados], key=f"problema_{nome}")
+            render_problema(next(p for p in encontrados if p["titulo"] == escolha))
 
 # ==========================================================
-# CABEÇALHO
+# REGISTRO
 # ==========================================================
 
-st.markdown(
-    f"""
-    <div class="hero">
-        <div style="font-size:13px;color:#93c5fd;font-weight:600;
-                    margin-bottom:.4rem;">
-            ENGENHARIA CLÍNICA • GUIA DE CAMPO
-        </div>
-        <h1 style="margin:0;font-size:2rem;">
-            {equipamento_selecionado}
-        </h1>
-        <p style="margin-top:.7rem;margin-bottom:0;color:#cbd5e1;
-                  font-size:15px;">
-            {dados.get("tipo", "Sistema de engenharia clínica")}
-        </p>
-    </div>
-    """,
-    unsafe_allow_html=True,
+def registro_page():
+    st.title("📝 Registro de ocorrência")
+
+    with st.form("registro_form"):
+        equipamento = st.selectbox("Equipamento", list(EQUIPAMENTOS.keys()))
+        patrimonio = st.text_input("Patrimônio / identificação")
+        local = st.text_input("Local")
+        sintoma = st.text_area("Sintoma observado")
+        subsistema = st.multiselect(
+            "Possíveis subsistemas envolvidos",
+            ["Elétrico", "Eletrônico", "Mecânico", "Térmico",
+             "Pneumático", "Hidráulico", "Óptico", "Sensor",
+             "Software/Controle", "Ambiente"]
+        )
+        hipotese = st.text_area("Hipótese inicial")
+        teste = st.text_area("Teste realizado")
+        resultado = st.text_area("Resultado do teste")
+        diagnostico = st.text_area("Causa confirmada")
+        acao = st.text_area("Ação corretiva / encaminhamento")
+        validacao = st.text_area("Como foi validado?")
+        status = st.selectbox(
+            "Status",
+            ["Em análise", "Aguardando peça", "Encaminhado", "Resolvido"]
+        )
+
+        submit = st.form_submit_button("💾 Salvar ocorrência")
+
+    if submit:
+        if "registros" not in st.session_state:
+            st.session_state.registros = []
+
+        st.session_state.registros.append({
+            "Data": datetime.now().strftime("%d/%m/%Y %H:%M"),
+            "Equipamento": equipamento,
+            "Patrimônio": patrimonio,
+            "Local": local,
+            "Sintoma": sintoma,
+            "Subsistema": ", ".join(subsistema),
+            "Hipótese": hipotese,
+            "Teste": teste,
+            "Resultado": resultado,
+            "Diagnóstico": diagnostico,
+            "Ação": acao,
+            "Validação": validacao,
+            "Status": status
+        })
+
+        st.success("Ocorrência salva na sessão.")
+
+    if st.session_state.get("registros"):
+        df = pd.DataFrame(st.session_state.registros)
+
+        st.subheader("Histórico atual")
+        st.dataframe(df, use_container_width=True, hide_index=True)
+
+        csv = df.to_csv(index=False).encode("utf-8-sig")
+        st.download_button(
+            "⬇️ Exportar CSV",
+            csv,
+            "ocorrencias_engenharia_clinica.csv",
+            "text/csv"
+        )
+
+# ==========================================================
+# MODO ESTUDO
+# ==========================================================
+
+def estudo_page():
+    st.title("🎓 Modo estudo")
+
+    equipamento = st.selectbox("Escolha um equipamento", list(EQUIPAMENTOS.keys()))
+    info = EQUIPAMENTOS[equipamento]
+
+    st.markdown(f"## {equipamento}")
+
+    st.markdown("### 🧠 Perguntas para estudar")
+
+    perguntas = [
+        "Qual é a energia de entrada do sistema?",
+        "Qual é a principal transformação de energia?",
+        "Qual componente executa essa transformação?",
+        "Quais sensores existem?",
+        "O que acontece se o sensor falhar?",
+        "Quais subsistemas participam do funcionamento?",
+        "Qual seria o primeiro passo diante de uma falha?",
+        "Como diferenciar falha externa de falha interna?"
+    ]
+
+    for i, pergunta in enumerate(perguntas, 1):
+        resposta = st.text_area(f"{i}. {pergunta}", key=f"{equipamento}_{i}")
+        if resposta:
+            st.caption("💡 Compare sua resposta com as abas 'Como pensar' e 'Componentes'.")
+
+# ==========================================================
+# INÍCIO
+# ==========================================================
+
+st.sidebar.title("🩺 Engenharia Clínica")
+st.sidebar.caption("Guia de Campo V4")
+
+menu = st.sidebar.radio(
+    "Navegação",
+    ["🏠 Início", "🎓 Modo estudo", "📝 Registro de ocorrência", "📚 Método universal", *EQUIPAMENTOS.keys()]
 )
 
+st.sidebar.divider()
+modo = st.sidebar.selectbox(
+    "Modo de uso",
+    ["🎓 Estudo", "🔧 Campo"]
+)
 
-# ==========================================================
-# GUIA DE CAMPO
-# ==========================================================
+st.sidebar.warning("""
+⚠️ Este aplicativo é um guia de estudo e apoio ao raciocínio técnico.
 
-if modo == "📘 Guia de Campo":
+Não substitui:
+- manual técnico;
+- treinamento;
+- procedimento institucional;
+- instrumentos adequados;
+- testes de segurança;
+- autorização técnica.
+""")
 
-    st.markdown("## Visão geral")
+if menu == "🏠 Início":
+    st.markdown('<div class="hero"><h1>🩺 Guia de Campo de Engenharia Clínica</h1><h3>Versão 2 — aprender a pensar, não apenas decorar defeitos</h3></div>', unsafe_allow_html=True)
 
-    col1, col2 = st.columns(2)
+    st.markdown("""
+    ## A lógica do aplicativo
 
-    with col1:
-        st.markdown(
-            '<div class="concept"><h3>🎯 Objetivo do equipamento</h3></div>',
-            unsafe_allow_html=True,
-        )
-        st.markdown(dados.get("objetivo", "Informação não disponível."))
+    Em vez de:
 
-    with col2:
-        st.markdown(
-            '<div class="concept"><h3>⚙️ Princípio de funcionamento</h3></div>',
-            unsafe_allow_html=True,
-        )
-        st.markdown(dados.get("principio", "Informação não disponível."))
+    **“Sintoma → trocar peça”**
 
-    raciocinio = dados.get("raciocinio", [])
+    o objetivo é:
 
-    if raciocinio:
-        st.markdown("---")
-        st.markdown("## 🧠 Raciocínio de engenharia")
+    **Princípio físico → funcionamento → componente → subsistema →
+    sintoma → hipótese → teste → confirmação → correção → validação**
 
-        cols = st.columns(min(3, len(raciocinio)))
+    Essa abordagem ajuda a trabalhar mesmo quando aparece um equipamento ou defeito que
+    você nunca viu antes.
+    """)
 
-        for i, item in enumerate(raciocinio):
-            pergunta, resposta = item
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Equipamentos", len(EQUIPAMENTOS))
+    c2.metric("Modo", modo)
+    c3.metric("Ocorrências na sessão", len(st.session_state.get("registros", [])))
 
-            with cols[i % len(cols)]:
-                st.markdown(
-                    f"""
-                    <div class="concept" style="height:100%;">
-                        <div style="color:#60a5fa;font-weight:700;
-                                    font-size:14px;margin-bottom:.5rem;">
-                            {pergunta}
-                        </div>
-                        <div style="color:#e2e8f0;font-size:14px;
-                                    line-height:1.6;">
-                            {resposta}
-                        </div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
+    st.markdown("## 📌 Equipamentos")
+    for nome, info in EQUIPAMENTOS.items():
+        with st.expander(nome):
+            st.write(info["tipo"])
 
-    componentes = dados.get("componentes", [])
+elif menu == "🎓 Modo estudo":
+    estudo_page()
 
-    if componentes:
-        st.markdown("---")
-        st.markdown("## 🔩 Componentes e função")
+elif menu == "📝 Registro de ocorrência":
+    registro_page()
 
-        for componente in componentes:
-            nome, funcao, falha = componente
+elif menu == "📚 Método universal":
+    st.title("📚 Método universal de diagnóstico")
 
-            with st.expander(f"🔧 {nome}"):
-                c1, c2 = st.columns(2)
+    st.markdown("""
+    # 1️⃣ Comece pelo princípio físico
 
-                with c1:
-                    st.markdown("**Função**")
-                    st.write(funcao)
+    Antes de procurar defeitos, pergunte:
 
-                with c2:
-                    st.markdown("**O que observar em caso de falha**")
-                    st.write(falha)
+    **Como esse equipamento funciona?**
 
-    problemas = dados.get("problemas", [])
+    # 2️⃣ Desenhe a cadeia
 
-    if problemas:
-        st.markdown("---")
-        st.markdown("## 🚨 Diagnóstico por sintoma")
-        st.caption(
-            "Selecione um sintoma para seguir uma sequência estruturada "
-            "de diagnóstico."
-        )
+    Exemplo genérico:
 
-        titulos = [p.get("titulo", "Problema") for p in problemas]
+    **Energia → conversão → transmissão → sensor → controle → resultado**
 
-        problema_titulo = st.selectbox(
-            "Sintoma / problema",
-            titulos,
-            key=f"problema_{equipamento_selecionado}",
-        )
+    # 3️⃣ Descubra onde o comportamento deixa de ser esperado
 
-        problema = next(
-            (p for p in problemas if p.get("titulo") == problema_titulo),
-            None,
-        )
+    Não pergunte apenas:
 
-        if problema:
-            st.markdown(
-                f"""
-                <div class="warning-box">
-                    <h3 style="margin-top:0;">
-                        {problema.get("titulo", "")}
-                    </h3>
-                    <p><b>Sintoma:</b> {problema.get("sintoma", "")}</p>
-                    <p><b>Cadeia de diagnóstico:</b>
-                    {problema.get("cadeia", "")}</p>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+    > “Qual peça está ruim?”
 
-            causas = problema.get("causas", [])
+    Pergunte:
 
-            if causas:
-                st.markdown("### 🔎 Possíveis causas")
-                cols = st.columns(2)
+    > “Em qual ponto da cadeia o sistema deixou de funcionar corretamente?”
 
-                for i, causa in enumerate(causas):
-                    with cols[i % 2]:
-                        st.markdown(
-                            f'<div class="concept">🔹 {causa}</div>',
-                            unsafe_allow_html=True,
-                        )
+    # 4️⃣ Isole variáveis
 
-            passos = problema.get("passos", [])
+    Um teste bom modifica apenas uma variável.
 
-            if passos:
-                st.markdown("### 🛠️ Passo a passo")
+    # 5️⃣ Diferencie hipótese de diagnóstico
 
-                for i, passo in enumerate(passos, start=1):
-                    st.markdown(
-                        f"""
-                        <div class="concept">
-                            <div style="display:flex;gap:12px;
-                                        align-items:flex-start;">
-                                <div style="min-width:30px;height:30px;
-                                            border-radius:50%;
-                                            background:#2563eb;
-                                            display:flex;
-                                            align-items:center;
-                                            justify-content:center;
-                                            font-weight:700;">
-                                    {i}
-                                </div>
-                                <div style="padding-top:4px;line-height:1.5;">
-                                    {passo}
-                                </div>
-                            </div>
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
+    **Hipótese:** pode ser o cabo.
 
-            nao_fazer = problema.get("nao_fazer")
+    **Diagnóstico:** o defeito foi reproduzido e isolado no cabo por teste apropriado.
 
-            if nao_fazer:
-                st.markdown(
-                    f"""
-                    <div class="warning-box">
-                        <h3 style="margin-top:0;">⚠️ O que NÃO fazer</h3>
-                        <p style="margin-bottom:0;">{nao_fazer}</p>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
+    # 6️⃣ Corrija
 
+    Somente depois de confirmar a causa.
 
-# ==========================================================
-# ANÁLISE TÉCNICA
-# ==========================================================
+    # 7️⃣ Valide
+
+    Confirme desempenho, segurança e ausência do defeito.
+
+    # 8️⃣ Registre
+
+    O registro cria histórico e melhora diagnósticos futuros.
+    """)
 
 else:
-
-    if tecnico is None:
-        st.warning(
-            "A camada técnica avançada ainda não foi cadastrada "
-            "para este equipamento."
-        )
-        st.info(
-            "O Guia de Campo continua disponível no modo "
-            "'📘 Guia de Campo'."
-        )
-
-    else:
-        st.markdown("## 🔬 Análise Técnica Avançada")
-        st.caption(
-            "Princípios físicos → subsistemas → componentes → relações "
-            "→ falhas → testes → decisão → validação"
-        )
-
-        fisica = tecnico.get("fisica")
-
-        if fisica:
-            st.markdown("---")
-            st.markdown("## ⚛️ Princípios físicos")
-            st.markdown(fisica)
-
-        interno = tecnico.get("interno", [])
-
-        if interno:
-            st.markdown("---")
-            st.markdown("## 🏗️ Estrutura interna")
-
-            for etapa in interno:
-                nome, descricao = etapa
-
-                st.markdown(
-                    f"""
-                    <div class="concept">
-                        <h4 style="margin-top:0;color:#60a5fa !important;">
-                            {nome}
-                        </h4>
-                        <p style="margin-bottom:0;">{descricao}</p>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-
-        subsistemas = tecnico.get("subsistemas", {})
-
-        if subsistemas:
-            st.markdown("---")
-            st.markdown("## 🧩 Subsistemas")
-
-            for nome_subsistema, lista in subsistemas.items():
-                with st.expander(nome_subsistema):
-                    for componente in lista:
-                        st.markdown(f"• {componente}")
-
-        relacoes = tecnico.get("relacoes", [])
-
-        if relacoes:
-            st.markdown("---")
-            st.markdown("## 🔗 Relações entre componentes")
-
-            for origem, destino, funcao in relacoes:
-                st.markdown(
-                    f"""
-                    <div class="concept">
-                        <strong>{origem}</strong>
-                        <span style="color:#60a5fa;font-size:20px;">
-                            &nbsp;→&nbsp;
-                        </span>
-                        <strong>{destino}</strong>
-                        <span style="color:#cbd5e1;">
-                            &nbsp; {funcao}
-                        </span>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-
-        diagrama = tecnico.get("diagrama")
-
-        if diagrama:
-            st.markdown("---")
-            st.markdown("## 📐 Diagrama funcional")
-            st.code(diagrama, language="text")
-
-        falhas = tecnico.get("falhas", {})
-
-        if falhas:
-            st.markdown("---")
-            st.markdown("## 🚨 Mapa de falhas")
-
-            for subsistema, lista_falhas in falhas.items():
-                st.markdown(f"### {subsistema}")
-
-                cols = st.columns(2)
-
-                for i, falha in enumerate(lista_falhas):
-                    with cols[i % 2]:
-                        st.markdown(
-                            f"""
-                            <div class="warning-box"
-                                 style="margin-bottom:.6rem;">
-                                🔸 {falha}
-                            </div>
-                            """,
-                            unsafe_allow_html=True,
-                        )
-
-        testes = tecnico.get("testes", [])
-
-        if testes:
-            st.markdown("---")
-            st.markdown("## 🧪 Testes e tomada de decisão")
-
-            for pergunta, interpretacao in testes:
-                with st.expander(f"❓ {pergunta}"):
-                    st.markdown(
-                        f"""
-                        <div class="concept">
-                            <strong>Interpretação:</strong>
-                            <p style="margin-top:.5rem;margin-bottom:0;">
-                                {interpretacao}
-                            </p>
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
-
-        arvore = tecnico.get("arvore")
-
-        if arvore:
-            st.markdown("---")
-            st.markdown("## 🌳 Árvore de diagnóstico")
-            st.code(arvore, language="text")
-
-        validacao = tecnico.get("validacao", [])
-
-        if validacao:
-            st.markdown("---")
-            st.markdown("## ✅ Validação após intervenção")
-
-            for i, item in enumerate(validacao, start=1):
-                st.markdown(
-                    f"""
-                    <div class="concept">
-                        <div style="display:flex;gap:12px;
-                                    align-items:center;">
-                            <div style="min-width:28px;height:28px;
-                                        border-radius:50%;
-                                        background:#2563eb;
-                                        display:flex;
-                                        align-items:center;
-                                        justify-content:center;
-                                        font-weight:700;">
-                                {i}
-                            </div>
-                            <div>{item}</div>
-                        </div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-
-
-# ==========================================================
-# RODAPÉ
-# ==========================================================
-
-st.markdown("---")
-
-st.markdown(
-    """
-    <div style="text-align:center;color:#64748b;font-size:11px;
-                padding:1rem 0 2rem 0;">
-        Engenharia Clínica • Guia de Campo<br>
-        Diagnóstico estruturado baseado em princípio físico,
-        cadeia funcional, testes e validação.
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+    equipamento_page(menu, EQUIPAMENTOS[menu])
