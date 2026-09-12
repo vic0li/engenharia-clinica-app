@@ -706,46 +706,21 @@ Cabos podem captar interferência por acoplamento capacitivo, magnético ou cond
     }
 }
 
-# ----------------------------------------------------------
-# FUNÇÕES AUXILIARES
-# ----------------------------------------------------------
 
-def render_card(titulo, conteudo, classe="concept"):
+# ==========================================================
+# INTERFACE DO GUIA DE CAMPO
+# ==========================================================
+
+def render_html_card(title, body, css_class="concept"):
     st.markdown(
         f"""
-        <div class="{classe}">
-            <h3>{titulo}</h3>
-            <div>{conteudo}</div>
+        <div class="{css_class}">
+            <h3>{title}</h3>
+            <div>{body}</div>
         </div>
         """,
         unsafe_allow_html=True
     )
-
-
-def render_markdown_box(titulo, texto, classe="concept"):
-    st.markdown(
-        f"""
-        <div class="{classe}">
-            <h3>{titulo}</h3>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-    st.markdown(texto)
-
-
-def render_lista(titulo, itens):
-    st.markdown(f"### {titulo}")
-
-    for item in itens:
-        st.markdown(
-            f"""
-            <div class="concept" style="margin: 0.45rem 0; padding: 0.8rem 1rem;">
-                {item}
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
 
 
 # ----------------------------------------------------------
@@ -753,103 +728,65 @@ def render_lista(titulo, itens):
 # ----------------------------------------------------------
 
 with st.sidebar:
-
     st.markdown(
         """
-        <div style="
-            padding: 1rem 0.5rem 1.2rem 0.5rem;
-            text-align: center;
-        ">
-            <div style="font-size: 42px;">🩺</div>
-            <h2 style="
-                color: #f8fafc;
-                margin-bottom: 0.2rem;
-            ">
-                Engenharia Clínica
-            </h2>
-            <p style="
-                color: #cbd5e1;
-                font-size: 13px;
-                margin-top: 0;
-            ">
+        <div style="padding: 1rem 0 1.2rem 0; text-align:center;">
+            <div style="font-size:42px;">🩺</div>
+            <h2 style="color:#f8fafc; margin:0;">Engenharia Clínica</h2>
+            <p style="color:#cbd5e1; font-size:13px; margin-top:5px;">
                 Guia de Campo
             </p>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     st.markdown("---")
 
     st.markdown(
-        """
-        <p style="
-            color: #94a3b8;
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-        ">
-            Equipamento
-        </p>
-        """,
-        unsafe_allow_html=True
+        '<p style="color:#94a3b8;font-size:12px;font-weight:700;'
+        'text-transform:uppercase;letter-spacing:.08em;">Equipamento</p>',
+        unsafe_allow_html=True,
     )
 
     equipamento_selecionado = st.selectbox(
         "Selecione o equipamento",
         list(EQUIPAMENTOS.keys()),
-        label_visibility="collapsed"
+        label_visibility="collapsed",
     )
 
     st.markdown("---")
 
     modo = st.radio(
         "Modo de visualização",
-        [
-            "📘 Guia de Campo",
-            "🔬 Análise Técnica"
-        ],
-        label_visibility="visible"
+        ["📘 Guia de Campo", "🔬 Análise Técnica"],
     )
 
     st.markdown("---")
 
     st.markdown(
         """
-        <div style="
-            color: #94a3b8;
-            font-size: 11px;
-            line-height: 1.5;
-        ">
-            <b>Fluxo de diagnóstico</b><br><br>
-            PRINCÍPIO FÍSICO<br>
-            ↓<br>
-            COMPONENTE<br>
-            ↓<br>
-            SINTOMA<br>
-            ↓<br>
-            HIPÓTESE<br>
-            ↓<br>
-            TESTE<br>
-            ↓<br>
-            CONCLUSÃO<br>
-            ↓<br>
-            CORREÇÃO AUTORIZADA<br>
-            ↓<br>
+        <div style="color:#94a3b8;font-size:11px;line-height:1.55;">
+            <b>FLUXO DE DIAGNÓSTICO</b><br><br>
+            PRINCÍPIO FÍSICO<br>↓<br>
+            COMPONENTE<br>↓<br>
+            SINTOMA<br>↓<br>
+            HIPÓTESE<br>↓<br>
+            TESTE<br>↓<br>
+            CONCLUSÃO<br>↓<br>
+            CORREÇÃO AUTORIZADA<br>↓<br>
             VALIDAÇÃO
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
 
 # ----------------------------------------------------------
-# DADOS DO EQUIPAMENTO
+# DADOS
 # ----------------------------------------------------------
 
 dados = EQUIPAMENTOS[equipamento_selecionado]
-
 tecnico = TECNICO.get(equipamento_selecionado)
 
 
@@ -860,47 +797,28 @@ tecnico = TECNICO.get(equipamento_selecionado)
 st.markdown(
     f"""
     <div class="hero">
-
-        <div style="
-            font-size: 13px;
-            color: #93c5fd;
-            font-weight: 600;
-            margin-bottom: 0.4rem;
-        ">
+        <div style="font-size:13px;color:#93c5fd;font-weight:600;
+                    margin-bottom:.4rem;">
             ENGENHARIA CLÍNICA • GUIA DE CAMPO
         </div>
-
-        <h1 style="
-            margin: 0;
-            font-size: 2rem;
-        ">
+        <h1 style="margin:0;font-size:2rem;">
             {equipamento_selecionado}
         </h1>
-
-        <p style="
-            margin-top: 0.7rem;
-            margin-bottom: 0;
-            color: #cbd5e1;
-            font-size: 15px;
-        ">
+        <p style="margin-top:.7rem;margin-bottom:0;color:#cbd5e1;
+                  font-size:15px;">
             {dados.get("tipo", "Sistema de engenharia clínica")}
         </p>
-
     </div>
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
 
 
 # ==========================================================
-# MODO 1 — GUIA DE CAMPO
+# GUIA DE CAMPO
 # ==========================================================
 
 if modo == "📘 Guia de Campo":
-
-    # ------------------------------------------------------
-    # VISÃO GERAL
-    # ------------------------------------------------------
 
     st.markdown("## Visão geral")
 
@@ -908,479 +826,345 @@ if modo == "📘 Guia de Campo":
 
     with col1:
         st.markdown(
-            f"""
-            <div class="concept">
-                <h3>🎯 Objetivo do equipamento</h3>
-            </div>
-            """,
-            unsafe_allow_html=True
+            '<div class="concept"><h3>🎯 Objetivo do equipamento</h3></div>',
+            unsafe_allow_html=True,
         )
-
         st.markdown(dados.get("objetivo", "Informação não disponível."))
 
     with col2:
         st.markdown(
-            f"""
-            <div class="concept">
-                <h3>⚙️ Princípio de funcionamento</h3>
-            </div>
-            """,
-            unsafe_allow_html=True
+            '<div class="concept"><h3>⚙️ Princípio de funcionamento</h3></div>',
+            unsafe_allow_html=True,
         )
-
         st.markdown(dados.get("principio", "Informação não disponível."))
-
-
-    # ------------------------------------------------------
-    # RACIOCÍNIO
-    # ------------------------------------------------------
 
     raciocinio = dados.get("raciocinio", [])
 
     if raciocinio:
-
         st.markdown("---")
         st.markdown("## 🧠 Raciocínio de engenharia")
 
         cols = st.columns(min(3, len(raciocinio)))
 
         for i, item in enumerate(raciocinio):
-
-            pergunta = item[0]
-            resposta = item[1]
+            pergunta, resposta = item
 
             with cols[i % len(cols)]:
-
                 st.markdown(
                     f"""
-                    <div class="concept" style="height: 100%;">
-
-                        <div style="
-                            color: #60a5fa;
-                            font-weight: 700;
-                            font-size: 14px;
-                            margin-bottom: 0.5rem;
-                        ">
+                    <div class="concept" style="height:100%;">
+                        <div style="color:#60a5fa;font-weight:700;
+                                    font-size:14px;margin-bottom:.5rem;">
                             {pergunta}
                         </div>
-
-                        <div style="
-                            color: #e2e8f0;
-                            font-size: 14px;
-                            line-height: 1.6;
-                        ">
+                        <div style="color:#e2e8f0;font-size:14px;
+                                    line-height:1.6;">
                             {resposta}
                         </div>
-
                     </div>
                     """,
-                    unsafe_allow_html=True
+                    unsafe_allow_html=True,
                 )
-
-
-    # ------------------------------------------------------
-    # COMPONENTES
-    # ------------------------------------------------------
 
     componentes = dados.get("componentes", [])
 
     if componentes:
-
         st.markdown("---")
         st.markdown("## 🔩 Componentes e função")
 
         for componente in componentes:
-
-            nome = componente[0]
-            funcao = componente[1]
-            falha = componente[2]
+            nome, funcao, falha = componente
 
             with st.expander(f"🔧 {nome}"):
+                c1, c2 = st.columns(2)
 
-                col1, col2 = st.columns(2)
-
-                with col1:
+                with c1:
                     st.markdown("**Função**")
                     st.write(funcao)
 
-                with col2:
+                with c2:
                     st.markdown("**O que observar em caso de falha**")
                     st.write(falha)
-
-
-    # ------------------------------------------------------
-    # PROBLEMAS
-    # ------------------------------------------------------
 
     problemas = dados.get("problemas", [])
 
     if problemas:
-
         st.markdown("---")
         st.markdown("## 🚨 Diagnóstico por sintoma")
-
         st.caption(
-            "Selecione um sintoma para seguir uma sequência estruturada de diagnóstico."
+            "Selecione um sintoma para seguir uma sequência estruturada "
+            "de diagnóstico."
         )
 
-        titulos_problemas = [
-            problema.get("titulo", "Problema")
-            for problema in problemas
-        ]
+        titulos = [p.get("titulo", "Problema") for p in problemas]
 
-        problema_selecionado = st.selectbox(
+        problema_titulo = st.selectbox(
             "Sintoma / problema",
-            titulos_problemas
+            titulos,
+            key=f"problema_{equipamento_selecionado}",
         )
 
         problema = next(
-            (
-                p for p in problemas
-                if p.get("titulo") == problema_selecionado
-            ),
-            None
+            (p for p in problemas if p.get("titulo") == problema_titulo),
+            None,
         )
 
         if problema:
-
             st.markdown(
                 f"""
                 <div class="warning-box">
-
-                    <h3 style="margin-top: 0;">
+                    <h3 style="margin-top:0;">
                         {problema.get("titulo", "")}
                     </h3>
-
-                    <p>
-                        <b>Sintoma:</b>
-                        {problema.get("sintoma", "")}
-                    </p>
-
-                    <p>
-                        <b>Cadeia de diagnóstico:</b>
-                        {problema.get("cadeia", "")}
-                    </p>
-
+                    <p><b>Sintoma:</b> {problema.get("sintoma", "")}</p>
+                    <p><b>Cadeia de diagnóstico:</b>
+                    {problema.get("cadeia", "")}</p>
                 </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
-
-            st.markdown("### 🔎 Possíveis causas")
 
             causas = problema.get("causas", [])
 
-            cols = st.columns(2)
+            if causas:
+                st.markdown("### 🔎 Possíveis causas")
+                cols = st.columns(2)
 
-            for i, causa in enumerate(causas):
-
-                with cols[i % 2]:
-
-                    st.markdown(
-                        f"""
-                        <div class="concept">
-                            🔹 {causa}
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
-
-
-            st.markdown("### 🛠️ Passo a passo")
+                for i, causa in enumerate(causas):
+                    with cols[i % 2]:
+                        st.markdown(
+                            f'<div class="concept">🔹 {causa}</div>',
+                            unsafe_allow_html=True,
+                        )
 
             passos = problema.get("passos", [])
 
-            for i, passo in enumerate(passos, start=1):
+            if passos:
+                st.markdown("### 🛠️ Passo a passo")
 
-                st.markdown(
-                    f"""
-                    <div class="concept">
-
-                        <div style="
-                            display: flex;
-                            gap: 12px;
-                            align-items: flex-start;
-                        ">
-
-                            <div style="
-                                min-width: 30px;
-                                height: 30px;
-                                border-radius: 50%;
-                                background: #2563eb;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                font-weight: 700;
-                            ">
-                                {i}
+                for i, passo in enumerate(passos, start=1):
+                    st.markdown(
+                        f"""
+                        <div class="concept">
+                            <div style="display:flex;gap:12px;
+                                        align-items:flex-start;">
+                                <div style="min-width:30px;height:30px;
+                                            border-radius:50%;
+                                            background:#2563eb;
+                                            display:flex;
+                                            align-items:center;
+                                            justify-content:center;
+                                            font-weight:700;">
+                                    {i}
+                                </div>
+                                <div style="padding-top:4px;line-height:1.5;">
+                                    {passo}
+                                </div>
                             </div>
-
-                            <div style="
-                                padding-top: 4px;
-                                line-height: 1.5;
-                            ">
-                                {passo}
-                            </div>
-
                         </div>
-
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
-
+                        """,
+                        unsafe_allow_html=True,
+                    )
 
             nao_fazer = problema.get("nao_fazer")
 
             if nao_fazer:
-
                 st.markdown(
                     f"""
                     <div class="warning-box">
-
-                        <h3 style="margin-top: 0;">
-                            ⚠️ O que NÃO fazer
-                        </h3>
-
-                        <p style="margin-bottom: 0;">
-                            {nao_fazer}
-                        </p>
-
+                        <h3 style="margin-top:0;">⚠️ O que NÃO fazer</h3>
+                        <p style="margin-bottom:0;">{nao_fazer}</p>
                     </div>
                     """,
-                    unsafe_allow_html=True
+                    unsafe_allow_html=True,
                 )
 
 
 # ==========================================================
-# MODO 2 — ANÁLISE TÉCNICA
+# ANÁLISE TÉCNICA
 # ==========================================================
 
 else:
 
     if tecnico is None:
-
         st.warning(
             "A camada técnica avançada ainda não foi cadastrada "
             "para este equipamento."
         )
-
         st.info(
             "O Guia de Campo continua disponível no modo "
             "'📘 Guia de Campo'."
         )
 
     else:
-
         st.markdown("## 🔬 Análise Técnica Avançada")
-
         st.caption(
-            "Princípios físicos → subsistemas → componentes → "
-            "relações → falhas → testes → decisão → validação"
+            "Princípios físicos → subsistemas → componentes → relações "
+            "→ falhas → testes → decisão → validação"
         )
-
-
-        # --------------------------------------------------
-        # PRINCÍPIOS FÍSICOS
-        # --------------------------------------------------
 
         fisica = tecnico.get("fisica")
 
         if fisica:
-
             st.markdown("---")
             st.markdown("## ⚛️ Princípios físicos")
-
             st.markdown(fisica)
-
-
-        # --------------------------------------------------
-        # ESTRUTURA INTERNA
-        # --------------------------------------------------
 
         interno = tecnico.get("interno", [])
 
         if interno:
-
             st.markdown("---")
             st.markdown("## 🏗️ Estrutura interna")
 
             for etapa in interno:
-
-                nome = etapa[0]
-                descricao = etapa[1]
+                nome, descricao = etapa
 
                 st.markdown(
                     f"""
                     <div class="concept">
-
-                        <h4 style="
-                            margin-top: 0;
-                            color: #60a5fa !important;
-                        ">
+                        <h4 style="margin-top:0;color:#60a5fa !important;">
                             {nome}
                         </h4>
-
-                        <p style="margin-bottom: 0;">
-                            {descricao}
-                        </p>
-
+                        <p style="margin-bottom:0;">{descricao}</p>
                     </div>
                     """,
-                    unsafe_allow_html=True
+                    unsafe_allow_html=True,
                 )
-
-
-        # --------------------------------------------------
-        # SUBSISTEMAS
-        # --------------------------------------------------
 
         subsistemas = tecnico.get("subsistemas", {})
 
         if subsistemas:
-
             st.markdown("---")
             st.markdown("## 🧩 Subsistemas")
 
-            for nome_subsistema, componentes_subsistema in subsistemas.items():
-
-                with st.expander(
-                    f"🔹 {nome_subsistema}",
-                    expanded=False
-                ):
-
-                    for componente in componentes_subsistema:
-
-                        st.markdown(
-                            f"""
-                            <div style="
-                                padding: 0.5rem 0;
-                                border-bottom: 1px solid #334155;
-                            ">
-                                • {componente}
-                            </div>
-                            """,
-                            unsafe_allow_html=True
-                        )
-
-
-        # --------------------------------------------------
-        # RELAÇÕES
-        # --------------------------------------------------
+            for nome_subsistema, lista in subsistemas.items():
+                with st.expander(nome_subsistema):
+                    for componente in lista:
+                        st.markdown(f"• {componente}")
 
         relacoes = tecnico.get("relacoes", [])
 
         if relacoes:
-
             st.markdown("---")
             st.markdown("## 🔗 Relações entre componentes")
 
-            for relacao in relacoes:
-
-                origem = relacao[0]
-                destino = relacao[1]
-                funcao = relacao[2]
-
+            for origem, destino, funcao in relacoes:
                 st.markdown(
                     f"""
                     <div class="concept">
-
-                        <div style="
-                            display: flex;
-                            align-items: center;
-                            gap: 12px;
-                            flex-wrap: wrap;
-                        ">
-
-                            <strong>{origem}</strong>
-
-                            <span style="
-                                color: #60a5fa;
-                                font-size: 20px;
-                            ">
-                                →
-                            </span>
-
-                            <strong>{destino}</strong>
-
-                            <span style="
-                                color: #cbd5e1;
-                                margin-left: 5px;
-                            ">
-                                {funcao}
-                            </span>
-
-                        </div>
-
+                        <strong>{origem}</strong>
+                        <span style="color:#60a5fa;font-size:20px;">
+                            &nbsp;→&nbsp;
+                        </span>
+                        <strong>{destino}</strong>
+                        <span style="color:#cbd5e1;">
+                            &nbsp; {funcao}
+                        </span>
                     </div>
                     """,
-                    unsafe_allow_html=True
+                    unsafe_allow_html=True,
                 )
-
-
-        # --------------------------------------------------
-        # DIAGRAMA
-        # --------------------------------------------------
 
         diagrama = tecnico.get("diagrama")
 
         if diagrama:
-
             st.markdown("---")
             st.markdown("## 📐 Diagrama funcional")
-
-            st.code(
-                diagrama,
-                language="text"
-            )
-
-
-        # --------------------------------------------------
-        # FALHAS POR SUBSISTEMA
-        # --------------------------------------------------
+            st.code(diagrama, language="text")
 
         falhas = tecnico.get("falhas", {})
 
         if falhas:
-
             st.markdown("---")
             st.markdown("## 🚨 Mapa de falhas")
 
             for subsistema, lista_falhas in falhas.items():
-
                 st.markdown(f"### {subsistema}")
 
                 cols = st.columns(2)
 
                 for i, falha in enumerate(lista_falhas):
-
                     with cols[i % 2]:
-
                         st.markdown(
                             f"""
                             <div class="warning-box"
-                                 style="margin-bottom: 0.6rem;">
-
+                                 style="margin-bottom:.6rem;">
                                 🔸 {falha}
-
                             </div>
                             """,
-                            unsafe_allow_html=True
+                            unsafe_allow_html=True,
                         )
-
-
-        # --------------------------------------------------
-        # TESTES DE DIAGNÓSTICO
-        # --------------------------------------------------
 
         testes = tecnico.get("testes", [])
 
         if testes:
-
             st.markdown("---")
             st.markdown("## 🧪 Testes e tomada de decisão")
 
             for pergunta, interpretacao in testes:
+                with st.expander(f"❓ {pergunta}"):
+                    st.markdown(
+                        f"""
+                        <div class="concept">
+                            <strong>Interpretação:</strong>
+                            <p style="margin-top:.5rem;margin-bottom:0;">
+                                {interpretacao}
+                            </p>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
 
-                with st.expander(f"❓ {pergunta}")
+        arvore = tecnico.get("arvore")
 
+        if arvore:
+            st.markdown("---")
+            st.markdown("## 🌳 Árvore de diagnóstico")
+            st.code(arvore, language="text")
+
+        validacao = tecnico.get("validacao", [])
+
+        if validacao:
+            st.markdown("---")
+            st.markdown("## ✅ Validação após intervenção")
+
+            for i, item in enumerate(validacao, start=1):
+                st.markdown(
+                    f"""
+                    <div class="concept">
+                        <div style="display:flex;gap:12px;
+                                    align-items:center;">
+                            <div style="min-width:28px;height:28px;
+                                        border-radius:50%;
+                                        background:#2563eb;
+                                        display:flex;
+                                        align-items:center;
+                                        justify-content:center;
+                                        font-weight:700;">
+                                {i}
+                            </div>
+                            <div>{item}</div>
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+
+# ==========================================================
+# RODAPÉ
+# ==========================================================
+
+st.markdown("---")
+
+st.markdown(
+    """
+    <div style="text-align:center;color:#64748b;font-size:11px;
+                padding:1rem 0 2rem 0;">
+        Engenharia Clínica • Guia de Campo<br>
+        Diagnóstico estruturado baseado em princípio físico,
+        cadeia funcional, testes e validação.
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
